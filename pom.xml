@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>dk.sdu.se4</groupId>
+  <artifactId>FarmingGame</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>Common-api</module>
+    <module>RobotModule</module>
+    <module>WeedModule</module>
+    <module>Common-ecs</module>
+    <module>Core-engine</module>
+    <module>MapModule</module>
+    <module>CropsModule</module>
+    <module>ToolsModule</module>
+    <module>ShopModule</module>
+    <module>PathfindingModule</module>
+    <module>InventoryModule</module>
+  </modules>
+  <properties>
+    <!-- Pick 21 (LTS). Use 17 if your course requires it. -->
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+</project>

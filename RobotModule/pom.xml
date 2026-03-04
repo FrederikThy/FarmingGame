@@ -3,10 +3,14 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>dk.sdu.se4.group1.Robot</groupId>
-  <artifactId>RobotModule</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <parent>
+    <groupId>dk.sdu.se4</groupId>
+    <artifactId>FarmingGame</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
 
+  <artifactId>RobotModule</artifactId>
   <name>RobotModule</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
