@@ -7,7 +7,7 @@ module Core.engine {
     requires spring.beans;
     requires spring.aop;
     requires spring.expression;
-
+    requires Common.ecs;
 
     requires RobotModule;
     exports dk.sdu.se4.group1.CoreEngine;
