@@ -6,9 +6,9 @@
   <packaging>pom</packaging>
   <modules>
     <module>Common-api</module>
+    <module>Common-ecs</module>
     <module>RobotModule</module>
     <module>WeedModule</module>
-    <module>Common-ecs</module>
     <module>Core-engine</module>
     <module>MapModule</module>
     <module>CropsModule</module>

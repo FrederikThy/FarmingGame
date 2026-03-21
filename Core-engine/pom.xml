@@ -72,6 +72,11 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-jcl</artifactId>
     </dependency>
+    <dependency>
+      <groupId>dk.sdu.se4</groupId>
+      <artifactId>RobotModule</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>

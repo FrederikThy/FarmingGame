@@ -1,2 +1,3 @@
 module-info.class
-dk/sdu/se4/group1/Robot/Robot.class
+dk/sdu/se4/group1/Robot/RobotPlugin.class
+dk/sdu/se4/group1/Robot/RobotSystem.class

@@ -2,7 +2,7 @@ package dk.sdu.se4.group1.Robot;
 
 import java.util.Random;
 
-public class Robot {
+public class RobotPlugin {
 
     //RANDOM giver random tal, som vi bruger til at give en destionation til vores robot
     private static final Random RANDOM = new Random();
@@ -17,7 +17,7 @@ public class Robot {
     private int xDestination;
     private int yDestination;
 
-    public Robot(double speed, int startX, int startY) {
+    public RobotPlugin(double speed, int startX, int startY) {
         this.speed = speed;
         this.x = startX;
         this.y = startY;
