@@ -1,6 +1,7 @@
 package dk.sdu.se4.group1.CoreEngine;
 
 import dk.sdu.se4.group1.CommonEcs.World;
+import dk.sdu.se4.group1.Map.WorldMap;
 import dk.sdu.se4.group1.Robot.RobotPlugin;
 import dk.sdu.se4.group1.Robot.RobotSystem;
 import javafx.animation.AnimationTimer;
@@ -12,9 +13,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-/**
- * Hello world!
- */
+import javafx.scene.layout.GridPane;
+
 public class Main extends Application {
 
     private long lastTime = 0;
@@ -24,6 +24,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage window) throws Exception {
+        WorldMap map = new WorldMap(10,10,50);
         World world = new World(); //creates world instance
         SystemRegistry registry = new SystemRegistry(); //Creates system registry instance
 
@@ -31,6 +32,12 @@ public class Main extends Application {
         // på hvordan vi skal gøre det. Derfor bliver det bare lige i main for nu
         RobotPlugin robot = new RobotPlugin(10.0, 100, 100);
         world.AddEntity(robot);
+
+        Pane root = new Pane();
+        GridPane mapGrid = map.createGrid();
+        root.getChildren().add(mapGrid);
+        map.makeBlack(5,5);
+
         registry.register(new RobotSystem());
         //Laver cirkel
         Circle robotCircle = new Circle(10);
@@ -43,7 +50,6 @@ public class Main extends Application {
 
         // Jeg har ændret det fra stackpane til pane, fordi stackpane nogle gange
         // kan være træls
-        Pane root = new Pane();
 
         Scene scene = new Scene(root, 800, 600);
 
