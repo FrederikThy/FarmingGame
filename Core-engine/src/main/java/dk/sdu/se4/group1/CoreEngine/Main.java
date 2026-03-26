@@ -29,7 +29,7 @@ public class Main extends Application {
 
         //Jeg ved godt vi har snakket om at bruge factories, men jeg er ikke sikker
         // på hvordan vi skal gøre det. Derfor bliver det bare lige i main for nu
-        RobotPlugin robot = new RobotPlugin(10.0, 100, 100);
+        RobotPlugin robot = new RobotPlugin(2.0, 100, 100);
         world.AddEntity(robot);
         registry.register(new RobotSystem());
         //Laver cirkel
