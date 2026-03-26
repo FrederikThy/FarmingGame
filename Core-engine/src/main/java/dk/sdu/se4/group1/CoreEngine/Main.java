@@ -12,9 +12,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-/**
- * Hello world!
- */
+
+
+
 public class Main extends Application {
 
     private long lastTime = 0;
@@ -81,7 +81,7 @@ public class Main extends Application {
 
     private void registerSystems(SystemRegistry registry){
         // Insert Systems here like this:
-        // registry.register(new *SystemName()*
+        // registry.register(new *SystemName()*)
         // Systems should be an implementation of the update method and implement the interface EcsSystem
     }
 }
