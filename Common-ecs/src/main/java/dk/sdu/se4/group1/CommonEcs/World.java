@@ -3,24 +3,6 @@ package dk.sdu.se4.group1.CommonEcs;
 import java.util.*;
 
 public class World {
-    private final List<Object> entities = new ArrayList<>(); // burde nok lave typen til EntityID
-    // og nok også et hashset da der ikke må være flere end 1 ting med samme id
-
-    public void AddEntity(Object entity) {
-        entities.add(entity);
-    }
-
-    public List<Object> getEntities() {
-        return entities;
-    }
-
-
-
-
-
-
-
-
     //Creates entity by using the EntityID record (en record er bare en simpel dataklasse så vi kan printe id ud osv)
     private final Set<EntityID> Entities = new HashSet<>();
 
@@ -73,5 +55,9 @@ public class World {
         }
 
         return entityComponents.containsKey(component.getClass());
+    }
+
+    public Set<EntityID> getEntities() {
+        return Entities;
     }
 }

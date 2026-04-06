@@ -1,6 +1,7 @@
 package dk.sdu.se4.group1.Robot;
 
 import dk.sdu.se4.group1.CommonEcs.EcsSystem;
+import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
 
 // Vi gennemgår alle entities i World.
@@ -9,9 +10,15 @@ import dk.sdu.se4.group1.CommonEcs.World;
 public class RobotSystem implements EcsSystem {
     @Override
     public void update(World world, double deltaTime) {
-        for (Object entity : world.getEntities()) {
-            if (entity instanceof RobotPlugin robot) {
-                robot.moveRandomly();
+        for (EntityID entity : world.getEntities()) {
+
+            RobotComponent robotComponent = new RobotComponent(0,0);
+
+            if (world.hasComponent(entity, robotComponent)) {
+
+                world.getComponent(entity, robotComponent).moveRandomly();
+
+                return;
             }
         }
     }
