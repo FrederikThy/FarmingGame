@@ -29,7 +29,7 @@ public class World {
 
     public void addComponent(EntityID entity, Component component){
 
-        //gets the component dictionary for the component inserted in the parameter
+        //gets the component dictionary for the entity inserted in the parameter
         Map<Class<? extends Component>, Component> entityComponents = entityComponentDictionary.get(entity);
 
         //checks if entity exists
@@ -44,10 +44,26 @@ public class World {
         entityComponents.put(component.getClass(), component);
     }
 
+    public Component GetComponent(EntityID entity, Class<? extends Component> componentClass){
+        Map<Class<? extends Component>, Component> entityComponents = entityComponentDictionary.get(entity);
+
+        Component result;
+
+        if(entityComponents.containsKey(componentClass)){
+            result = entityComponents.get(componentClass);
+        }
+
+        else{
+            throw new IllegalArgumentException("Entity does not have that component: " + entity);
+        }
+
+        return result;
+    }
+
 
     //To use this method call:
     //World.hasComponent(*entityID*, new *componentType*)
-    public boolean hasComponent(EntityID entity, Component component){
+    public boolean hasComponent(EntityID entity, Class<? extends Component> componentClass){
         Map<Class<? extends Component>, Component> entityComponents = entityComponentDictionary.get(entity);
 
         //checks if entity exists
@@ -55,11 +71,25 @@ public class World {
             throw new IllegalArgumentException("Entity does not exist: " + entity);
         }
 
-        return entityComponents.containsKey(component.getClass());
+        return entityComponents.containsKey(componentClass);
     }
 
     public Set<EntityID> getEntities() {
         return Entities;
     }
 
+    public Set<EntityID> getEntitiesWith(Class<? extends Component> componentClass) {
+        Set<EntityID> result = new HashSet<>();
+
+        for(EntityID entity : Entities){
+            Map<Class<? extends Component>, Component> components =
+                    entityComponentDictionary.get(entity);
+
+            if(components != null && components.containsKey(componentClass)){
+
+                result.add(entity);
+            }
+        }
+        return result;
+    }
 }

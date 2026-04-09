@@ -8,6 +8,7 @@ module Core.engine {
     requires spring.aop;
     requires spring.expression;
     requires Common.ecs;
+    requires MapModule;
 
     requires RobotModule;
     exports dk.sdu.se4.group1.CoreEngine;

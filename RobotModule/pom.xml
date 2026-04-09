@@ -49,6 +49,10 @@
       <artifactId>Common-ecs</artifactId>
       <version>1.0.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-graphics</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
