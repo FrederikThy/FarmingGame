@@ -1,5 +1,8 @@
 package dk.sdu.se4.group1.Map;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -45,4 +48,20 @@ public class WorldMap {
     public void makeBlack(int x, int y) {
         getTile(x,y).setFill(Color.BLACK);
     }
+
+    public List<Rectangle> getColumn(int x) {
+
+        if (x < 0 || x >= cols) {
+        throw new IllegalArgumentException("Column index out of bounds: " + x);
+    }
+
+    List<Rectangle> columnTiles = new ArrayList<>();
+    
+    for (int y = 0; y < rows; y++) {
+        columnTiles.add(Map[y][x]); 
+    }
+    
+    return columnTiles;
+}
+
 }
