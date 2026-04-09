@@ -12,7 +12,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="DK"/>
     <property name="sun.boot.library.path" value="/opt/homebrew/Cellar/openjdk/25.0.2/libexec/openjdk.jdk/Contents/Home/lib"/>
-    <property name="sun.java.command" value="/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-api/target/surefire/surefirebooter-20260321114118151_3.jar /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-api/target/surefire 2026-03-21T11-41-18_078-jvmRun1 surefire-20260321114118151_1tmp surefire_0-20260321114118151_2tmp"/>
+    <property name="sun.java.command" value="/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-api/target/surefire/surefirebooter-20260409121544392_3.jar /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-api/target/surefire 2026-04-09T12-15-44_317-jvmRun1 surefire-20260409121544392_1tmp surefire_0-20260409121544392_2tmp"/>
     <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-api/target/test-classes:/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-api/target/classes:/Users/frederikthygesen/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/Users/frederikthygesen/.m2/repository/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/Users/frederikthygesen/.m2/repository/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/Users/frederikthygesen/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/frederikthygesen/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:"/>
@@ -29,7 +29,7 @@
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="apple.awt.application.name" value="ForkedBooter"/>
-    <property name="surefire.real.class.path" value="/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-api/target/surefire/surefirebooter-20260321114118151_3.jar"/>
+    <property name="surefire.real.class.path" value="/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-api/target/surefire/surefirebooter-20260409121544392_3.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.runtime.version" value="25.0.2"/>
@@ -59,5 +59,5 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="69.0"/>
   </properties>
-  <testcase name="shouldAnswerWithTrue" classname="dk.sdu.se4.group1.CommonApi.AppTest" time="0.015"/>
+  <testcase name="shouldAnswerWithTrue" classname="dk.sdu.se4.group1.CommonApi.AppTest" time="0.017"/>
 </testsuite>

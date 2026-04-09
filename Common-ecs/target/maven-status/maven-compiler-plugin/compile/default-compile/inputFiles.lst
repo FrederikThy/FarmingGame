@@ -1,4 +1,10 @@
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/App.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Component.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/EcsSystem.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Entity.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/EntityID.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/IPathfinding.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Node.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/PositionComponent.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/World.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/module-info.java

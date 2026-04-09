@@ -1,5 +1,6 @@
 package dk.sdu.se4.group1.CommonEcs;
 
+import java.awt.*;
 import java.util.*;
 
 public class World {
@@ -60,4 +61,5 @@ public class World {
     public Set<EntityID> getEntities() {
         return Entities;
     }
+
 }

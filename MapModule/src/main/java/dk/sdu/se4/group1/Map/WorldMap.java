@@ -1,4 +1,4 @@
-package dk.sdu.se4.group1.map;
+package dk.sdu.se4.group1.Map;
 
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;

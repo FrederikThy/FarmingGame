@@ -16,7 +16,7 @@ public class RobotSystem implements EcsSystem {
 
             if (world.hasComponent(entity, robotComponent)) {
 
-                world.getComponent(entity, robotComponent).moveRandomly();
+              //  world.getComponent(entity, robotComponent).moveRandomly();
 
                 return;
             }
