@@ -4,8 +4,8 @@ dk/sdu/se4/group1/CommonEcs/IPathfinding.class
 dk/sdu/se4/group1/CommonEcs/Entity.class
 dk/sdu/se4/group1/CommonEcs/Node.class
 dk/sdu/se4/group1/CommonEcs/EcsSystem.class
-dk/sdu/se4/group1/CommonEcs/World.class
 dk/sdu/se4/group1/CommonEcs/Component.class
+dk/sdu/se4/group1/CommonEcs/World.class
 dk/sdu/se4/group1/CommonEcs/RenderComponent.class
 dk/sdu/se4/group1/CommonEcs/App.class
 dk/sdu/se4/group1/CommonEcs/PositionComponent.class

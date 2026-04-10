@@ -14,7 +14,7 @@ public class MappingSystem implements EcsSystem{
 
     //constructer injecting the Grapical context
     public MappingSystem(GraphicsContext gc){
-    this.gc = gc;
+        this.gc = gc;
     }
 
     //update method
@@ -31,8 +31,8 @@ public class MappingSystem implements EcsSystem{
         for(EntityID entity : world.getEntities()){
             if(world.hasComponent(entity, PositionComponent.class)){
                 PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
-                RenderComponent EntityColor = (RenderComponent) world.GetComponent(entity, RenderComponent.class);
-                RenderTile(pos.x, pos.y, EntityColor.color);
+                RenderComponent renderComponent = (RenderComponent) world.GetComponent(entity, RenderComponent.class);
+                RenderTile(pos.x, pos.y, renderComponent);
             }
         }
     }
@@ -40,8 +40,6 @@ public class MappingSystem implements EcsSystem{
 
     //method for rendering each tile that needs to be rendered according to its color and component
     private void RenderTile (int x, int y, Color color){
-        int tileSize = 45;
-
         gc.setFill(color);
 
         gc.fillRect(
@@ -60,4 +58,19 @@ public class MappingSystem implements EcsSystem{
                 tileSize);
     }
 
+    private void RenderTile(int x, int y, RenderComponent renderComponent) {
+        double drawX = 40 + x * (tileSize + gap);
+        double drawY = 40 + y * (tileSize + gap);
+
+        //If there is a sprite, then it will be rendered instead of a color
+        if (renderComponent.sprite != null) {
+            gc.drawImage(renderComponent.sprite, drawX, drawY, tileSize, tileSize);
+            gc.setStroke(Color.BLACK);
+            gc.strokeRect(drawX, drawY, tileSize, tileSize);
+            return;
+        }
+
+        //If there are no sprite, then there will be rendered a color instead
+        RenderTile(x, y, renderComponent.color != null ? renderComponent.color : Color.GRAY);
+    }
 }
