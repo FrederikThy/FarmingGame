@@ -1,5 +1,6 @@
 package dk.sdu.se4.group1.CoreEngine;
 
+import dk.sdu.se4.group1.Monitoring.FPSCounter;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
 import dk.sdu.se4.group1.Robot.RobotFactory;
@@ -35,6 +36,9 @@ public class Main extends Application {
         Canvas canvas = new Canvas(800,600);
         root.getChildren().add(canvas);
 
+        FPSCounter fpsCounter = new FPSCounter(); //Making an instance of FPSCounter Module
+        root.getChildren().add(fpsCounter);
+
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         // Opret RenderSystem med gc
@@ -65,6 +69,7 @@ public class Main extends Application {
                 lastTime = now;
                 // Kalder systems
                 registry.updateAll(world, deltaTime);
+                fpsCounter.OnFrame(deltaTime);
             }
         };
 
