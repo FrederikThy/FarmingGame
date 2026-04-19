@@ -16,8 +16,9 @@ public class World {
 
     //Creates a new instance of an entity
     public EntityID createEntity(){
-        NextEntityId = NextEntityId++;
+        // Vores Entities overskrev hinanden før, men det gør de ikke længere
         EntityID id = new EntityID(NextEntityId);
+        NextEntityId++;
         Entities.add(id);
 
         //put the entity in the dictionary for components:

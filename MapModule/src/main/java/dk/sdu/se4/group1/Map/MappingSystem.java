@@ -20,6 +20,8 @@ public class MappingSystem implements EcsSystem{
     //update method
     @Override
     public void update(World world, double deltaTime) {
+        // Sikrer os, at vi clearer tiles hver gang, så vi ikke kommer til at have "ghost trails"
+        gc.clearRect(0, 0, 800, 600);
         int [][] grid = new int[10][10];
 
         for(int y=0; y<grid.length; y++){
@@ -29,7 +31,7 @@ public class MappingSystem implements EcsSystem{
         }
 
         for(EntityID entity : world.getEntities()){
-            if(world.hasComponent(entity, PositionComponent.class)){
+            if(world.hasComponent(entity, PositionComponent.class) && (world.hasComponent(entity, RenderComponent.class))){
                 PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
                 RenderComponent renderComponent = (RenderComponent) world.GetComponent(entity, RenderComponent.class);
                 RenderTile(pos.x, pos.y, renderComponent);
