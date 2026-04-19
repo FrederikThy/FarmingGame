@@ -1,5 +1,7 @@
 package dk.sdu.se4.group1.CommonEcs;
 
+import javafx.geometry.Pos;
+
 import java.awt.*;
 import java.util.*;
 
@@ -92,5 +94,17 @@ public class World {
             }
         }
         return result;
+    }
+
+    public boolean isTileFree(int x, int y){
+        for(EntityID entityID : Entities){
+            if(hasComponent(entityID, PositionComponent.class)){
+                PositionComponent pos =(PositionComponent) GetComponent(entityID, PositionComponent.class);
+                if(pos.x == x && pos.y == y){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

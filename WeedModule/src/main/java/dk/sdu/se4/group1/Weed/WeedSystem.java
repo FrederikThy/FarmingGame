@@ -1,20 +1,41 @@
 package dk.sdu.se4.group1.Weed;
 
 import dk.sdu.se4.group1.CommonEcs.EcsSystem;
+import dk.sdu.se4.group1.CommonEcs.MapSize;
 import dk.sdu.se4.group1.CommonEcs.World;
 
-public class WeedSystem implements EcsSystem {
+import java.util.Random;
 
-    private boolean hasSpawned = false;
+public class WeedSystem implements EcsSystem {
+    private double timePassed = 0;
+    private double spawnChance = 0.25;
+
+    private final int mapHeight = MapSize.MAP_HEIGHT;
+    private final int mapWidth = MapSize.MAP_WIDTH;
+
+    private final Random random = new Random();
+
     public void update(World world, double deltaTime){
 
-        if(!hasSpawned){
-            hasSpawned = true;
+            timePassed = timePassed + deltaTime;
 
-            int x = 0;
-            int y = 0;
+            if(timePassed >= 5){
+                double n = random.nextDouble();
 
-            WeedFactory.CreateWeed(world, x, y);
-        }
+                if(n > spawnChance){
+                    timePassed = 0;
+                }
+
+                if (n <= spawnChance){
+                    int x = random.nextInt(mapWidth);
+                    int y = random.nextInt(mapHeight);
+
+                    if(world.isTileFree(x, y)){
+                        WeedFactory.CreateWeed(world, x, y);
+                        timePassed = 0;
+                        System.out.print("weed created");
+                    }
+                }
+            }
     }
 }

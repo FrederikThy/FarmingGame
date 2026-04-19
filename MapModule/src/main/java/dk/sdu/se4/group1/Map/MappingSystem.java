@@ -5,7 +5,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 
+
+
 public class MappingSystem implements EcsSystem{
+
+    private final int mapHeight = MapSize.MAP_HEIGHT;
+    private final int mapWidth = MapSize.MAP_WIDTH;
 
     //map variables
     private static final int tileSize = 45;
@@ -22,7 +27,7 @@ public class MappingSystem implements EcsSystem{
     public void update(World world, double deltaTime) {
         // Sikrer os, at vi clearer tiles hver gang, så vi ikke kommer til at have "ghost trails"
         gc.clearRect(0, 0, 800, 600);
-        int [][] grid = new int[10][10];
+        int [][] grid = new int[mapHeight][mapWidth];
 
         for(int y=0; y<grid.length; y++){
             for(int x=0; x<grid[y].length; x++){
