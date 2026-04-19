@@ -43,7 +43,7 @@
       <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
     </dependency>
-      <dependency>
+        <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-graphics</artifactId>
       </dependency>

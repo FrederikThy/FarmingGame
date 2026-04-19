@@ -1,22 +1,21 @@
 package dk.sdu.se4.group1.CoreEngine;
 
 import dk.sdu.se4.group1.CommonEcs.EntityID;
+import dk.sdu.se4.group1.CommonEcs.PositionComponent;
 import dk.sdu.se4.group1.CommonEcs.World;
+import dk.sdu.se4.group1.Map.GoalFactory;
+import dk.sdu.se4.group1.Map.MapFactory;
+import dk.sdu.se4.group1.Map.MappingSystem;
+import dk.sdu.se4.group1.Pathfinding.PathfindingSystem;
 import dk.sdu.se4.group1.Robot.RobotFactory;
-import dk.sdu.se4.group1.Robot.RobotSystem;
-import dk.sdu.se4.group1.Weed.WeedSystem;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.stage.Stage;
-import dk.sdu.se4.group1.Map.MappingSystem;
-import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+
 
 
 
@@ -30,6 +29,7 @@ public class Main extends Application {
     @Override
     public void start(Stage window) throws Exception {
         World world = new World(); //creates world instance
+        MapFactory.registerTiles(world, 10, 10); // initialize map tiles (must match MapSize 10x10)
         SystemRegistry registry = new SystemRegistry(); //Creates system registry instance
 
         Pane root = new Pane();
@@ -40,9 +40,8 @@ public class Main extends Application {
 
         // Opret RenderSystem med gc
         //Adds graphic content to mappingsystem
-
-
-        registerSystems(registry, gc); //Adds all systems to the current instance
+        registry.register(new MappingSystem(gc));
+        registerSystems(registry); //Adds all systems to the current instance
 
         // set scene and stage
         Scene scene = new Scene(root, 800, 600);
@@ -50,10 +49,17 @@ public class Main extends Application {
         window.setScene(scene);
         window.show();
 
-        RobotFactory robotFactory = new RobotFactory();
 
-        EntityID firstrobotid = robotFactory.createRobot(world);
+        // --- Define point A (start) and point B (destination) ---
+        int startX = 1, startY = 1; // Point A
+        int goalX  = 8, goalY  = 8; // Point B
 
+        // Spawn the gold "B" marker on the grid
+        GoalFactory.createGoal(world, goalX, goalY);
+
+        // Spawn the robot at point A, with B as its pathfinding target
+        PositionComponent target = new PositionComponent(goalX, goalY);
+        EntityID firstRobotId = RobotFactory.createRobot(world, startX, startY, 10, 10, target);
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -73,12 +79,10 @@ public class Main extends Application {
     }
 
 
-    private void registerSystems(SystemRegistry registry, GraphicsContext gc) {
+    private void registerSystems(SystemRegistry registry){
         // Insert Systems here like this:
         // registry.register(new *SystemName()*)
         // Systems should be an implementation of the update method and implement the interface EcsSystem
-        registry.register(new RobotSystem());
-        registry.register(new WeedSystem());
-        registry.register(new MappingSystem(gc));
+        registry.register(new PathfindingSystem());
     }
 }

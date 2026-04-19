@@ -17,7 +17,9 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>17</maven.compiler.release>
-  </properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target> 
+</properties>
 
   <dependencyManagement>
     <dependencies>
@@ -29,6 +31,7 @@
         <scope>import</scope>
       </dependency>
     </dependencies>
+
   </dependencyManagement>
 
   <dependencies>
@@ -36,6 +39,16 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
+    </dependency>
+      <dependency>
+        <groupId>dk.sdu.se4</groupId> 
+        <artifactId>Common-ecs</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </dependency>
+     <dependency>
+        <groupId>dk.sdu.se4</groupId> 
+        <artifactId>MapModule</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
     </dependency>
     <!-- Optionally: parameterized tests support -->
     <dependency>
@@ -91,3 +104,4 @@
     </pluginManagement>
   </build>
 </project>
+    

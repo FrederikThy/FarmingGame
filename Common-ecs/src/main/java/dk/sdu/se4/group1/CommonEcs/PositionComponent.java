@@ -9,4 +9,13 @@ public class PositionComponent implements Component {
         this.x = x;
         this.y = y;
     }
+
+    // getter methods 
+    public int getX(){
+        return this.x;
+    }
+
+    public int getY(){
+        return this.y;
+    }
 }

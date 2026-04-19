@@ -1,10 +1,14 @@
 package dk.sdu.se4.group1.Map;
 
-import dk.sdu.se4.group1.CommonEcs.*;
+import dk.sdu.se4.group1.CommonEcs.EcsSystem;
+import dk.sdu.se4.group1.CommonEcs.EntityID;
+import dk.sdu.se4.group1.CommonEcs.GoalComponent;
+import dk.sdu.se4.group1.CommonEcs.MapSize;
+import dk.sdu.se4.group1.CommonEcs.PositionComponent;
+import dk.sdu.se4.group1.CommonEcs.RenderComponent;
+import dk.sdu.se4.group1.CommonEcs.World;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-
-
 
 
 public class MappingSystem implements EcsSystem{
@@ -25,23 +29,40 @@ public class MappingSystem implements EcsSystem{
     //update method
     @Override
     public void update(World world, double deltaTime) {
-        // Sikrer os, at vi clearer tiles hver gang, så vi ikke kommer til at have "ghost trails"
         gc.clearRect(0, 0, 800, 600);
-        int [][] grid = new int[mapHeight][mapWidth];
 
-        for(int y=0; y<grid.length; y++){
-            for(int x=0; x<grid[y].length; x++){
+        // Draw base green grid
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
                 RenderTile(x, y, Color.GREEN);
             }
         }
 
-        for(EntityID entity : world.getEntities()){
-            if(world.hasComponent(entity, PositionComponent.class) && (world.hasComponent(entity, RenderComponent.class))){
+        // Draw goal tile in gold with "B" label (drawn before robot so robot renders on top when it arrives)
+        for (EntityID entity : world.getEntitiesWith(GoalComponent.class)) {
+            PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
+            RenderTile(pos.x, pos.y, Color.GOLD);
+            drawGoalMarker(pos.x, pos.y);
+        }
+
+        // Draw all renderable entities except goal markers (already drawn above)
+        for (EntityID entity : world.getEntities()) {
+            if (world.hasComponent(entity, GoalComponent.class)) continue;
+            if (world.hasComponent(entity, PositionComponent.class) && world.hasComponent(entity, RenderComponent.class)) {
                 PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
                 RenderComponent renderComponent = (RenderComponent) world.GetComponent(entity, RenderComponent.class);
                 RenderTile(pos.x, pos.y, renderComponent);
             }
         }
+    }
+
+    // Draws a bold "B" label on the goal tile so it is clearly the destination. 
+    private void drawGoalMarker(int x, int y) {
+        double drawX = 40 + x * (tileSize + gap);
+        double drawY = 40 + y * (tileSize + gap);
+        gc.setFill(Color.BLACK);
+        gc.setFont(javafx.scene.text.Font.font("Arial", javafx.scene.text.FontWeight.BOLD, 18));
+        gc.fillText("B", drawX + tileSize / 2.0 - 6, drawY + tileSize / 2.0 + 7);
     }
 
 
@@ -69,15 +90,7 @@ public class MappingSystem implements EcsSystem{
         double drawX = 40 + x * (tileSize + gap);
         double drawY = 40 + y * (tileSize + gap);
 
-        //If there is a sprite, then it will be rendered instead of a color
-        if (renderComponent.sprite != null) {
-            gc.drawImage(renderComponent.sprite, drawX, drawY, tileSize, tileSize);
-            gc.setStroke(Color.BLACK);
-            gc.strokeRect(drawX, drawY, tileSize, tileSize);
-            return;
-        }
-
+  
         //If there are no sprite, then there will be rendered a color instead
-        RenderTile(x, y, renderComponent.color != null ? renderComponent.color : Color.GRAY);
-    }
+        RenderTile(x, y, Color.valueOf(renderComponent.color != null ? renderComponent.color : "GRAY"));    }
 }

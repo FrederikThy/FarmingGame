@@ -46,3 +46,6 @@ public class WorldMap {
         getTile(x,y).setFill(Color.BLACK);
     }
 }
+
+
+

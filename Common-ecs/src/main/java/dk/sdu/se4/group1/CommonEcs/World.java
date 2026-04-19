@@ -1,7 +1,5 @@
 package dk.sdu.se4.group1.CommonEcs;
 
-import javafx.geometry.Pos;
-
 import java.awt.*;
 import java.util.*;
 
@@ -18,9 +16,8 @@ public class World {
 
     //Creates a new instance of an entity
     public EntityID createEntity(){
-        // Vores Entities overskrev hinanden før, men det gør de ikke længere
-        EntityID id = new EntityID(NextEntityId);
         NextEntityId++;
+        EntityID id = new EntityID(NextEntityId);
         Entities.add(id);
 
         //put the entity in the dictionary for components:
@@ -81,6 +78,18 @@ public class World {
         return Entities;
     }
 
+    public boolean isTileFree(int x, int y) {
+        for (EntityID entity : Entities) {
+            Map<Class<? extends Component>, Component> components = entityComponentDictionary.get(entity);
+            if (components == null) continue;
+            if (components.containsKey(PositionComponent.class) && !components.containsKey(TileComponent.class)) {
+                PositionComponent pos = (PositionComponent) components.get(PositionComponent.class);
+                if (pos.x == x && pos.y == y) return false;
+            }
+        }
+        return true;
+    }
+
     public Set<EntityID> getEntitiesWith(Class<? extends Component> componentClass) {
         Set<EntityID> result = new HashSet<>();
 
@@ -94,17 +103,5 @@ public class World {
             }
         }
         return result;
-    }
-
-    public boolean isTileFree(int x, int y){
-        for(EntityID entityID : Entities){
-            if(hasComponent(entityID, PositionComponent.class)){
-                PositionComponent pos =(PositionComponent) GetComponent(entityID, PositionComponent.class);
-                if(pos.x == x && pos.y == y){
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }
