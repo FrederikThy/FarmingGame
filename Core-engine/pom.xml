@@ -87,6 +87,17 @@
       <artifactId>MapModule</artifactId>
       <version>1.0.1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>dk.sdu.se4</groupId>
+      <artifactId>MonitoringModule</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>dk.sdu.se4</groupId>
+      <artifactId>MonitoringModule</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>
