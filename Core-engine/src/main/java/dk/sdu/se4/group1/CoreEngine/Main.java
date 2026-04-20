@@ -4,6 +4,7 @@ import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
 import dk.sdu.se4.group1.Robot.RobotFactory;
 import dk.sdu.se4.group1.Robot.RobotSystem;
+import dk.sdu.se4.group1.Weed.WeedSystem;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.canvas.Canvas;
@@ -39,9 +40,9 @@ public class Main extends Application {
 
         // Opret RenderSystem med gc
         //Adds graphic content to mappingsystem
-        registry.register(new MappingSystem(gc));
 
-        registerSystems(registry); //Adds all systems to the current instance
+
+        registerSystems(registry, gc); //Adds all systems to the current instance
 
         // set scene and stage
         Scene scene = new Scene(root, 800, 600);
@@ -72,10 +73,12 @@ public class Main extends Application {
     }
 
 
-    private void registerSystems(SystemRegistry registry){
+    private void registerSystems(SystemRegistry registry, GraphicsContext gc) {
         // Insert Systems here like this:
         // registry.register(new *SystemName()*)
         // Systems should be an implementation of the update method and implement the interface EcsSystem
         registry.register(new RobotSystem());
+        registry.register(new WeedSystem());
+        registry.register(new MappingSystem(gc));
     }
 }
