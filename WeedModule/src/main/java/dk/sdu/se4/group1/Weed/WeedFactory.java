@@ -25,7 +25,7 @@ public class WeedFactory {
                 throw new IllegalArgumentException("Sprite not found: WeedPicture");
             }
             //Here we add the render the image from the code above
-            //Throws an exception if it fails to load HrFlink
+            //Throws an exception if it fails to load 317046.png mrBad picture
             world.addComponent(WeedId, new RenderComponent(new Image(spriteStream)));
         } catch (IOException e) {
             throw new RuntimeException("Failed to close sprite stream", e);
