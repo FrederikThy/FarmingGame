@@ -16,8 +16,8 @@ public class FPSCounter extends Label implements IMoniteringService {
     public FPSCounter(){
         super("FPS 0"); //"super" refers to the parent class.
         //Here it is calling the constructor of the Label class to set the text to "FPS 0".
-        setTextFill(Color.PURPLE);
-        setFont(Font.font("Verdana", FontWeight.BOLD, 20));
+        setTextFill(Color.LIGHTGREEN);
+        setFont(Font.font("Verdana", FontWeight.LIGHT, 10));
         setLayoutX(10);
         setLayoutY(10);
         setMouseTransparent(true);
