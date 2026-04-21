@@ -4,6 +4,7 @@ import dk.sdu.se4.group1.Monitoring.CPUCounter;
 import dk.sdu.se4.group1.Monitoring.FPSCounter;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
+import dk.sdu.se4.group1.Monitoring.MemoryCounter;
 import dk.sdu.se4.group1.Robot.RobotFactory;
 import dk.sdu.se4.group1.Robot.RobotSystem;
 import dk.sdu.se4.group1.Weed.WeedSystem;
@@ -45,6 +46,9 @@ public class Main extends Application {
         FPSCounter fpsCounter = new FPSCounter(); //Making an instance of FPSCounter Module
         root.getChildren().add(fpsCounter);
 
+        MemoryCounter memoryCounter = new MemoryCounter();
+        root.getChildren().add(memoryCounter);
+
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         // Opret RenderSystem med gc
@@ -77,6 +81,8 @@ public class Main extends Application {
                 registry.updateAll(world, deltaTime);
                 fpsCounter.OnFrame(deltaTime);
                 cpuCounter.OnFrame(deltaTime);
+                memoryCounter.OnFrame(deltaTime);
+
             }
         };
 

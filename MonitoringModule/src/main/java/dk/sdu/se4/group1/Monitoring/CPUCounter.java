@@ -53,8 +53,9 @@ public class CPUCounter extends Label implements IMoniteringService {
             //and getProcessCpuload tells how much cpu we use
             if (load > 0.0) {
                 cpuPercent = load * 100.0; //Converts it into to percentage
-                setText(String.format("CPU: %.1f%%", cpuPercent));
+                setText(String.format("CPU: %.1f%%", cpuPercent)); //.1f = .1(decimal)f(floating) means we round up to 1 decimal
             }
+
             timeAccumulator = 0.0;
         }
     }
