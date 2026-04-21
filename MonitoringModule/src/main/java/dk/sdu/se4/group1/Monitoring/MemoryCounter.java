@@ -43,6 +43,7 @@ public class MemoryCounter extends Label implements IMoniteringService{
         timeAccumulator += dt;
         if(timeAccumulator >= 1.0) {
             long usedBytes = memoryMXBean.getHeapMemoryUsage().getUsed(); //Gives us bytes used in the game
+            //Heap memory - all objects that we are measuring
             memoryUsed = usedBytes / (1024.0 * 1024.0); //Converts the bytes into MB
             setText(String.format("Memory: %.1f MB", memoryUsed));
             timeAccumulator = 0;
