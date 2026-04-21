@@ -1,5 +1,6 @@
 package dk.sdu.se4.group1.CoreEngine;
 
+import dk.sdu.se4.group1.Monitoring.CPUCounter;
 import dk.sdu.se4.group1.Monitoring.FPSCounter;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
@@ -14,6 +15,7 @@ import javafx.stage.Stage;
 import dk.sdu.se4.group1.Map.MappingSystem;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -36,6 +38,9 @@ public class Main extends Application {
         Pane root = new Pane();
         Canvas canvas = new Canvas(800,600);
         root.getChildren().add(canvas);
+
+        CPUCounter cpuCounter = new CPUCounter();
+        root.getChildren().add(cpuCounter);
 
         FPSCounter fpsCounter = new FPSCounter(); //Making an instance of FPSCounter Module
         root.getChildren().add(fpsCounter);
@@ -71,6 +76,7 @@ public class Main extends Application {
                 // Kalder systems
                 registry.updateAll(world, deltaTime);
                 fpsCounter.OnFrame(deltaTime);
+                cpuCounter.OnFrame(deltaTime);
             }
         };
 
