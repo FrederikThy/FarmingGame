@@ -43,6 +43,14 @@
       <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>dk.sdu.se4</groupId>
+          <artifactId>Common-ecs</artifactId>
+      </dependency>
+    <dependency>
+      <groupId>org.openjfx</groupId>
+      <artifactId>javafx-controls</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
