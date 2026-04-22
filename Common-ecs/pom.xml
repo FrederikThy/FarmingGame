@@ -51,6 +51,10 @@
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-graphics</artifactId>
     </dependency>
+    <dependency>
+      <groupId>dk.sdu.se4</groupId>
+      <artifactId>Common-api</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

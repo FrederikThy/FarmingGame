@@ -1,7 +1,8 @@
 package dk.sdu.se4.group1.Robot;
 
-import dk.sdu.se4.group1.CommonEcs.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.RenderComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.RenderComponent;
 import dk.sdu.se4.group1.CommonEcs.World;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import javafx.scene.image.Image;

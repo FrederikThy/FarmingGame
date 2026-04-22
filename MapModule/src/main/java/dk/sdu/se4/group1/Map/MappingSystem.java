@@ -1,6 +1,8 @@
 package dk.sdu.se4.group1.Map;
 
 import dk.sdu.se4.group1.CommonEcs.*;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.RenderComponent;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -13,8 +15,7 @@ public class MappingSystem implements EcsSystem{
     private final int mapWidth = MapSize.MAP_WIDTH;
 
     //map variables
-    private static final int tileSize = 45;
-    private static final int gap = 5;
+    private static final int tileSize = 64;
     private final GraphicsContext gc;
 
     //constructer injecting the Grapical context
@@ -26,12 +27,12 @@ public class MappingSystem implements EcsSystem{
     @Override
     public void update(World world, double deltaTime) {
         // Sikrer os, at vi clearer tiles hver gang, så vi ikke kommer til at have "ghost trails"
-        gc.clearRect(0, 0, 800, 600);
+        gc.clearRect(0, 0, 960, 960);
         int [][] grid = new int[mapHeight][mapWidth];
 
         for(int y=0; y<grid.length; y++){
             for(int x=0; x<grid[y].length; x++){
-                RenderTile(x, y, Color.GREEN);
+                RenderTile(x, y, Color.TRANSPARENT);
             }
         }
 
@@ -50,30 +51,19 @@ public class MappingSystem implements EcsSystem{
         gc.setFill(color);
 
         gc.fillRect(
-                40 + x * (tileSize + gap),
-                40 + y * (tileSize + gap),
-                tileSize,
-                tileSize);
-
-
-        gc.setStroke(Color.BLACK);
-
-        gc.strokeRect(
-                40 + x * (tileSize + gap),
-                40 + y * (tileSize + gap),
+                x * tileSize,
+                y * tileSize ,
                 tileSize,
                 tileSize);
     }
 
     private void RenderTile(int x, int y, RenderComponent renderComponent) {
-        double drawX = 40 + x * (tileSize + gap);
-        double drawY = 40 + y * (tileSize + gap);
+        double drawX =x * tileSize;
+        double drawY =y * tileSize;
 
         //If there is a sprite, then it will be rendered instead of a color
         if (renderComponent.sprite != null) {
             gc.drawImage(renderComponent.sprite, drawX, drawY, tileSize, tileSize);
-            gc.setStroke(Color.BLACK);
-            gc.strokeRect(drawX, drawY, tileSize, tileSize);
             return;
         }
 
