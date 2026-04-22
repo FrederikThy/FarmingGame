@@ -10,6 +10,7 @@ module Core.engine {
     requires Common.ecs;
     requires MapModule;
     requires WeedModule;
+    requires CropsModule;
 
     requires RobotModule;
     exports dk.sdu.se4.group1.CoreEngine;

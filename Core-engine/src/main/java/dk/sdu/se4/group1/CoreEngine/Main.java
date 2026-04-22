@@ -11,6 +11,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 import dk.sdu.se4.group1.Map.MappingSystem;
+import dk.sdu.se4.group1.Crops.cropSystem;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.Image;
@@ -33,26 +34,39 @@ public class Main extends Application {
         SystemRegistry registry = new SystemRegistry(); //Creates system registry instance
 
         Pane root = new Pane();
-        Canvas canvas = new Canvas(800,600);
-        root.getChildren().add(canvas);
+
+        //Get Map picture from resources
+        Image OriginalbackgroundImage = new Image(Main.class.getResource("/Map.png").toExternalForm());
+
+        ImageView backgroundView = new ImageView(OriginalbackgroundImage);
+        backgroundView.setFitHeight(960);
+        backgroundView.setFitWidth(960);
+        backgroundView.setPreserveRatio(false);
+        backgroundView.setSmooth(false);
+
+        Canvas canvas = new Canvas(960,960);
+        root.getChildren().addAll(backgroundView, canvas);
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         // Opret RenderSystem med gc
         //Adds graphic content to mappingsystem
 
-
         registerSystems(registry, gc); //Adds all systems to the current instance
 
         // set scene and stage
-        Scene scene = new Scene(root, 800, 600);
-        window.setTitle("RAWR");
+        Scene scene = new Scene(root, 960, 960);
+        window.setTitle("Farming Game");
         window.setScene(scene);
         window.show();
 
         RobotFactory robotFactory = new RobotFactory();
 
         EntityID firstrobotid = robotFactory.createRobot(world);
+
+        EntityID firstrobotid2 = robotFactory.createRobot(world);
+
+        EntityID firstrobotid3 = robotFactory.createRobot(world);
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -80,5 +94,6 @@ public class Main extends Application {
         registry.register(new RobotSystem());
         registry.register(new WeedSystem());
         registry.register(new MappingSystem(gc));
+        registry.register(new cropSystem());
     }
 }
