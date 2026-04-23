@@ -11,11 +11,10 @@ module Core.engine {
     requires MapModule;
     requires WeedModule;
     requires CropsModule;
-
     requires RobotModule;
+    requires PathfindingModule;
     requires MonitoringModule;
     requires ShopModule;
     requires InventoryModule;
     exports dk.sdu.se4.group1.CoreEngine;
 }
-

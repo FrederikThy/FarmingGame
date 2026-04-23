@@ -3,61 +3,54 @@ package dk.sdu.se4.group1.Robot;
 import java.util.Random;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
+import dk.sdu.se4.group1.CommonEcs.Components.PathComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
 import dk.sdu.se4.group1.CommonEcs.EcsSystem;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
+import dk.sdu.se4.group1.CommonEcs.MapSize;
+import dk.sdu.se4.group1.CommonEcs.Node;
 import dk.sdu.se4.group1.CommonEcs.World;
 
+// ECS system that moves robots and handles planting each tick
+// Movement uses A* waypoints from PathComponent — if no PathComponent exists it falls back to random movement
 public class RobotSystem implements EcsSystem {
 
     private final Random random = new Random();
 
+    // How much time has passed since the robot last moved
     private double timeSinceLastMove = 0.0;
+    // Robot moves one tile every 0.3 seconds
     private static final double MOVE_INTERVAL = 0.3;
 
+    // How much time has passed since the robot last tried to plant
     private double timeSinceLastPlantCheck = 0.0;
+    // Robot attempts to plant a seed every 2 seconds
     private static final double PLANT_INTERVAL = 2.0;
 
-    private static final int MAP_WIDTH = 10;
-    private static final int MAP_HEIGHT = 10;
-
-
-    /**
-     * HELE DENNE SIDE ER TEMPORARY AI SLOP FORDI VI IKKE HAR NOGLE ALGORITMER ENDNU :)
-     * Temporary robot behavior system.
-     * The system makes each robot:
-     * 1. move randomly every 0.3 seconds
-     * 2. check every 10 seconds whether it should plant a seed
-     * 3. choose a random seed type
-     * 4. plant only on a free tile directly next to the robot
-     *
-     * Planting is done by adding a seed request to the world's seed queue.
-     * The actual crop entity is then created later by the crop system.
-     *
-     * This logic is currently simple and mainly intended for testing.
-     * It can later be replaced by proper pathfinding and decision-making algorithms.
-     */
-
-
+    private static final int MAP_WIDTH  = MapSize.MAP_WIDTH;
+    private static final int MAP_HEIGHT = MapSize.MAP_HEIGHT;
 
     @Override
     public void update(World world, double deltaTime) {
-        timeSinceLastMove += deltaTime;
+
+        // Accumulate time since last move and last plant attempt
+        timeSinceLastMove       += deltaTime;
         timeSinceLastPlantCheck += deltaTime;
 
-        boolean shouldMove = timeSinceLastMove >= MOVE_INTERVAL;
+        boolean shouldMove          = timeSinceLastMove       >= MOVE_INTERVAL;
         boolean shouldCheckPlanting = timeSinceLastPlantCheck >= PLANT_INTERVAL;
 
         for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
-            PositionComponent robotPos =
-                    (PositionComponent) world.GetComponent(entity, PositionComponent.class);
-
-            RobotComponent robot =
-                    (RobotComponent) world.GetComponent(entity, RobotComponent.class);
+            PositionComponent robotPos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
+            RobotComponent    robot    = (RobotComponent)    world.GetComponent(entity, RobotComponent.class);
 
             if (shouldMove) {
-                moveRobotRandomly(world, robotPos);
+                if (world.hasComponent(entity, PathComponent.class)) {
+                    // Robot has a computed A* path — follow it one step at a time
+                    PathComponent path = (PathComponent) world.GetComponent(entity, PathComponent.class);
+                    followPath(world, robotPos, path);
+                } 
             }
 
             if (shouldCheckPlanting) {
@@ -65,35 +58,42 @@ public class RobotSystem implements EcsSystem {
             }
         }
 
-        if (shouldMove) {
-            timeSinceLastMove = 0.0;
+        // Reset timers after processing all robots
+        if (shouldMove)          timeSinceLastMove       = 0.0;
+        if (shouldCheckPlanting) timeSinceLastPlantCheck = 0.0;
+    }
+
+    // Move the robot one step along its A* path
+    private void followPath(World world, PositionComponent robotPos, PathComponent path) {
+
+        // Path queue is empty — PathfindingSystem will refill it next tick
+        if (path.isDone()) return;
+
+        Node next = path.peekNext();
+
+        // A* includes the start tile in the path — skip it if the robot is already standing on it
+        if (next != null && next.getX() == robotPos.x && next.getY() == robotPos.y) {
+            path.pollNext();
+            next = path.peekNext();
         }
 
-        if (shouldCheckPlanting) {
-            timeSinceLastPlantCheck = 0.0;
+        // Nothing left to step to
+        if (next == null) return;
+
+        if (world.isTileFreeIgnoringRobots(next.getX(), next.getY())) {
+            // Step onto the next waypoint
+            path.pollNext();
+            robotPos.x = next.getX();
+            robotPos.y = next.getY();
+        } else {
+            // Next tile got blocked since the path was computed (e.g. a weed spawned on it)
+            // Clear the path so PathfindingSystem recomputes a detour next tick
+            path.setPath(java.util.Collections.emptyList());
         }
     }
 
-    private void moveRobotRandomly(World world, PositionComponent robotPos) {
-        int targetX = robotPos.x;
-        int targetY = robotPos.y;
 
-        int direction = random.nextInt(4);
-
-        switch (direction) {
-            case 0 -> targetY = Math.max(0, robotPos.y - 1);              // up
-            case 1 -> targetY = Math.min(MAP_HEIGHT - 1, robotPos.y + 1); // down
-            case 2 -> targetX = Math.max(0, robotPos.x - 1);              // left
-            case 3 -> targetX = Math.min(MAP_WIDTH - 1, robotPos.x + 1);  // right
-        }
-
-        if (world.isTileFree(targetX, targetY)) {
-            robotPos.x = targetX;
-            robotPos.y = targetY;
-        }
-    }
-
-    private void tryPlantSeed(World world, RobotComponent robot, PositionComponent robotPos) {
+  private void tryPlantSeed(World world, RobotComponent robot, PositionComponent robotPos) {
         int chance = random.nextInt(10) + 1; // 1 to 10
 
         if (chance >= 5) {

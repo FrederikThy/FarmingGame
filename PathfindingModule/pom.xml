@@ -32,6 +32,17 @@
   </dependencyManagement>
 
   <dependencies>
+    <!-- Common ECS: provides World, Node, IPathfinding, Component, etc. -->
+    <dependency>
+      <groupId>dk.sdu.se4</groupId>
+      <artifactId>Common-ecs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>dk.sdu.se4</groupId>
+      <artifactId>Common-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
