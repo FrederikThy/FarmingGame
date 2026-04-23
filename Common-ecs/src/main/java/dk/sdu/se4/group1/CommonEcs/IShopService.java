@@ -4,7 +4,7 @@ package dk.sdu.se4.group1.CommonEcs;
 import java.util.List;
 
 public interface IShopService {
-    static IShopService[] sharedInstance = {null};
+    /*static IShopService[] sharedInstance = {null};
 
     static void setInstance(IShopService instance) {
         sharedInstance[0] = instance;
@@ -12,9 +12,9 @@ public interface IShopService {
 
     static IShopService getInstance() {
         return sharedInstance[0];
-    }
-    void openShop();
-    List<Item> getShopItems(int entityID);
+    }*/
+    void openShop(World world);
+    List<EntityID> getShopItems(World world);
     boolean buyItem(int EntityID,Item item);
     boolean buyItem(int EntityID,Item item,int quantity);
     int SellItem(int EntityID, Item item, int quantity);
