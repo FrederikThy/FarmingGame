@@ -1,32 +1,42 @@
 package dk.sdu.se4.group1.Inventory;
 
 import dk.sdu.se4.group1.CommonEcs.*;
+import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import java.util.stream.Collectors;
-
 import java.util.*;
 
 /**
  * Hello world!
  */
 public class InventoryPlugin implements IInventoryService, EcsSystem {
-    List<InviItme> invitory = new ArrayList<InviItme>();
-    private final Map<EntityID, List<InviItme>> Harvest = new HashMap<>();
-    private int Wallet = 500;
 
 
+    public void showInventory(World world, EntityID inventoryId) {
+        InventoryComponent inventory =(InventoryComponent) world.GetComponent(inventoryId, InventoryComponent.class);
 
+        Stage stage = new Stage();
+        VBox layout = new VBox(10);
 
+        layout.getChildren().add(new Label("Inventory"));
+
+        for (var entry : inventory.getHarvestedCrops().entrySet()) {
+            layout.getChildren().add(new Label(entry.getKey() + " x" + entry.getValue()));
+        }
+
+        layout.setPadding(new Insets(20));
+        stage.setScene(new Scene(layout, 300, 400));
+        stage.setTitle("Inventory");
+        stage.show();
+    }
 
     @Override
     public boolean additem(Item item) {
-        boolean result = true;
-        try {
+       boolean result = true;
+        /*try {
             for (InviItme invItem : invitory) {
                 if (invItem.getItem().equals(item)) {
                     invItem.addCount(1); // Fast 1, ikke amount!
@@ -37,14 +47,14 @@ public class InventoryPlugin implements IInventoryService, EcsSystem {
         } catch (Exception e) {
             System.console().printf(e.getMessage());
             result = false;
-        }
+        }*/
         return result;
     }
 
     @Override
     public boolean additem(Item item, int quantity) {
         boolean result = true;
-        try {
+        /*try {
             for (InviItme invItem : invitory) {
                 if (invItem.getItem().equals(item)) {
                     invItem.addCount(quantity);
@@ -54,14 +64,15 @@ public class InventoryPlugin implements IInventoryService, EcsSystem {
         } catch (Exception e) {
             System.console().printf(e.getMessage());
             result = false;
-        }
-        return result;
+        }*/
+         return result;
+
     }
 
 
     @Override
     public void removeItem(Item item) {
-        invitory.removeIf(invItem -> invItem.getItem().equals(item));
+        /*invitory.removeIf(invItem -> invItem.getItem().equals(item));*/
     }
 
     @Override
@@ -71,42 +82,10 @@ public class InventoryPlugin implements IInventoryService, EcsSystem {
         Label title = new Label("Inventory");
 
         layout.getChildren().add(title);
-
-        for (InviItme invItem : invitory) {
-            Button btn = new Button(invItem.getItem().GetAllnfo() + " x" + invItem.getCount());
-            btn.setOnAction(e-> {
-
-                ServiceLoader<IShopService> loader = ServiceLoader.load(IShopService.class);
-                loader.findFirst().ifPresent(shop -> {
-                    int sellPrice = shop.SellItem(1,invItem.getItem(),invItem.getCount());
-                    IInventoryService inventory = IInventoryService.getInstance();
-                    if(inventory != null){
-                        System.out.println("Before");
-                        System.out.println(inventory.getWallet());
-                        System.out.println(sellPrice);
-                        inventory.AddCoins(sellPrice);
-                        System.out.println("After");
-                        System.out.println(inventory.getWallet());
-                        inventory.removeItem(invItem.getItem());
-                    }
-                });
-
-
-            });
-            layout.getChildren().add(btn);
-        }
-
-        layout.setPadding(new Insets(20));
-        inviStage.setScene(new Scene(layout, 300, 400));
-        inviStage.setTitle("Inventory");
-        inviStage.show();
-
-
     }
-
     @Override
     public List<InviItme> getItems() {
-        return invitory;
+        return null;
     }
     @Override
     public boolean hasItem(Item item) {
@@ -115,22 +94,22 @@ public class InventoryPlugin implements IInventoryService, EcsSystem {
 
     @Override
     public void AddCoins(int coins){
-        Wallet +=coins;
+
 
     }
     @Override
     public void RemoveCoins(int coins){
-        Wallet -=coins;
+
     }
 
     @Override
     public int getWallet() {
-        return Wallet ;
+
     }
 
     @Override
     public void AddHarvest( EntityID EntityID, Item crop, int quantity) {
-        List<InviItme> harvest = Harvest.computeIfAbsent(EntityID, k -> new ArrayList<>());
+       /* List<InviItme> harvest = Harvest.computeIfAbsent(EntityID, k -> new ArrayList<>());
 
         for (InviItme invItem : harvest) {
             if (invItem.getItem().equals(crop)) {
@@ -138,21 +117,22 @@ public class InventoryPlugin implements IInventoryService, EcsSystem {
                 return;
             }
         }
-        harvest.add(new InviItme(crop, quantity));
+        harvest.add(new InviItme(crop, quantity));*/
     }
 
     //private final Map<EntityID, List<InviItme>> Harvest = new HashMap<>();
 
     @Override
     public List<InviItme> getHarvest() {
-        return Harvest.values().stream()
+        return null;
+        /*return Harvest.values().stream()
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());*/
     }
 
     @Override
     public void sellAllHarvest(EntityID entityID) {
-        List<InviItme> harvest = Harvest.getOrDefault(entityID, new ArrayList<>());
+        /*List<InviItme> harvest = Harvest.getOrDefault(entityID, new ArrayList<>());
 
         for (InviItme invItem : harvest) {
             var shop =IShopService.getInstance();
@@ -161,7 +141,7 @@ public class InventoryPlugin implements IInventoryService, EcsSystem {
             AddCoins(coins);
         }
 
-        Harvest.remove(entityID);
+        Harvest.remove(entityID);*/
     }
 
 
