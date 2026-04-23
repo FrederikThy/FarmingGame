@@ -1,11 +1,16 @@
 package dk.sdu.se4.group1.CommonEcs;
 
-import java.awt.*;
+import dk.sdu.se4.group1.CommonApi.SeedType;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
+
 import java.util.*;
 
 public class World {
     //Creates entity by using the EntityID record (en record er bare en simpel dataklasse så vi kan printe id ud osv)
     private final Set<EntityID> Entities = new HashSet<>();
+
+    //qeue that stores plant requests added from robots. If a request is contained it is checked the plant is planted and the request is deleted by the cropsystem
+    Queue<SeedRequest> SeedQueue = new LinkedList<>();
 
     //For each entity store its components in a dictionary like setup. (det er en dictionary inde i en dictionary
     //Dvs for hver entity som key tilhører der en value som også er et dictionary men dette indeholder
@@ -16,8 +21,9 @@ public class World {
 
     //Creates a new instance of an entity
     public EntityID createEntity(){
-        NextEntityId = NextEntityId++;
+        // Vores Entities overskrev hinanden før, men det gør de ikke længere
         EntityID id = new EntityID(NextEntityId);
+        NextEntityId++;
         Entities.add(id);
 
         //put the entity in the dictionary for components:
@@ -91,5 +97,29 @@ public class World {
             }
         }
         return result;
+    }
+
+    public boolean isTileFree(int x, int y){
+        for(EntityID entityID : Entities){
+            if(hasComponent(entityID, PositionComponent.class)){
+                PositionComponent pos =(PositionComponent) GetComponent(entityID, PositionComponent.class);
+                if(pos.x == x && pos.y == y){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    //Adds the a seed request to the queue
+    public void addSeedToQueue(int x, int y, SeedType seedType){
+        SeedQueue.add(new SeedRequest(seedType, x, y));
+    }
+
+
+    //poll() takes the first added SeedRequest and returns it. It then removes it from the queue
+    public SeedRequest CheckSeedQueue(){
+        return SeedQueue.poll();
     }
 }

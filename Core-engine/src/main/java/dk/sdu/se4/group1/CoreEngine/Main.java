@@ -1,27 +1,28 @@
 package dk.sdu.se4.group1.CoreEngine;
 
+import dk.sdu.se4.group1.Monitoring.CPUCounter;
+import dk.sdu.se4.group1.Monitoring.FPSCounter;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
-import dk.sdu.se4.group1.CommonEcs.IInventoryService;
-import dk.sdu.se4.group1.CommonEcs.IShopService;
 import dk.sdu.se4.group1.CommonEcs.World;
+import dk.sdu.se4.group1.Monitoring.MemoryCounter;
 import dk.sdu.se4.group1.Robot.RobotFactory;
 import dk.sdu.se4.group1.Robot.RobotSystem;
+import dk.sdu.se4.group1.Weed.WeedSystem;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import dk.sdu.se4.group1.Map.MappingSystem;
+import dk.sdu.se4.group1.Crops.cropSystem;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import java.util.ServiceLoader;
 
 
 public class Main extends Application {
@@ -33,86 +34,52 @@ public class Main extends Application {
 
     @Override
     public void start(Stage window) throws Exception {
-        ServiceLoader<IInventoryService> invLoader = ServiceLoader.load(IInventoryService.class);
-        invLoader.findFirst().ifPresent(inv -> {
-            IInventoryService.setInstance(inv); // Gemmer instansen
-        });
-
-        ServiceLoader<IShopService> shpLoader = ServiceLoader.load(IShopService.class);
-        shpLoader.findFirst().ifPresent(shp -> {
-            IShopService.setInstance(shp);
-        });
         World world = new World(); //creates world instance
         SystemRegistry registry = new SystemRegistry(); //Creates system registry instance
 
         Pane root = new Pane();
-        Canvas canvas = new Canvas(800,600);
 
+        //Get Map picture from resources
+        Image OriginalbackgroundImage = new Image(Main.class.getResource("/Map.png").toExternalForm());
 
+        ImageView backgroundView = new ImageView(OriginalbackgroundImage);
+        backgroundView.setFitHeight(960);
+        backgroundView.setFitWidth(960);
+        backgroundView.setPreserveRatio(false);
+        backgroundView.setSmooth(false);
 
-        Button shopBtn = new Button("Åbn Shop");
-        shopBtn.setLayoutX(2);  // placering X
-        shopBtn.setLayoutY(550);  // placering Y
-        shopBtn.setPrefWidth(395);
-        shopBtn.setPrefHeight(50);
-        shopBtn.setOnAction(e -> {
-            IShopService Shp = IShopService.getInstance();
-            Shp.openShop();
-        });
+        Canvas canvas = new Canvas(960,960);
+        root.getChildren().addAll(backgroundView, canvas);
 
+        CPUCounter cpuCounter = new CPUCounter();
+        root.getChildren().add(cpuCounter);
 
-        Label coinLabel = new Label();
-        coinLabel.setTextFill(Color.YELLOW);
-        coinLabel.setLayoutX(560); // Skubber den 600 pixels mod højre
-        coinLabel.setLayoutY(5);  // Skubber den 50 pixels ned fra toppen
-        // Styling af "kassen"
-        coinLabel.setStyle(
-                "-fx-background-color: #0000FF; " +    // Blå baggrund
-                        "-fx-border-color: white; " +         // Hvid ramme
-                        "-fx-border-width: 2; " +             // Tykkelse på rammen
-                        "-fx-padding: 10 20 10 20; " +        // Luft: Top, Højre, Bund, Venstre
-                        "-fx-text-fill: yellow; " +           // Gul tekst
-                        "-fx-font-size: 18px; " +
-                        "-fx-font-weight: bold; " +
-                        "-fx-background-radius: 10; " +       // Runde hjørner på baggrunden
-                        "-fx-border-radius: 10;"              // Runde hjørner på rammen
-        );
-        IInventoryService inventorye = IInventoryService.getInstance();
-        coinLabel.setText("Coins : "+inventorye.getWallet());
+        FPSCounter fpsCounter = new FPSCounter(); //Making an instance of FPSCounter Module
+        root.getChildren().add(fpsCounter);
 
-        Button invBtn = new Button("Åbn Inventory");
-        invBtn.setPrefWidth(395);
-        invBtn.setPrefHeight(50);
-        invBtn.setLayoutX(402.5); // lige til højre for shop knappen
-        invBtn.setLayoutY(550);
-        invBtn.setOnAction(e -> {
+        MemoryCounter memoryCounter = new MemoryCounter();
+        root.getChildren().add(memoryCounter);
 
-            IInventoryService inventory = IInventoryService.getInstance();
-            inventory.showInvi();
-            coinLabel.setText("Coins : "+inventory.getWallet());
-
-        });
-        root.getChildren().add(coinLabel);
-        root.getChildren().add(canvas);
-        root.getChildren().add(shopBtn);
-        root.getChildren().add(invBtn);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         // Opret RenderSystem med gc
         //Adds graphic content to mappingsystem
-        registry.register(new MappingSystem(gc));
 
-        registerSystems(registry); //Adds all systems to the current instance
+        registerSystems(registry, gc); //Adds all systems to the current instance
 
         // set scene and stage
-        Scene scene = new Scene(root, 800, 600);
-        window.setTitle("RAWR");
+        Scene scene = new Scene(root, 960, 960);
+        window.setTitle("Farming Game");
         window.setScene(scene);
         window.show();
 
         RobotFactory robotFactory = new RobotFactory();
 
         EntityID firstrobotid = robotFactory.createRobot(world);
+
+        EntityID firstrobotid2 = robotFactory.createRobot(world);
+
+        EntityID firstrobotid3 = robotFactory.createRobot(world);
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -126,6 +93,10 @@ public class Main extends Application {
                 lastTime = now;
                 // Kalder systems
                 registry.updateAll(world, deltaTime);
+                fpsCounter.OnFrame(deltaTime);
+                cpuCounter.OnFrame(deltaTime);
+                memoryCounter.OnFrame(deltaTime);
+
             }
         };
 
@@ -133,10 +104,13 @@ public class Main extends Application {
     }
 
 
-    private void registerSystems(SystemRegistry registry){
+    private void registerSystems(SystemRegistry registry, GraphicsContext gc) {
         // Insert Systems here like this:
         // registry.register(new *SystemName()*)
         // Systems should be an implementation of the update method and implement the interface EcsSystem
         registry.register(new RobotSystem());
+        registry.register(new WeedSystem());
+        registry.register(new MappingSystem(gc));
+        registry.register(new cropSystem());
     }
 }
