@@ -2,6 +2,7 @@ package dk.sdu.se4.group1.CoreEngine;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
+import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.Inventory.InventoryPlugin;
 import dk.sdu.se4.group1.Inventory.InventoryFactory;
 import dk.sdu.se4.group1.CommonEcs.World;
@@ -43,8 +44,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage window) throws Exception {
-        World world = new World();
-        SystemRegistry registry = new SystemRegistry();
         World world = new World(); //creates world instance
         SystemRegistry registry = new SystemRegistry(); //Creates system registry instance
         shop = new ShopStore();
@@ -66,7 +65,6 @@ public class Main extends Application {
         backgroundView.setPreserveRatio(false);
         backgroundView.setSmooth(false);
 
-        Canvas canvas = new Canvas(960, 960);
         Button shopButton = new Button();
         shopButton.setLayoutX(710);
         shopButton.setLayoutY(180);
@@ -116,11 +114,11 @@ public class Main extends Application {
         RobotFactory robotFactory = new RobotFactory();
 
 
-        EntityID firstrobotid = robotFactory.createRobot(world);
+        EntityID firstrobotid = robotFactory.createRobot(world,1,1,8,8);
 
-        EntityID firstrobotid2 = robotFactory.createRobot(world);
+        EntityID firstrobotid2 = robotFactory.createRobot(world,2,2,7,7);
 
-        EntityID firstrobotid3 = robotFactory.createRobot(world);
+        EntityID firstrobotid3 = robotFactory.createRobot(world,3,3,6,6);
 
         AnimationTimer timer = new AnimationTimer() {
             @Override

@@ -104,7 +104,7 @@ public class InventoryPlugin implements IInventoryService, EcsSystem {
 
     @Override
     public int getWallet() {
-
+        return 0;
     }
 
     @Override
