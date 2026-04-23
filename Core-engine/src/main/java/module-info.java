@@ -11,17 +11,8 @@ module Core.engine {
     requires MapModule;
     requires WeedModule;
     requires CropsModule;
-<<<<<<< HEAD
     requires RobotModule;
     requires PathfindingModule;
     requires MonitoringModule;
     exports dk.sdu.se4.group1.CoreEngine;
 }
-=======
-
-    requires RobotModule;
-    requires MonitoringModule;
-    exports dk.sdu.se4.group1.CoreEngine;
-}
-
->>>>>>> main/main
