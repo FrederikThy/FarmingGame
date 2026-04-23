@@ -50,10 +50,7 @@ public class RobotSystem implements EcsSystem {
                     // Robot has a computed A* path — follow it one step at a time
                     PathComponent path = (PathComponent) world.GetComponent(entity, PathComponent.class);
                     followPath(world, robotPos, path);
-                } else {
-                    // No path component — use the old random walk as a fallback
-                    moveRobotRandomly(world, robotPos);
-                }
+                } 
             }
 
             if (shouldCheckPlanting) {
@@ -95,42 +92,58 @@ public class RobotSystem implements EcsSystem {
         }
     }
 
-    // Legacy fallback movement — picks a random direction and moves there if the tile is free
-    private void moveRobotRandomly(World world, PositionComponent robotPos) {
-        int tx = robotPos.x, ty = robotPos.y;
-        switch (random.nextInt(4)) {
-            case 0 -> ty = Math.max(0, robotPos.y - 1);              // up
-            case 1 -> ty = Math.min(MAP_HEIGHT - 1, robotPos.y + 1); // down
-            case 2 -> tx = Math.max(0, robotPos.x - 1);              // left
-            case 3 -> tx = Math.min(MAP_WIDTH - 1, robotPos.x + 1);  // right
+
+  private void tryPlantSeed(World world, RobotComponent robot, PositionComponent robotPos) {
+        int chance = random.nextInt(10) + 1; // 1 to 10
+
+        if (chance >= 5) {
+            return;
         }
-        if (world.isTileFree(tx, ty)) { robotPos.x = tx; robotPos.y = ty; }
+
+        robot.seedType = getRandomSeedType();
+
+        int[] plantTile = findFreeAdjacentTile(world, robotPos.x, robotPos.y);
+
+        if (plantTile != null) {
+            world.addSeedToQueue(plantTile[0], plantTile[1], robot.seedType);
+        }
     }
 
-    // 50% chance to plant a seed on a free adjacent tile
-    private void tryPlantSeed(World world, RobotComponent robot, PositionComponent robotPos) {
-        if (random.nextInt(10) + 1 >= 5) return; // roll fails — skip planting this interval
-
-        // Pick a random seed type and find a free neighbour to plant on
-        robot.seedType = SeedType.values()[random.nextInt(SeedType.values().length)];
-        int[] tile = findFreeAdjacentTile(world, robotPos.x, robotPos.y);
-
-        // Add the request to the world queue — cropSystem will create the entity next tick
-        if (tile != null) world.addSeedToQueue(tile[0], tile[1], robot.seedType);
+    private SeedType getRandomSeedType() {
+        SeedType[] seedTypes = SeedType.values();
+        return seedTypes[random.nextInt(seedTypes.length)];
     }
 
-    // Check all four neighbours in a random order and return the first free tile found
-    private int[] findFreeAdjacentTile(World world, int rx, int ry) {
-        int[][] dirs = {{0,-1},{0,1},{-1,0},{1,0}};
-        int start = random.nextInt(dirs.length); // randomise which direction we check first
-        for (int i = 0; i < dirs.length; i++) {
-            int[] d = dirs[(start + i) % dirs.length];
-            int x = rx + d[0], y = ry + d[1];
+    private int[] findFreeAdjacentTile(World world, int robotX, int robotY) {
+        int[][] directions = {
+                {0, -1}, // up
+                {0, 1},  // down
+                {-1, 0}, // left
+                {1, 0}   // right
+        };
 
-            // Skip tiles outside the map or already occupied
-            if (x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT && world.isTileFree(x, y))
+        // optional: randomize start direction
+        int startIndex = random.nextInt(directions.length);
+
+        for (int i = 0; i < directions.length; i++) {
+            int[] dir = directions[(startIndex + i) % directions.length];
+
+            int x = robotX + dir[0];
+            int y = robotY + dir[1];
+
+            if (!isInsideMap(x, y)) {
+                continue;
+            }
+
+            if (world.isTileFree(x, y)) {
                 return new int[]{x, y};
+            }
         }
-        return null; // all neighbours are occupied or out of bounds
+
+        return null;
+    }
+
+    private boolean isInsideMap(int x, int y) {
+        return x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT;
     }
 }
