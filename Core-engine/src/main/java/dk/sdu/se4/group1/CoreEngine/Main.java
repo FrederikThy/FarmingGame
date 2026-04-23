@@ -1,5 +1,9 @@
 package dk.sdu.se4.group1.CoreEngine;
 
+import dk.sdu.se4.group1.CommonApi.SeedType;
+import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
+import dk.sdu.se4.group1.Inventory.InventoryPlugin;
+import dk.sdu.se4.group1.Inventory.InventoryFactory;
 import dk.sdu.se4.group1.Monitoring.CPUCounter;
 import dk.sdu.se4.group1.Monitoring.FPSCounter;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
@@ -7,11 +11,13 @@ import dk.sdu.se4.group1.CommonEcs.World;
 import dk.sdu.se4.group1.Monitoring.MemoryCounter;
 import dk.sdu.se4.group1.Robot.RobotFactory;
 import dk.sdu.se4.group1.Robot.RobotSystem;
+import dk.sdu.se4.group1.Shop.ShopStore;
 import dk.sdu.se4.group1.Weed.WeedSystem;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import dk.sdu.se4.group1.Map.MappingSystem;
 import dk.sdu.se4.group1.Crops.cropSystem;
@@ -20,13 +26,12 @@ import javafx.scene.layout.Pane;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-
 
 
 public class Main extends Application {
-
+    private ShopStore shop;
+    private InventoryPlugin inventory;
+    private EntityID inventoryId;
     private long lastTime = 0;
     public static void main(String[] args) {
         launch(args);
@@ -36,7 +41,16 @@ public class Main extends Application {
     public void start(Stage window) throws Exception {
         World world = new World(); //creates world instance
         SystemRegistry registry = new SystemRegistry(); //Creates system registry instance
+        shop = new ShopStore();
+        inventory = new InventoryPlugin();
+        inventoryId = InventoryFactory.createInventory(world);
 
+        InventoryComponent inventoryComponent =
+                (InventoryComponent) world.GetComponent(inventoryId, InventoryComponent.class);
+        inventoryComponent.addHarvest(SeedType.CARROT);
+
+        inventoryComponent.addHarvest(SeedType.CARROT);
+        inventoryComponent.addHarvest(SeedType.CHILI);
         Pane root = new Pane();
 
         //Get Map picture from resources
@@ -47,6 +61,26 @@ public class Main extends Application {
         backgroundView.setFitWidth(960);
         backgroundView.setPreserveRatio(false);
         backgroundView.setSmooth(false);
+
+        Button shopButton = new Button();
+        shopButton.setLayoutX(710);
+        shopButton.setLayoutY(180);
+        shopButton.setPrefWidth(230);
+        shopButton.setPrefHeight(150);
+        shopButton.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3);");
+        shopButton.setOnAction(e -> {
+            shop.openShop(world);
+        });
+
+        Button invitoryButton = new Button();
+        invitoryButton.setLayoutX(710);
+        invitoryButton.setLayoutY(521);
+        invitoryButton.setPrefWidth(230);
+        invitoryButton.setPrefHeight(150);
+        invitoryButton.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3);");
+        invitoryButton.setOnAction(e -> {
+            inventory.showInventory(world, inventoryId);
+        });
 
         Canvas canvas = new Canvas(960,960);
         root.getChildren().addAll(backgroundView, canvas);
@@ -62,6 +96,9 @@ public class Main extends Application {
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
+        root.getChildren().add(shopButton);
+        root.getChildren().add(invitoryButton);
+
         // Opret RenderSystem med gc
         //Adds graphic content to mappingsystem
 
@@ -74,6 +111,7 @@ public class Main extends Application {
         window.show();
 
         RobotFactory robotFactory = new RobotFactory();
+
 
         EntityID firstrobotid = robotFactory.createRobot(world);
 
@@ -112,5 +150,7 @@ public class Main extends Application {
         registry.register(new WeedSystem());
         registry.register(new MappingSystem(gc));
         registry.register(new cropSystem());
+        registry.register(shop);
+        registry.register(inventory);
     }
 }

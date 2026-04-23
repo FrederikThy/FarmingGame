@@ -98,6 +98,18 @@
       <version>1.0.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>dk.sdu.se4</groupId>
+      <artifactId>ShopModule</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>dk.sdu.se4</groupId>
+      <artifactId>InventoryModule</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>

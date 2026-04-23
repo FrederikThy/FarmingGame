@@ -14,6 +14,8 @@ module Core.engine {
 
     requires RobotModule;
     requires MonitoringModule;
+    requires ShopModule;
+    requires InventoryModule;
     exports dk.sdu.se4.group1.CoreEngine;
 }
 
