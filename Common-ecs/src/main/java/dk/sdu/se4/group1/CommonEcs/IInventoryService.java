@@ -3,19 +3,11 @@ package dk.sdu.se4.group1.CommonEcs;
 import java.util.List;
 
 public interface IInventoryService {
-    static IInventoryService[] sharedInstance = {null};
 
-    static void setInstance(IInventoryService instance) {
-        sharedInstance[0] = instance;
-    }
-
-    static IInventoryService getInstance() {
-        return sharedInstance[0];
-    }
-    boolean additem(Item item);
-    boolean additem(Item item,int quantity);
+    boolean additem(EntityID entityID);
+    boolean additem(EntityID entityID,int quantity);
     void removeItem(Item item);
-    void showInvi();
+    void showInventory(World world);
     List<InviItme> getItems();
     boolean hasItem(Item item);
     void AddCoins(int coins);
