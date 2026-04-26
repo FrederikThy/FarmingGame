@@ -122,4 +122,12 @@ public class World {
     public SeedRequest CheckSeedQueue(){
         return SeedQueue.poll();
     }
+
+    public void RemoveEntity(EntityID entity){
+        // Fjerner entity fra listen over entities.
+        Entities.remove(entity);
+
+        // Fjerner alle components til den entity.
+        entityComponentDictionary.remove(entity);
+    }
 }

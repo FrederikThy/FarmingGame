@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class WeedSystem implements EcsSystem {
     private double timePassed = 0;
-    private double spawnChance = 0.40;
+    private double spawnChance = 0.4;
 
     private final int mapHeight = MapSize.MAP_HEIGHT;
     private final int mapWidth = MapSize.MAP_WIDTH;

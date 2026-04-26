@@ -2,8 +2,7 @@ package dk.sdu.se4.group1.CoreEngine;
 
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
-import dk.sdu.se4.group1.Robot.RobotFactory;
-import dk.sdu.se4.group1.Robot.RobotSystem;
+import dk.sdu.se4.group1.Robot.*;
 import dk.sdu.se4.group1.Weed.WeedSystem;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -16,9 +15,6 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-
 
 
 public class Main extends Application {
@@ -62,11 +58,11 @@ public class Main extends Application {
 
         RobotFactory robotFactory = new RobotFactory();
 
-        EntityID firstrobotid = robotFactory.createRobot(world);
 
-        EntityID firstrobotid2 = robotFactory.createRobot(world);
+        EntityID PlantingRobot = robotFactory.PlantingRobot(world);
+        EntityID RemoveWeedRobot = robotFactory.RemoveWeedRobot(world);
+        EntityID HarvestingRobot = robotFactory.HarvestingRobot(world);
 
-        EntityID firstrobotid3 = robotFactory.createRobot(world);
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -91,9 +87,12 @@ public class Main extends Application {
         // Insert Systems here like this:
         // registry.register(new *SystemName()*)
         // Systems should be an implementation of the update method and implement the interface EcsSystem
-        registry.register(new RobotSystem());
+        registry.register(new MovementSystem());
         registry.register(new WeedSystem());
-        registry.register(new MappingSystem(gc));
         registry.register(new cropSystem());
+        registry.register(new HarvestingSystem());
+        registry.register(new PlantingSystem());
+        registry.register(new RemoveWeedSystem());
+        registry.register(new MappingSystem(gc));
     }
 }
