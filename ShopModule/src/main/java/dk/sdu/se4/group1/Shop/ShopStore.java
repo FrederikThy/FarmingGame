@@ -4,18 +4,15 @@ import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.CropComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.SpeedToolComponent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 import java.util.List;
 
-/**
- * Hello world!
- */
 public class ShopStore implements IShopService,EcsSystem {
 
     private EntityID findAvailableRobot(World world) {
@@ -38,6 +35,7 @@ public class ShopStore implements IShopService,EcsSystem {
         layout.getChildren().add(new Label("Shop"));
 
         for (SeedType seedType : SeedType.values()) {
+            //Seeds buy button
             Button buyBtn = new Button("Køb " + seedType + "pris: 100");
             buyBtn.setOnAction(e -> {
                 EntityID robotId = findAvailableRobot(world);
@@ -53,11 +51,22 @@ public class ShopStore implements IShopService,EcsSystem {
                 robot.seedType = seedType;
                 System.out.println("Gav " + seedType + " til robot " +robotId.id());
             });
-
             layout.getChildren().add(buyBtn);
             layout.setPadding(new Insets(20));
             layout.setPadding(new Insets(20));
         }
+        //Speed tool buy button
+        Button speedToolBtn = new Button("Køb Speed Tool - pris: 200");
+        speedToolBtn.setOnAction(e -> {
+            for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
+                if (!world.hasComponent(entity, SpeedToolComponent.class)) {
+                    world.addComponent(entity, new SpeedToolComponent(2.0));
+                    System.out.println("Speed tool equipped on robot " + entity.id());
+                }
+            }
+        });
+        layout.getChildren().add(speedToolBtn);
+
         shopStage.setScene(new Scene(layout, 300, 400));
         shopStage.setTitle("Shop");
         shopStage.show();

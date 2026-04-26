@@ -5,6 +5,7 @@ import java.util.Random;
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.Components.PathComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.SpeedToolComponent;
 import dk.sdu.se4.group1.CommonEcs.EcsSystem;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
@@ -38,28 +39,31 @@ public class RobotSystem implements EcsSystem {
         timeSinceLastMove       += deltaTime;
         timeSinceLastPlantCheck += deltaTime;
 
-        boolean shouldMove          = timeSinceLastMove       >= MOVE_INTERVAL;
+        boolean anyMoved            = false;
         boolean shouldCheckPlanting = timeSinceLastPlantCheck >= PLANT_INTERVAL;
 
         for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
             PositionComponent robotPos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
-            RobotComponent    robot    = (RobotComponent)    world.GetComponent(entity, RobotComponent.class);
+            RobotComponent robot = (RobotComponent) world.GetComponent(entity, RobotComponent.class);
 
-            if (shouldMove) {
-                if (world.hasComponent(entity, PathComponent.class)) {
-                    // Robot has a computed A* path — follow it one step at a time
-                    PathComponent path = (PathComponent) world.GetComponent(entity, PathComponent.class);
-                    followPath(world, robotPos, path);
-                } 
+            double effectiveMoveInterval = MOVE_INTERVAL;
+            if (world.hasComponent(entity, SpeedToolComponent.class)) {
+                SpeedToolComponent speedTool = (SpeedToolComponent) world.GetComponent(entity, SpeedToolComponent.class);
+                effectiveMoveInterval = MOVE_INTERVAL / speedTool.getSpeedMultiplier();
             }
 
+            if (timeSinceLastMove >= effectiveMoveInterval) {
+                if (world.hasComponent(entity, PathComponent.class)) {
+                    PathComponent path = (PathComponent) world.GetComponent(entity, PathComponent.class);
+                    followPath(world, robotPos, path);
+                }
+                anyMoved = true;
+            }
             if (shouldCheckPlanting) {
                 tryPlantSeed(world, robot, robotPos);
             }
         }
-
-        // Reset timers after processing all robots
-        if (shouldMove)          timeSinceLastMove       = 0.0;
+        if (anyMoved)            timeSinceLastMove       = 0.0;
         if (shouldCheckPlanting) timeSinceLastPlantCheck = 0.0;
     }
 
@@ -93,7 +97,7 @@ public class RobotSystem implements EcsSystem {
     }
 
 
-  private void tryPlantSeed(World world, RobotComponent robot, PositionComponent robotPos) {
+    private void tryPlantSeed(World world, RobotComponent robot, PositionComponent robotPos) {
         int chance = random.nextInt(10) + 1; // 1 to 10
 
         if (chance >= 5) {
