@@ -33,7 +33,6 @@ public class WeedSystem implements EcsSystem {
                     if(world.isTileFree(x, y)){
                         WeedFactory.CreateWeed(world, x, y);
                         timePassed = 0;
-                        System.out.print("weed created");
                     }
                 }
             }

@@ -15,6 +15,7 @@
         <module name="Common-ecs" />
         <module name="MapModule" />
         <module name="ShopModule" />
+        <module name="MonitoringModule" />
         <module name="PathfindingModule" />
         <module name="ToolsModule" />
       </profile>

@@ -112,6 +112,26 @@ public class World {
     }
 
 
+    /**
+     * Like isTileFree but ignores entities with a RobotComponent.
+     * Used by PathfindingSystem so robots can plan paths through tiles
+     * occupied by other robots; only static obstacles (crops, weeds) block routes.
+     */
+    public boolean isTileFreeIgnoringRobots(int x, int y){
+        for(EntityID entityID : Entities){
+            if(hasComponent(entityID, PositionComponent.class)){
+                if(hasComponent(entityID, dk.sdu.se4.group1.CommonEcs.Components.RobotComponent.class)){
+                    continue;
+                }
+                PositionComponent pos = (PositionComponent) GetComponent(entityID, PositionComponent.class);
+                if(pos.x == x && pos.y == y){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     //Adds the a seed request to the queue
     public void addSeedToQueue(int x, int y, SeedType seedType){
         SeedQueue.add(new SeedRequest(seedType, x, y));

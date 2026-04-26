@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 
 
 public class RobotFactory {
@@ -31,12 +32,16 @@ public class RobotFactory {
         return robotId;
     }*/
 
-    public EntityID BaseRobot(World world) {
+    public EntityID BaseRobot(World world, int startX, int startY, int goalX, int goalY) {
         EntityID robotId = world.createEntity();
         world.addComponent(robotId, new RobotComponent(0,0));
-        world.addComponent(robotId, new PositionComponent(5,5));
+        world.addComponent(robotId, new PositionComponent(startX,startY));
         world.addComponent(robotId, new MovementComponent());
 
+        PathComponent path = new PathComponent();
+        path.goalX = goalX;
+        path.goalY = goalY;
+        world.addComponent(robotId, path);
 
         try (InputStream spriteStream = RobotFactory.class.getResourceAsStream("/HrFlink.png")) {
             if (spriteStream == null) {
@@ -52,20 +57,20 @@ public class RobotFactory {
         return robotId;
     }
 
-    public EntityID HarvestingRobot(World world) {
-        EntityID robotId = BaseRobot(world);
+    public EntityID HarvestingRobot(World world, int startX, int startY, int goalX, int goalY) {
+        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY);
         world.addComponent(robotId, new HarvestingComponent());
         return robotId;
     }
 
-    public EntityID PlantingRobot(World world) {
-        EntityID robotId = BaseRobot(world);
+    public EntityID PlantingRobot(World world, int startX, int startY, int goalX, int goalY) {
+        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY);
         world.addComponent(robotId, new PlantingComponent());
         return robotId;
     }
 
-    public EntityID RemoveWeedRobot(World world) {
-        EntityID robotId = BaseRobot(world);
+    public EntityID RemoveWeedRobot(World world, int startX, int startY, int goalX, int goalY) {
+        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY);
         world.addComponent(robotId, new RemoveCropComponent());
         return robotId;
     }
