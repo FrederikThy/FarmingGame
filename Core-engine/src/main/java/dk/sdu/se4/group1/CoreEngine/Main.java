@@ -106,7 +106,8 @@ public class Main extends Application {
     }
 
     private void registerSystems(SystemRegistry registry, GraphicsContext gc) {
-        registry.register(new PathfindingSystem(PathfindingAlgorithm.create())); // must be before RobotSystem — change algorithm in PathfindingAlgorithm.ACTIVE
+        registry.register(new PathfindingSystem(PathfindingAlgorithm.create())); // must be before MovementSystem — change algorithm in PathfindingAlgorithm.ACTIVE
+        registry.register(new MovementSystem()); // steps robots along their PathComponent waypoints
         registry.register(new RobotSystem());
         registry.register(new WeedSystem());
         registry.register(new MappingSystem(gc));

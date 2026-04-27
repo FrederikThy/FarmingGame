@@ -2,22 +2,14 @@ package dk.sdu.se4.group1.Pathfinding;
 
 import dk.sdu.se4.group1.CommonEcs.IPathfinding;
 
-/**
- * Enum that enumerates every available pathfinding algorithm.
- * To switch algorithms, change the ACTIVE constant below — one line, no other edits needed.
- *
- * <pre>
- *   A_STAR   — best performance, optimal path, uses Manhattan heuristic
- *   BFS      — simple wave-front search, optimal on uniform grids, no heuristic
- *   DIJKSTRA — cost-based expansion, no heuristic; ready for weighted terrain
- * </pre>
- */
+// Pathfinding factory
+
 public enum PathfindingAlgorithm {
     A_STAR,
     BFS,
     DIJKSTRA;
 
-    // ── CHANGE THIS LINE TO SWITCH ALGORITHMS 
+    // Change this line to change robots algorithm - will probably be changed in the future 
     public static final PathfindingAlgorithm ACTIVE = PathfindingAlgorithm.A_STAR;
 
     /** Returns a fresh instance of whichever algorithm is currently ACTIVE. */

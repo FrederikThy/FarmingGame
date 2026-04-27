@@ -13,8 +13,5 @@ public interface IPathfinding {
      * Returns an ordered list of Nodes from start (inclusive) to goal (inclusive),
      * or an empty list when no path exists.
      */
-    List<Node> findPath(int startX, int startY,
-                        int goalX,  int goalY,
-                        int mapWidth, int mapHeight,
-                        World world);
+    List<Node> findPath(int startX, int startY,int goalX,  int goalY,int mapWidth, int mapHeight, World world);
 }
