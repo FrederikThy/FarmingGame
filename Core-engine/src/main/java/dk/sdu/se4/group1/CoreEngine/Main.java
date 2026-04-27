@@ -13,6 +13,10 @@ import dk.sdu.se4.group1.Pathfinding.AStarPathfinding;
 import dk.sdu.se4.group1.Pathfinding.PathfindingSystem;
 import dk.sdu.se4.group1.Robot.*;
 import dk.sdu.se4.group1.Shop.ShopStore;
+import dk.sdu.se4.group1.Robot.RobotFactory;
+import dk.sdu.se4.group1.Robot.RobotSystem;
+import dk.sdu.se4.group1.Shop.ShopFactory;
+import dk.sdu.se4.group1.Shop.ShopPlugin;
 import dk.sdu.se4.group1.Weed.WeedSystem;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -22,21 +26,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import dk.sdu.se4.group1.Map.MappingSystem;
 import dk.sdu.se4.group1.Crops.cropSystem;
-import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
-
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 
 public class Main extends Application {
-    private ShopStore shop;
+    private ShopPlugin shop;
     private InventoryPlugin inventory;
-    private EntityID inventoryId;
     private long lastTime = 0;
 
     public static void main(String[] args) { launch(args); }
@@ -45,16 +42,10 @@ public class Main extends Application {
     public void start(Stage window) throws Exception {
         World world = new World(); //creates world instance
         SystemRegistry registry = new SystemRegistry(); //Creates system registry instance
-        shop = new ShopStore();
-        inventory = new InventoryPlugin();
-        inventoryId = InventoryFactory.createInventory(world);
-
-        InventoryComponent inventoryComponent =
-                (InventoryComponent) world.GetComponent(inventoryId, InventoryComponent.class);
-        inventoryComponent.addHarvest(SeedType.CARROT);
-
-        inventoryComponent.addHarvest(SeedType.CARROT);
-        inventoryComponent.addHarvest(SeedType.CHILI);
+        inventory = new InventoryPlugin(world);
+        EntityID inventoryId = InventoryFactory.createInventory(world);
+        EntityID shopId = ShopFactory.createShop(world);
+        shop = new ShopPlugin(world);
         Pane root = new Pane();
 
         Image backgroundImage = new Image(Main.class.getResource("/Map.png").toExternalForm());
@@ -64,25 +55,6 @@ public class Main extends Application {
         backgroundView.setPreserveRatio(false);
         backgroundView.setSmooth(false);
 
-        Button shopButton = new Button();
-        shopButton.setLayoutX(710);
-        shopButton.setLayoutY(180);
-        shopButton.setPrefWidth(230);
-        shopButton.setPrefHeight(150);
-        shopButton.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3);");
-        shopButton.setOnAction(e -> {
-            shop.openShop(world);
-        });
-
-        Button invitoryButton = new Button();
-        invitoryButton.setLayoutX(710);
-        invitoryButton.setLayoutY(521);
-        invitoryButton.setPrefWidth(230);
-        invitoryButton.setPrefHeight(150);
-        invitoryButton.setStyle("-fx-background-color: rgba(255, 255, 255, 0.3);");
-        invitoryButton.setOnAction(e -> {
-            inventory.showInventory(world, inventoryId);
-        });
 
         Canvas canvas = new Canvas(960,960);
         root.getChildren().addAll(backgroundView, canvas);
@@ -96,8 +68,8 @@ public class Main extends Application {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
         registerSystems(registry, gc);
-        root.getChildren().add(shopButton);
-        root.getChildren().add(invitoryButton);
+        root.getChildren().add(shop);
+        root.getChildren().add(inventory);
 
         // Opret RenderSystem med gc
         //Adds graphic content to mappingsystem

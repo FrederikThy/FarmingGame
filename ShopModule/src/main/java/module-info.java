@@ -1,5 +1,3 @@
-import dk.sdu.se4.group1.Shop.ShopStore;
-
 module ShopModule {
     exports dk.sdu.se4.group1.Shop;
     requires Common.ecs;
@@ -9,6 +7,5 @@ module ShopModule {
     requires java.naming;
     requires jdk.compiler;
 
-    provides dk.sdu.se4.group1.CommonEcs.IShopService
-            with ShopStore;
+
 }

@@ -1,9 +1,12 @@
 package dk.sdu.se4.group1.Inventory;
 
 import dk.sdu.se4.group1.CommonEcs.*;
+import dk.sdu.se4.group1.CommonEcs.Components.CropComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -12,18 +15,51 @@ import java.util.*;
 /**
  * Hello world!
  */
-public class InventoryPlugin implements IInventoryService, EcsSystem {
+public class InventoryPlugin extends Button implements IInventoryService, EcsSystem {
+
+    World world;
+    public InventoryPlugin(World world){
+        this.world=world;
+        this.setLayoutX(710);
+        this.setLayoutY(521);
+        this.setPrefWidth(230);
+        this.setPrefHeight(150);
+        this.setStyle("-fx-background-color: rgba(255, 255, 255, 0);");
+        this.setOnAction(e -> {
+            showInventory(world);
+        });
+    }
+
+    private EntityID findAvailableRobot(World world) {
+        for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
+            RobotComponent robot =
+                    (RobotComponent) world.GetComponent(entity, RobotComponent.class);
 
 
-    public void showInventory(World world, EntityID inventoryId) {
-        InventoryComponent inventory =(InventoryComponent) world.GetComponent(inventoryId, InventoryComponent.class);
+            if (robot.seedType == null) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    public void showInventory(World world) {
+
+        var entityInvitory = world.getEntitiesWith(InventoryComponent.class);
+        InventoryComponent invitory = (InventoryComponent)world.GetComponent(entityInvitory.iterator().next(),InventoryComponent.class);
 
         Stage stage = new Stage();
         VBox layout = new VBox(10);
 
         layout.getChildren().add(new Label("Inventory"));
 
-        for (var entry : inventory.getHarvestedCrops().entrySet()) {
+        layout.getChildren().add(new Label(""+invitory.getWallet()));
+
+        for (var entry : invitory.getHarvestedCrops().entrySet()) {
+            layout.getChildren().add(new Label(entry.getKey() + " x" + entry.getValue()));
+        }
+        layout.getChildren().add(new Label("Let Over seed"));
+        for (var entry : invitory.getSeedStorage().entrySet()) {
             layout.getChildren().add(new Label(entry.getKey() + " x" + entry.getValue()));
         }
 
@@ -34,25 +70,19 @@ public class InventoryPlugin implements IInventoryService, EcsSystem {
     }
 
     @Override
-    public boolean additem(Item item) {
+    public boolean additem(EntityID entityID) {
        boolean result = true;
-        /*try {
-            for (InviItme invItem : invitory) {
-                if (invItem.getItem().equals(item)) {
-                    invItem.addCount(1); // Fast 1, ikke amount!
-                    return result;
-                }
-            }
-            invitory.add(new InviItme(item)); // Bruger den originale constructor
-        } catch (Exception e) {
-            System.console().printf(e.getMessage());
-            result = false;
-        }*/
+        var entityInvitory = world.getEntitiesWith(InventoryComponent.class);
+        InventoryComponent invitory = (InventoryComponent)world.GetComponent(entityInvitory.iterator().next(),InventoryComponent.class);
+        world.getEntitiesWith(CropComponent.class).stream();
+
+
+        //invitory.addHarvest();
         return result;
     }
 
     @Override
-    public boolean additem(Item item, int quantity) {
+    public boolean additem(EntityID entityID, int quantity) {
         boolean result = true;
         /*try {
             for (InviItme invItem : invitory) {
@@ -75,14 +105,6 @@ public class InventoryPlugin implements IInventoryService, EcsSystem {
         /*invitory.removeIf(invItem -> invItem.getItem().equals(item));*/
     }
 
-    @Override
-    public void showInvi() {
-        Stage inviStage = new Stage();
-        VBox layout = new VBox(10);
-        Label title = new Label("Inventory");
-
-        layout.getChildren().add(title);
-    }
     @Override
     public List<InviItme> getItems() {
         return null;
