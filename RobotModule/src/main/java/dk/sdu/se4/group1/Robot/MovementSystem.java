@@ -1,62 +1,50 @@
 package dk.sdu.se4.group1.Robot;
 
 import dk.sdu.se4.group1.CommonEcs.Components.MovementComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.PathComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
 import dk.sdu.se4.group1.CommonEcs.EcsSystem;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
+import dk.sdu.se4.group1.CommonEcs.Node;
 import dk.sdu.se4.group1.CommonEcs.World;
 
-import java.util.Random;
-
+// Advances each robot one tile along its planned path every MOVE_INTERVAL seconds.
+// PathfindingSystem fills PathComponent.remainingPath each time the queue runs out;
+// this system just pops the next waypoint and updates PositionComponent to match.
 public class MovementSystem implements EcsSystem {
 
-    private final Random random = new Random();
-
     private double timeSinceLastMove = 0.0;
-    private static final double MOVE_INTERVAL = 0.3;
 
-    private static final int MAP_WIDTH = 10;
-    private static final int MAP_HEIGHT = 10;
+    // How often (in seconds) each robot takes one step — tune this to control speed
+    private static final double MOVE_INTERVAL = 0.3;
 
     @Override
     public void update(World world, double deltaTime) {
-
         timeSinceLastMove += deltaTime;
 
-        boolean shouldMove = timeSinceLastMove >= MOVE_INTERVAL;
+        if (timeSinceLastMove < MOVE_INTERVAL) return;
+        timeSinceLastMove = 0.0;
 
-        if (!shouldMove) return;
+        // Process every entity that has both a path and a position
+        for (EntityID entity : world.getEntitiesWith(MovementComponent.class)) {
+            if (!world.hasComponent(entity, PathComponent.class))     continue;
+            if (!world.hasComponent(entity, PositionComponent.class)) continue;
 
-        for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
+            PathComponent     path = (PathComponent)     world.GetComponent(entity, PathComponent.class);
+            PositionComponent pos  = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
 
-            PositionComponent robotPos =
-                    (PositionComponent) world.GetComponent(entity, PositionComponent.class);
+            // Robot has arrived at its fixed goal — nothing left to do
+            if (path.arrived) continue;
 
-            moveRobotRandomly(world, robotPos);
-        }
+            // Path is empty or still being computed — wait for PathfindingSystem
+            if (path.isDone() || path.pathPending) continue;
 
-        if (shouldMove) {
-            timeSinceLastMove = 0.0;
-        }
-    }
-
-    private void moveRobotRandomly(World world, PositionComponent robotPos) {
-        int targetX = robotPos.x;
-        int targetY = robotPos.y;
-
-        int direction = random.nextInt(4);
-
-        switch (direction) {
-            case 0 -> targetY = Math.max(0, robotPos.y - 1);
-            case 1 -> targetY = Math.min(MAP_HEIGHT - 1, robotPos.y + 1);
-            case 2 -> targetX = Math.max(0, robotPos.x - 1);
-            case 3 -> targetX = Math.min(MAP_WIDTH - 1, robotPos.x + 1);
-        }
-
-        if (world.isTileFree(targetX, targetY)) {
-            robotPos.x = targetX;
-            robotPos.y = targetY;
+            // Pop the next waypoint and move the robot there
+            Node next = path.pollNext();
+            if (next != null) {
+                pos.x = next.getX();
+                pos.y = next.getY();
+            }
         }
     }
 }

@@ -16,10 +16,7 @@ public class AStarPathfinding implements IPathfinding {
     };
 
     @Override
-    public List<Node> findPath(int startX, int startY,
-                               int goalX,  int goalY,
-                               int mapWidth, int mapHeight,
-                               World world) {
+    public List<Node> findPath(int startX, int startY, int goalX,  int goalY, int mapWidth, int mapHeight, World world) {
 
         // Already at the goal — return a single-node path so the robot doesn't move
         if (startX == goalX && startY == goalY) {

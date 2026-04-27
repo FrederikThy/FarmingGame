@@ -17,7 +17,7 @@ import java.util.Random;
 // Runs every tick before RobotSystem so paths are ready when the robot tries to move
 public class PathfindingSystem implements EcsSystem {
 
-    // The algorithm to use — injected so it can be swapped or mocked in tests
+    // The algorithm to use — injected so it can be swapped
     private final IPathfinding pathfinding;
     private final Random random = new Random();
 

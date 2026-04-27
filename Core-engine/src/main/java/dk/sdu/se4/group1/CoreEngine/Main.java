@@ -9,7 +9,7 @@ import dk.sdu.se4.group1.CommonEcs.World;
 import dk.sdu.se4.group1.Monitoring.CPUCounter;
 import dk.sdu.se4.group1.Monitoring.FPSCounter;
 import dk.sdu.se4.group1.Monitoring.MemoryCounter;
-import dk.sdu.se4.group1.Pathfinding.AStarPathfinding;
+import dk.sdu.se4.group1.Pathfinding.PathfindingAlgorithm;
 import dk.sdu.se4.group1.Pathfinding.PathfindingSystem;
 import dk.sdu.se4.group1.Robot.*;
 import dk.sdu.se4.group1.Shop.ShopStore;
@@ -105,11 +105,9 @@ public class Main extends Application {
     }
 
     private void registerSystems(SystemRegistry registry, GraphicsContext gc) {
-        registry.register(new PathfindingSystem(new AStarPathfinding()));
-        registry.register(new MovementSystem());// must be before RobotSystem
-        registry.register(new HarvestingSystem());
-        registry.register(new PlantingSystem());
-        registry.register(new RemoveWeedSystem());
+        registry.register(new PathfindingSystem(PathfindingAlgorithm.create())); // must be before MovementSystem — change algorithm in PathfindingAlgorithm.ACTIVE
+        registry.register(new MovementSystem()); // steps robots along their PathComponent waypoints
+        registry.register(new RobotSystem());
         registry.register(new WeedSystem());
         registry.register(new MappingSystem(gc));
         registry.register(new cropSystem());
