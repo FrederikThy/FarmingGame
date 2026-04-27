@@ -80,7 +80,6 @@ public class Main extends Application {
 
         // One robot: top-left (0,0) → bottom-right (9,9)
         // Change these four numbers to set any A→B route.
-        new RobotFactory().BaseRobot(world, 0, 0, 9, 9);
         RobotFactory robotFactory = new RobotFactory();
 
 
