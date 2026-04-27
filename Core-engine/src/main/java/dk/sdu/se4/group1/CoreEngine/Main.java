@@ -84,11 +84,11 @@ public class Main extends Application {
         RobotFactory robotFactory = new RobotFactory();
 
 
-        EntityID firstrobotid = robotFactory.BaseRobot(world,1,1,8,8);
+        EntityID firstrobotid = robotFactory.HarvestingRobot(world,1,1,8,8);
 
-        EntityID firstrobotid2 = robotFactory.BaseRobot(world,2,2,7,7);
+        EntityID firstrobotid2 = robotFactory.PlantingRobot(world,2,2,7,7);
 
-        EntityID firstrobotid3 = robotFactory.BaseRobot(world,3,3,6,6);
+        EntityID firstrobotid3 = robotFactory.RemoveWeedRobot(world,3,3,6,6);
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
