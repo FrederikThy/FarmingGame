@@ -14,7 +14,6 @@ import dk.sdu.se4.group1.Pathfinding.PathfindingSystem;
 import dk.sdu.se4.group1.Robot.*;
 import dk.sdu.se4.group1.Shop.ShopStore;
 import dk.sdu.se4.group1.Robot.RobotFactory;
-import dk.sdu.se4.group1.Robot.RobotSystem;
 import dk.sdu.se4.group1.Shop.ShopFactory;
 import dk.sdu.se4.group1.Shop.ShopPlugin;
 import dk.sdu.se4.group1.Weed.WeedSystem;

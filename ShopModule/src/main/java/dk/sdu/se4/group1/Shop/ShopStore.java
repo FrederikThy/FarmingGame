@@ -69,10 +69,6 @@ public class ShopStore implements IShopService,EcsSystem {
     }
 
 
-    @Override
-    public boolean buyItem(int entityID, Item item) {
-        return false;
-    }
 
     @Override
     public boolean buyItem(int entityID, Item item, int quantity) {
@@ -80,9 +76,29 @@ public class ShopStore implements IShopService,EcsSystem {
     }
 
     @Override
-    public int SellItem(int entityID, Item item, int quantity) {
+    public int SellItem(int EntityID, int quantity) {
+        return 0;
+    }
+
+    @Override
+    public int getBuyPrice(SeedType type) {
+        return 0;
+    }
+
+    @Override
+    public int getSellPrice(int entityID, int amount) {
+        return 0;
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return false;
+    }
+
+   /* @Override
+    public int SellItem(int entityID, int quantity) {
         int coins =0;
-        switch (item.getType()){
+       /* switch (item.getType()){
 
             case "Dirt":
                 coins = item.getLevel()*4;
@@ -96,17 +112,8 @@ public class ShopStore implements IShopService,EcsSystem {
         }
         System.out.println("Item Sold");
         return coins;
-    }
+    }*/
 
-    @Override
-    public int getBuyPrice(Item item) {
-        return item.getPrice();
-    }
-
-    @Override
-    public int getSellPrice(int entityID, Item item) {
-        return SellItem(entityID,item,1);
-    }
 
     @Override
     public void update(World world, double deltaTime) {
