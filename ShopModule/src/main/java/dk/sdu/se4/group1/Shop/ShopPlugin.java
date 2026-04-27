@@ -105,7 +105,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return lower.substring(0, 1).toUpperCase() + lower.substring(1);
     }
 
-
+    //image path
     private ImageView loadImage(String path, double width, double height) {
         InputStream stream = getClass().getResourceAsStream(path);
 
