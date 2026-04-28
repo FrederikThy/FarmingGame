@@ -108,6 +108,9 @@ public class Main extends Application {
         registry.register(new PathfindingSystem(PathfindingAlgorithm.create())); // must be before MovementSystem — change algorithm in PathfindingAlgorithm.ACTIVE
         registry.register(new MovementSystem()); // steps robots along their PathComponent waypoints
         registry.register(new RobotSystem());
+        registry.register(new HarvestingSystem());   // harvests crops adjacent to HarvestingRobots
+        registry.register(new PlantingSystem());     // plants seeds near PlantingRobots
+        registry.register(new RemoveWeedSystem());   // removes weeds near RemoveWeedRobots
         registry.register(new WeedSystem());
         registry.register(new MappingSystem(gc));
         registry.register(new cropSystem());

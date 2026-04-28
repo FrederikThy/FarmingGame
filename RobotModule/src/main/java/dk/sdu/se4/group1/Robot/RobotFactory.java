@@ -39,8 +39,9 @@ public class RobotFactory {
         world.addComponent(robotId, new MovementComponent());
 
         PathComponent path = new PathComponent();
-        path.goalX = goalX;
-        path.goalY = goalY;
+        path.goalX     = goalX;
+        path.goalY     = goalY;
+        path.goalFixed = true; // travel to this exact goal, don't pick a random one
         world.addComponent(robotId, path);
 
         try (InputStream spriteStream = RobotFactory.class.getResourceAsStream("/HrFlink.png")) {

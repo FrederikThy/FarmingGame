@@ -2,6 +2,7 @@ package dk.sdu.se4.group1.Robot;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.PlantingComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
 import dk.sdu.se4.group1.CommonEcs.EcsSystem;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
@@ -23,7 +24,7 @@ public class PlantingSystem implements EcsSystem {
 
         boolean shouldCheckPlanting = timeSinceLastPlantCheck >= PLANT_INTERVAL;
 
-        for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
+        for (EntityID entity : world.getEntitiesWith(PlantingComponent.class)) {
             PositionComponent robotPos =
                     (PositionComponent) world.GetComponent(entity, PositionComponent.class);
 
