@@ -8,8 +8,12 @@ public class GrowthComponent implements Component {
     public int growthStage;
     public double elapsedGrowthTime;
 
+    //Time for a crop to grow 1 in its growth stage (max growth stage is 4)
+    public double growthTime;
+
     public GrowthComponent(){
         growthStage = 1;
         elapsedGrowthTime = 0;
+        growthTime= 5;
     }
 }

@@ -3,6 +3,7 @@ package dk.sdu.se4.group1.CoreEngine;
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
+import dk.sdu.se4.group1.Crops.IntercroppingSystem;
 import dk.sdu.se4.group1.Inventory.InventoryPlugin;
 import dk.sdu.se4.group1.Inventory.InventoryFactory;
 import dk.sdu.se4.group1.CommonEcs.World;
@@ -85,7 +86,7 @@ public class Main extends Application {
 
         EntityID firstrobotid = robotFactory.HarvestingRobot(world,1,1,8,1);
 
-        //EntityID firstrobotid2 = robotFactory.PlantingRobot(world,2,2,1,7);
+        EntityID firstrobotid2 = robotFactory.PlantingRobot(world,2,2,1,7);
 
         EntityID firstrobotid3 = robotFactory.RemoveWeedRobot(world,3,3,9,9);
 
@@ -114,6 +115,7 @@ public class Main extends Application {
         registry.register(new WeedSystem());
         registry.register(new MappingSystem(gc));
         registry.register(new cropSystem());
+        registry.register(new IntercroppingSystem());
         registry.register(shop);
         registry.register(inventory);
     }
