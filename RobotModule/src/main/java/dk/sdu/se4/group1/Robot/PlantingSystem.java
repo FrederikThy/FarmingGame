@@ -1,8 +1,9 @@
 package dk.sdu.se4.group1.Robot;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
-import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.HarvestingComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.PlantingComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
 import dk.sdu.se4.group1.CommonEcs.EcsSystem;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
@@ -28,12 +29,9 @@ public class PlantingSystem implements EcsSystem {
             PositionComponent robotPos =
                     (PositionComponent) world.GetComponent(entity, PositionComponent.class);
 
-            RobotComponent robot =
-                    (RobotComponent) world.GetComponent(entity, RobotComponent.class);
-
 
             if (shouldCheckPlanting) {
-                tryPlantSeed(world, robot, robotPos);
+                tryPlantSeed(world, robotPos);
             }
         }
 
@@ -43,19 +41,19 @@ public class PlantingSystem implements EcsSystem {
         }
     }
 
-    private void tryPlantSeed(World world, RobotComponent robot, PositionComponent robotPos) {
+    private void tryPlantSeed(World world, PositionComponent robotPos) {
         int chance = random.nextInt(10) + 1; // 1 to 10
 
         if (chance >= 5) {
             return;
         }
 
-        robot.seedType = getRandomSeedType();
+        SeedType seedType = getRandomSeedType();
 
         int[] plantTile = findFreeAdjacentTile(world, robotPos.x, robotPos.y);
 
         if (plantTile != null) {
-            world.addSeedToQueue(plantTile[0], plantTile[1], robot.seedType);
+            world.addSeedToQueue(plantTile[0], plantTile[1], seedType);
         }
     }
 
