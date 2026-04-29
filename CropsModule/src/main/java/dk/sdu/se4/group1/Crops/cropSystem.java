@@ -14,9 +14,6 @@ import java.io.InputStream;
 
 public class cropSystem implements EcsSystem {
 
-    //Time for a crop to grow 1 in its growth stage (max growth stage is 4)
-    private static final double CropGrowTime = 5;
-
     @Override
     public void update(World world, double deltaTime) {
 
@@ -52,7 +49,7 @@ public class cropSystem implements EcsSystem {
             //here we add the deltatime for each system call
             Growth.elapsedGrowthTime = Growth.elapsedGrowthTime + deltaTime;
 
-            if(Growth.elapsedGrowthTime >= CropGrowTime){
+            if(Growth.elapsedGrowthTime >= Growth.growthTime){
                 Growth.elapsedGrowthTime = 0;
 
                 Growth.growthStage++;

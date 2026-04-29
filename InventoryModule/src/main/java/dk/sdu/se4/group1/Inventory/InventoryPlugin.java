@@ -117,8 +117,8 @@ public class InventoryPlugin extends Button implements IInventoryService, EcsSys
     @Override
     public void AddCoins(int coins){
 
-
     }
+
     @Override
     public void RemoveCoins(int coins){
 
