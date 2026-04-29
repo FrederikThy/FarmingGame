@@ -84,9 +84,9 @@ public class Main extends Application {
         RobotFactory robotFactory = new RobotFactory();
 
 
-        EntityID firstrobotid = robotFactory.HarvestingRobot(world,1,1,8,1);
+        EntityID firstrobotid = robotFactory.HarvestingRobot(world,1,1,7,7);
 
-        EntityID firstrobotid2 = robotFactory.PlantingRobot(world,2,2,1,7);
+        EntityID firstrobotid2 = robotFactory.PlantingRobot(world,2,2,8,8);
 
         EntityID firstrobotid3 = robotFactory.RemoveWeedRobot(world,3,3,9,9);
 
@@ -108,7 +108,6 @@ public class Main extends Application {
     private void registerSystems(SystemRegistry registry, GraphicsContext gc) {
         registry.register(new PathfindingSystem(PathfindingAlgorithm.create())); // must be before MovementSystem — change algorithm in PathfindingAlgorithm.ACTIVE
         registry.register(new MovementSystem()); // steps robots along their PathComponent waypoints
-        registry.register(new RobotSystem());
         registry.register(new HarvestingSystem());   // harvests crops adjacent to HarvestingRobots
         registry.register(new PlantingSystem());     // plants seeds near PlantingRobots
         registry.register(new RemoveWeedSystem());   // removes weeds near RemoveWeedRobots

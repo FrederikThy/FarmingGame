@@ -11,26 +11,6 @@ import java.nio.file.Path;
 
 
 public class RobotFactory {
-   /* public EntityID createRobot(World world) {
-        EntityID robotId = world.createEntity();
-
-        world.addComponent(robotId, new RobotComponent(0,0));
-        world.addComponent(robotId, new PositionComponent(5,5));
-
-       //We try to use ur sprite to find our picture of HrFlink
-        // if it fails we throw an exception
-        try (InputStream spriteStream = RobotFactory.class.getResourceAsStream("/HrFlink.png")) {
-            if (spriteStream == null) {
-                throw new IllegalArgumentException("Sprite not found: /HrFlink.png");
-            }
-            //Here we add the render the image from the code above
-            //Throws an exception if it fails to load HrFlink
-            world.addComponent(robotId, new RenderComponent(new Image(spriteStream)));
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to close sprite stream", e);
-        }
-        return robotId;
-    }*/
 
     public EntityID BaseRobot(World world, int startX, int startY, int goalX, int goalY) {
         EntityID robotId = world.createEntity();
