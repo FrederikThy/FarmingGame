@@ -1,24 +1,31 @@
 package dk.sdu.se4.group1.Robot;
 
+import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.CropComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.HarvestingComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.EcsSystem;
-import dk.sdu.se4.group1.CommonEcs.Entity;
-import dk.sdu.se4.group1.CommonEcs.EntityID;
-import dk.sdu.se4.group1.CommonEcs.World;
 import javafx.geometry.Pos;
+
+import java.util.Set;
 
 public class HarvestingSystem implements EcsSystem {
 
     @Override
     public void update(World world, double deltaTime) {
+        // the variable expects an EntityID as a return. It gets a Set<> because of getentitiesWith.
+        // iterator.next gets the first element in the list, and returns it as EntityID
+        EntityID inventoryEntity = world.getEntitiesWith(InventoryComponent.class).iterator().next();
+
+        InventoryComponent inventory = (InventoryComponent) world.GetComponent(inventoryEntity, InventoryComponent.class);
+
         for (EntityID entity : world.getEntitiesWith(HarvestingComponent.class)) {
             PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
-
             EntityID crop = FindCropAtPosition(world, pos);
 
             if (crop != null) {
+
+                inventory.addToWallet(100);
                 world.RemoveEntity(crop);
             }
         }
