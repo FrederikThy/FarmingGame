@@ -1,10 +1,7 @@
 package dk.sdu.se4.group1.Robot;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
-import dk.sdu.se4.group1.CommonEcs.Components.HarvestingComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.PlantingComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.*;
 import dk.sdu.se4.group1.CommonEcs.EcsSystem;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
@@ -42,24 +39,54 @@ public class PlantingSystem implements EcsSystem {
     }
 
     private void tryPlantSeed(World world, PositionComponent robotPos) {
-        int chance = random.nextInt(10) + 1; // 1 to 10
 
-        if (chance >= 5) {
+        // Chance for om den planter. 50% chance. Måske lidt unødvendigt?
+        int chance = random.nextInt(10);
+        if (chance > 5) {
             return;
         }
 
-        SeedType seedType = getRandomSeedType();
+        // Henter inventory. kommentar om iterator.next i harvestingSystem.
+        EntityID inventoryEntity = world.getEntitiesWith(InventoryComponent.class).iterator().next();
 
-        int[] plantTile = findFreeAdjacentTile(world, robotPos.x, robotPos.y);
+        InventoryComponent inventory = (InventoryComponent) world.GetComponent(inventoryEntity, InventoryComponent.class);
 
-        if (plantTile != null) {
-            world.addSeedToQueue(plantTile[0], plantTile[1], seedType);
+        int[] plantTile = findFreeAdjacentTile(world, robotPos.x,  robotPos.y);
+
+        // For at det ikke crasher hvis det er null
+        if (plantTile == null) {
+            return;
         }
-    }
 
-    private SeedType getRandomSeedType() {
-        SeedType[] seedTypes = SeedType.values();
-        return seedTypes[random.nextInt(seedTypes.length)];
+        SeedType seedType = null;
+
+
+        // Bruger entrySet til at få par af key, value par fordi getSeedStorage er Map
+
+        for (var entry : inventory.getSeedStorage().entrySet()) {
+            if (entry.getValue() > 0) {
+                // Får key fra vores key/value par
+                seedType = entry.getKey();
+                break;
+            }
+        }
+
+        // For at det ikke crasher hvis det er null
+        if (seedType == null) {
+            return;
+        }
+
+        // Fjerner den seed vi har brugt fra storage.
+        boolean success = inventory.removeSeedsFromStorage(seedType, 1);
+
+        // For at det ikke crasher hvis det er null
+        if (!success) {
+            return;
+        }
+
+        // Tilføjer til seedQueue
+        world.addSeedToQueue(plantTile[0], plantTile[1], seedType);
+
     }
 
     private int[] findFreeAdjacentTile(World world, int robotX, int robotY) {

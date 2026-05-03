@@ -84,11 +84,11 @@ public class Main extends Application {
         RobotFactory robotFactory = new RobotFactory();
 
 
-        EntityID firstrobotid = robotFactory.HarvestingRobot(world,1,1,7,7);
+        EntityID firstrobotid = robotFactory.HarvestingRobot(world,1,1,2,2);
 
-        EntityID firstrobotid2 = robotFactory.PlantingRobot(world,2,2,8,8);
+        EntityID firstrobotid2 = robotFactory.PlantingRobot(world,2,2,9,9);
 
-        EntityID firstrobotid3 = robotFactory.RemoveWeedRobot(world,3,3,9,9);
+        EntityID firstrobotid3 = robotFactory.RemoveWeedRobot(world,3,3,2,9);
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -112,6 +112,7 @@ public class Main extends Application {
         registry.register(new PlantingSystem());     // plants seeds near PlantingRobots
         registry.register(new RemoveWeedSystem());   // removes weeds near RemoveWeedRobots
         registry.register(new WeedSystem());
+        registry.register(new RobotTaskSystem());
         registry.register(new MappingSystem(gc));
         registry.register(new cropSystem());
         registry.register(new IntercroppingSystem());

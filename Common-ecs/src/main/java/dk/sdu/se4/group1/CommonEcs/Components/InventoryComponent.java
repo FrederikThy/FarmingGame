@@ -38,10 +38,11 @@ public class InventoryComponent implements Component {
 
         int newAmount = currentAmount - amount;
 
+        // Rettede den til, at den fjernede det fra harvestedCrops til at den fjerner det fra seedsStorage.
         if (newAmount == 0) {
-            harvestedCrops.remove(seedType);
+            seedsStorage.remove(seedType);
         } else {
-            harvestedCrops.put(seedType, newAmount);
+            seedsStorage.put(seedType, newAmount);
         }
 
         return true;
