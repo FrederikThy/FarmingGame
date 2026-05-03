@@ -4,6 +4,7 @@ import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.SpeedToolComponent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -68,7 +69,8 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             layout.getChildren().add(card);
         }
 
-        Scene scene = new Scene(layout, 360, 420);
+        layout.getChildren().add(createSpeedToolCard(invitory, walletLabel, world));
+        Scene scene = new Scene(layout, 360, 520);
 
 
         Stage shopStage = new Stage();
@@ -97,6 +99,41 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         button.getStyleClass().add("shop-item");
         button.setOnAction(e -> handlePurchase(seedType, price, inventory, walletLabel, world));
 
+        return button;
+    }
+
+    private Button createSpeedToolCard(InventoryComponent inventory, Label walletLabel, World world) {
+        int price = 200;
+        ImageView coinImage = loadImage("/coin.png", 24, 24);
+        Label nameLabel = new Label("Speed Tool");
+        Label priceLabel = new Label("pris: " + price);
+        HBox priceRow = new HBox(12, priceLabel, coinImage);
+        VBox textBox = new VBox(12, nameLabel, priceRow);
+
+        Button button = new Button();
+        button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #7a5c2e; -fx-border-width: 3; -fx-padding: 10;");
+        button.setGraphic(textBox);
+        button.setMaxWidth(Double.MAX_VALUE);
+        button.getStyleClass().add("shop-item");
+
+        button.setOnAction(e -> {
+            if (inventory.getWallet() < price) return;
+
+            Stage pickStage = new Stage();
+            VBox pickLayout = new VBox(10);
+            pickLayout.setPadding(new javafx.geometry.Insets(20));
+            pickLayout.getChildren().add(new Label("Vælg en robot:"));
+
+            for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
+                Button robotBtn = new Button("Robot " + entity.id());
+                robotBtn.setOnAction(ev -> {
+                    handleSpeedToolPurchase(entity, price, inventory, walletLabel, world);
+                    pickStage.close();
+                });
+                pickLayout.getChildren().add(robotBtn);}
+            pickStage.setScene(new Scene(pickLayout, 250, 300));
+            pickStage.setTitle("Vælg Robot");
+            pickStage.show();});
         return button;
     }
 
@@ -138,6 +175,13 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
         inventory.removeFromWallet(price);
         updateWalletLabel(walletLabel, inventory);
+    }
+
+    private void handleSpeedToolPurchase(EntityID entity, int price, InventoryComponent inventory, Label walletLabel, World world) {
+        world.addComponent(entity, new SpeedToolComponent(2.0));
+        inventory.removeFromWallet(price);
+        updateWalletLabel(walletLabel, inventory);
+        System.out.println("Speed tool equipped on robot " + entity.id());
     }
 
     @Override
