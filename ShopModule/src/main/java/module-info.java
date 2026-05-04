@@ -6,6 +6,7 @@ module ShopModule {
     requires javafx.base;
     requires java.naming;
     requires jdk.compiler;
+    requires RobotModule;
 
 
 }

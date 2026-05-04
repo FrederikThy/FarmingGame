@@ -4,10 +4,12 @@ import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.CropComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
+import dk.sdu.se4.group1.CommonApi.SeedType;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.util.*;
@@ -18,8 +20,15 @@ import java.util.*;
 public class InventoryPlugin extends Button implements IInventoryService, EcsSystem {
 
     World world;
+    private final IShopService shopService;
+
     public InventoryPlugin(World world){
+        this(world, null);
+    }
+
+    public InventoryPlugin(World world, IShopService shopService){
         this.world=world;
+        this.shopService = shopService;
         this.setLayoutX(710);
         this.setLayoutY(521);
         this.setPrefWidth(230);
@@ -55,14 +64,44 @@ public class InventoryPlugin extends Button implements IInventoryService, EcsSys
 
         layout.getChildren().add(new Label(""+invitory.getWallet()));
 
-        for (var entry : invitory.getHarvestedCrops().entrySet()) {
-            layout.getChildren().add(new Label(entry.getKey() + " x" + entry.getValue()));
-        }
-        layout.getChildren().add(new Label("Let Over seed"));
-        for (var entry : invitory.getSeedStorage().entrySet()) {
-            layout.getChildren().add(new Label(entry.getKey() + " x" + entry.getValue()));
-        }
 
+        layout.getChildren().add(new Label("Let Over seed"));
+        if(invitory.getSeedStorage().entrySet().stream().count()==0){
+            layout.getChildren().add(new Label("No Seeds Leftover"));
+        }
+        else{
+            for (var entry : invitory.getSeedStorage().entrySet()) {
+                var key = entry.getKey();
+                var value = entry.getValue();
+
+                layout.getChildren().add(new Label(key +" X "+value +" Seeds"));
+
+            }
+        }
+        layout.getChildren().add(new Label("Harvest plants"));
+        if(invitory.getharvestedCrops().entrySet().stream().count()==0){
+            layout.getChildren().add(new Label("Ingen Item Harvested"));
+        }
+        else{
+            for (var entry : invitory.getharvestedCrops().entrySet()) {
+                var key = entry.getKey();
+                var value = entry.getValue();
+                Label cropLabel = new Label(key + " X " + value + " Harvested");
+                Button sellButton = new Button("Sell");
+
+                sellButton.setOnAction(e -> {
+                    boolean sold = invitory.removeHarvest(key, value);
+                    if (sold) {
+                        invitory.addToWallet(getSellPrice(key, value));
+                        stage.close();
+                        showInventory(world);
+                    }
+                });
+
+                layout.getChildren().add(new HBox(10, cropLabel, sellButton));
+
+            }
+        }
         layout.setPadding(new Insets(20));
         stage.setScene(new Scene(layout, 300, 400));
         stage.setTitle("Inventory");
@@ -98,6 +137,14 @@ public class InventoryPlugin extends Button implements IInventoryService, EcsSys
          return result;
 
     }
+    private InventoryComponent getInventoryComponent() {
+        var entityInvitory = world.getEntitiesWith(InventoryComponent.class);
+        return (InventoryComponent) world.GetComponent(
+                entityInvitory.iterator().next(),
+                InventoryComponent.class
+        );
+    }
+
 
 
     @Override
@@ -117,16 +164,24 @@ public class InventoryPlugin extends Button implements IInventoryService, EcsSys
     @Override
     public void AddCoins(int coins){
 
+        var entityInvitory = world.getEntitiesWith(InventoryComponent.class);
+        InventoryComponent invitory = (InventoryComponent)world.GetComponent(entityInvitory.iterator().next(),InventoryComponent.class);
+        invitory.addToWallet(coins);
+
     }
 
     @Override
     public void RemoveCoins(int coins){
-
+        var entityInvitory = world.getEntitiesWith(InventoryComponent.class);
+        InventoryComponent invitory = (InventoryComponent)world.GetComponent(entityInvitory.iterator().next(),InventoryComponent.class);
+        invitory.removeFromWallet(coins);
     }
 
     @Override
     public int getWallet() {
-        return 0;
+        var entityInvitory = world.getEntitiesWith(InventoryComponent.class);
+        InventoryComponent invitory = (InventoryComponent)world.GetComponent(entityInvitory.iterator().next(),InventoryComponent.class);
+        return  invitory.getWallet();
     }
 
     @Override
@@ -164,6 +219,13 @@ public class InventoryPlugin extends Button implements IInventoryService, EcsSys
         }
 
         Harvest.remove(entityID);*/
+    }
+
+    private int getSellPrice(SeedType seedType, int amount) {
+        if (shopService == null) {
+            return 0;
+        }
+        return shopService.getSellPrice(seedType, amount);
     }
 
 

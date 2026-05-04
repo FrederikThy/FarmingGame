@@ -43,11 +43,11 @@ public class Main extends Application {
     public void start(Stage window) throws Exception {
         World world = new World(); //creates world instance
         SystemRegistry registry = new SystemRegistry(); //Creates system registry instance
-        inventory = new InventoryPlugin(world);
         EntityID inventoryId = InventoryFactory.createInventory(world);
         EntityID shopId = ShopFactory.createShop(world);
         EntityID mapId = MapFactory.createGrowthMap(world);
         shop = new ShopPlugin(world);
+        inventory = new InventoryPlugin(world, shop);
         Pane root = new Pane();
 
         Image backgroundImage = new Image(Main.class.getResource("/Map.png").toExternalForm());
