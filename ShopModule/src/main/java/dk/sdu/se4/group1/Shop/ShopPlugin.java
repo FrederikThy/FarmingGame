@@ -125,12 +125,22 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             pickLayout.getChildren().add(new Label("Vælg en robot:"));
 
             for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
-                Button robotBtn = new Button("Robot " + entity.id());
+                boolean alreadyEquipped = world.hasComponent(entity, SpeedToolComponent.class);
+
+                String label;
+                if (alreadyEquipped){
+                   label = "Robot " + entity.id() + " (level " + (int)((SpeedToolComponent) world.GetComponent(entity, SpeedToolComponent.class)).getSpeedMultiplier() + ")";
+                } else {
+                    label = "Robot " + entity.id();
+                }
+
+                Button robotBtn = new Button(label);
                 robotBtn.setOnAction(ev -> {
                     handleSpeedToolPurchase(entity, price, inventory, walletLabel, world);
                     pickStage.close();
                 });
                 pickLayout.getChildren().add(robotBtn);}
+
             pickStage.setScene(new Scene(pickLayout, 250, 300));
             pickStage.setTitle("Vælg Robot");
             pickStage.show();});
@@ -178,10 +188,15 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
     }
 
     private void handleSpeedToolPurchase(EntityID entity, int price, InventoryComponent inventory, Label walletLabel, World world) {
-        world.addComponent(entity, new SpeedToolComponent(2.0));
+        if (world.hasComponent(entity, SpeedToolComponent.class)) {
+            SpeedToolComponent existing = (SpeedToolComponent) world.GetComponent(entity, SpeedToolComponent.class);
+            world.addComponent(entity, new SpeedToolComponent(existing.getSpeedMultiplier() + 1.0));
+        } else {
+            world.addComponent(entity, new SpeedToolComponent(2.0));
+        }
         inventory.removeFromWallet(price);
         updateWalletLabel(walletLabel, inventory);
-        System.out.println("Speed tool equipped on robot " + entity.id());
+        System.out.println("Speed tool upgraded on robot " + entity.id());
     }
 
     @Override

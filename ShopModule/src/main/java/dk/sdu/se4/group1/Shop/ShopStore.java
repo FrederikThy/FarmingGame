@@ -13,9 +13,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-/**
- * Hello world!
- */
+
 public class ShopStore implements IShopService,EcsSystem {
 
     private EntityID findAvailableRobot(World world) {
