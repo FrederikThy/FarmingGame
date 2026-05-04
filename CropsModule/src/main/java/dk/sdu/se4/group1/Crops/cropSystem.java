@@ -7,6 +7,7 @@ import dk.sdu.se4.group1.CommonEcs.EcsSystem;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.SeedRequest;
 import dk.sdu.se4.group1.CommonEcs.World;
+import dk.sdu.se4.group1.CommonEcs.Components.GrowthMapComponent;
 import javafx.scene.image.Image;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ public class cropSystem implements EcsSystem {
 
     @Override
     public void update(World world, double deltaTime) {
+        double growthRate = getGrowthRate(world);
 
         //Takes the first seed request from the world queue.
         //The request was put there by a robot that wants to plant a seed.
@@ -47,7 +49,8 @@ public class cropSystem implements EcsSystem {
 
             //Each crop has its own growth time contained in its growth component
             //here we add the deltatime for each system call
-            Growth.elapsedGrowthTime = Growth.elapsedGrowthTime + deltaTime;
+            Growth.elapsedGrowthTime = Growth.elapsedGrowthTime + (deltaTime * growthRate);
+            //Updated so we can multiply with our growth time
 
             if(Growth.elapsedGrowthTime >= Growth.growthTime){
                 Growth.elapsedGrowthTime = 0;
@@ -83,4 +86,15 @@ public class cropSystem implements EcsSystem {
             case BEANSPROUT -> "/Beansprout_" + growthStage + ".png";
         };
     }
+
+    //Checks for growth map in the world and if true then it returns the growth rate from that map
+    private double getGrowthRate(World world) {
+        for (EntityID entity : world.getEntitiesWith(GrowthMapComponent.class)) {
+            GrowthMapComponent growthMap =
+                    (GrowthMapComponent) world.GetComponent(entity, GrowthMapComponent.class);
+            return growthMap.getGrowthRate();
+        }
+        return 1.0;
+    }
+
 }
