@@ -92,7 +92,8 @@ public class cropSystem implements EcsSystem {
         for (EntityID entity : world.getEntitiesWith(GrowthMapComponent.class)) {
             GrowthMapComponent growthMap =
                     (GrowthMapComponent) world.GetComponent(entity, GrowthMapComponent.class);
-            return growthMap.getGrowthRate();
+            return growthMap.
+                    getGrowthRate();
         }
         return 1.0;
     }
