@@ -1,12 +1,17 @@
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Component.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\CropComponent.java
+C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\HarvestingComponent.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\InventoryComponent.java
+C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\MovementComponent.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\PathComponent.java
+C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\PlantingComponent.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\PositionComponent.java
+C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\RemoveCropComponent.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\RenderComponent.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\RobotComponent.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\ShopComponent.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\ShopOfferComponent.java
+C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\SpeedToolComponent.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Components\WeedComponent.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\EcsSystem.java
 C:\Users\Frederik\IdeaProjects\FarmingGameeds\Common-ecs\src\main\java\dk\sdu\se4\group1\CommonEcs\Entity.java

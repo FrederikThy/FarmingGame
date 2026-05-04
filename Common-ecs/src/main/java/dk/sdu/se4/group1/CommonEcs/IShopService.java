@@ -21,5 +21,6 @@ public interface IShopService {
     int SellItem(int EntityID, int quantity);
     int getBuyPrice(SeedType type);
     int getSellPrice(int entityID,int amount);
-    boolean isAvailable();
+    int getSellPrice(SeedType seedType, int amount);
+    boolean isAvailable(int price,int wallet);
 }

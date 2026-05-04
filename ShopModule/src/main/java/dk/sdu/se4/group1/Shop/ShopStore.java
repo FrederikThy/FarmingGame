@@ -76,11 +76,6 @@ public class ShopStore implements IShopService,EcsSystem {
     }
 
     @Override
-    public int SellItem(int EntityID, int quantity) {
-        return 0;
-    }
-
-    @Override
     public int getBuyPrice(SeedType type) {
         return 0;
     }
@@ -91,28 +86,41 @@ public class ShopStore implements IShopService,EcsSystem {
     }
 
     @Override
-    public boolean isAvailable() {
-        return false;
+    public int getSellPrice(SeedType seedType, int amount) {
+        return switch (seedType) {
+            case BEANSPROUT -> 110 * amount;
+            case CHILI -> 120 * amount;
+            case CARROT -> 150 * amount;
+            case TOMATO -> 100 * amount;
+        };
     }
 
-   /* @Override
+    @Override
+    public boolean isAvailable(int price, int wallet ) {
+        return false;
+    }
+    @Override
     public int SellItem(int entityID, int quantity) {
         int coins =0;
-       /* switch (item.getType()){
+        SeedType type = SeedType.BEANSPROUT;
+        switch (type){
 
-            case "Dirt":
-                coins = item.getLevel()*4;
+            case BEANSPROUT:
+                coins = 110*quantity;
                 break;
-            case "shovel":
-                coins = item.getLevel()*3;
+            case CHILI:
+                coins = 120*quantity;
                 break;
-            case "Planer":
-                coins = item.getLevel()*2;
+            case CARROT:
+                coins = 150*quantity;
+                break;
+            case TOMATO:
+                coins = 90*quantity;
                 break;
         }
         System.out.println("Item Sold");
         return coins;
-    }*/
+    }
 
 
     @Override

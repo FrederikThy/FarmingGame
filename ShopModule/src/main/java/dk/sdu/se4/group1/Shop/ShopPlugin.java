@@ -2,11 +2,13 @@ package dk.sdu.se4.group1.Shop;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.*;
-import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.*;
+import dk.sdu.se4.group1.Robot.RobotFactory;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -14,7 +16,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Hello world!
@@ -34,6 +38,39 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         });
     }
 
+    private EntityID findSlowestRobot(World world) {
+        EntityID slowestRobot = null;
+        double slowestSpeed = Double.MAX_VALUE;
+
+        List<EntityID> tiedRobots = new ArrayList<>();
+
+        for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
+            double speed = 1.0;
+
+            if (world.hasComponent(entity, SpeedToolComponent.class)) {
+                SpeedToolComponent speedTool =
+                        (SpeedToolComponent) world.GetComponent(entity, SpeedToolComponent.class);
+
+                speed = speedTool.getSpeedMultiplier();
+            }
+
+            if (speed < slowestSpeed) {
+                slowestSpeed = speed;
+                tiedRobots.clear();
+                tiedRobots.add(entity);
+                slowestRobot = entity;
+            } else if (speed == slowestSpeed) {
+                tiedRobots.add(entity);
+            }
+        }
+
+        if (tiedRobots.isEmpty()) {
+            return slowestRobot;
+        }
+
+        int randomIndex = new Random().nextInt(tiedRobots.size());
+        return tiedRobots.get(randomIndex);
+    }
     private EntityID findAvailableRobot(World world) {
         for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
             RobotComponent robot =
@@ -50,58 +87,130 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
     public void openShop(World world) {
         var entityInvitory = world.getEntitiesWith(InventoryComponent.class);
         InventoryComponent invitory = (InventoryComponent)world.GetComponent(entityInvitory.iterator().next(),InventoryComponent.class);
-
+        var entityShop = world.getEntitiesWith(ShopComponent.class);
+        ShopComponent shop = (ShopComponent)world.GetComponent(entityShop.iterator().next(),ShopComponent.class);
         VBox layout = new VBox(12);
+        layout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
         layout.getStyleClass().add("shop-root");
 
         Label title = new Label("Shop");
+        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
         title.getStyleClass().add("shop-title");
 
         Label walletLabel = new Label();
+        walletLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         updateWalletLabel(walletLabel, invitory);
 
-        layout.getChildren().addAll(title, walletLabel);
+        VBox itemList = new VBox(12);
+        itemList.setStyle("-fx-padding: 8; -fx-background-color: #7a5c2e;");
 
-        for (SeedType seedType : SeedType.values()) {
-            Button card = createSeedCard(seedType, invitory, walletLabel, world);
-            card.setLayoutX(100);
-            layout.getChildren().add(card);
+        for (ShopOfferComponent component : shop.getShopItems()) {
+            Button card = createShopCard(component, invitory, walletLabel, world);
+            itemList.getChildren().add(card);
         }
 
-        Scene scene = new Scene(layout, 360, 420);
+        ScrollPane scrollPane = new ScrollPane(itemList);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setPrefViewportHeight(330);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
 
+        layout.getChildren().addAll(title, walletLabel, scrollPane);
+        Scene scene = new Scene(layout, 390, 460);
         Stage shopStage = new Stage();
         shopStage.setScene(scene);
         shopStage.setTitle("Shop");
         shopStage.show();
     }
 
-    private Button createSeedCard(SeedType seedType, InventoryComponent inventory, Label walletLabel, World world) {
-        int price = getBuyPrice(seedType);
+    private Button createShopCard(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world) {
+        int price = item.getBuyPrice();
+        var component = item.getComponent();
+        String name = getName(component);
+        String imagePath = getImagePath(component);
 
-        ImageView seedImage = loadImage("/" + seedType.name().toLowerCase() + ".png", 52, 52);
+        ImageView itemImage = loadImage(imagePath, 52, 52);
         ImageView coinImage = loadImage("/coin.png", 24, 24);
 
-        Label nameLabel = new Label(formatSeedName(seedType)+" Seed");
+        Label nameLabel = new Label(name);
         Label priceLabel = new Label("pris: " + price);
 
         HBox priceRow = new HBox(12, priceLabel, coinImage);
         VBox textBox = new VBox(12, nameLabel, priceRow);
-        HBox content = new HBox(12, seedImage, textBox);
+        HBox content = new HBox(12, itemImage, textBox);
+        content.setStyle("-fx-alignment: center-left;");
 
         Button button = new Button();
-        button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #7a5c2e; -fx-border-width: 3; -fx-padding: 10;");
+        button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
         button.setGraphic(content);
         button.setMaxWidth(Double.MAX_VALUE);
+        button.setPrefWidth(330);
+        if (!isAvailable(price,inventory.getWallet())){
+            button.setCancelButton(false);
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.5); // -1.0 = helt sort, 0.0 = normal
+
+            button.setEffect(darken);
+        }
         button.getStyleClass().add("shop-item");
-        button.setOnAction(e -> handlePurchase(seedType, price, inventory, walletLabel, world));
+        button.setOnAction(e -> handlePurchase(component, price, inventory, walletLabel, world));
 
         return button;
     }
 
-    private String formatSeedName(SeedType seedType) {
-        String lower = seedType.name().toLowerCase();
+    private String getImagePath(Component component) {
+        if (component instanceof CropComponent cropComponent) {
+            return "/" + cropComponent.seedType.name().toLowerCase() + ".png";
+        }
+
+        if (component instanceof SpeedToolComponent) {
+            return "/Speed_Tool.png";
+        }
+
+        if (component instanceof PlantingComponent) {
+            return "/Planting_Tool.png";
+        }
+
+        if (component instanceof HarvestingComponent) {
+            return "/Harvesting_Tool.png";
+        }
+        if(component instanceof RobotComponent){
+            return "/HrFlink.png";
+        }
+        return "/item_slot.png";
+    }
+
+
+
+    private String getName(Component component) {
+        if (component instanceof CropComponent cropComponent) {
+            return formatSeedName(cropComponent.seedType.toString()) + " Seed";
+        }
+
+        if (component instanceof SpeedToolComponent) {
+            return "Speed Tool";
+        }
+
+        if (component instanceof PlantingComponent) {
+            return "Planting Tool";
+        }
+
+        if (component instanceof HarvestingComponent) {
+            return "Harvesting Tool";
+        }
+        if (component instanceof RobotComponent){
+            return "Hr Flink";
+        }
+
+        return component.getClass().getSimpleName();
+    }
+    private int getPrice(ShopOfferComponent component) {
+       return component.getBuyPrice();
+    }
+
+    private String formatSeedName(String seedType) {
+        String lower = seedType.toLowerCase();
         return lower.substring(0, 1).toUpperCase() + lower.substring(1);
     }
 
@@ -121,20 +230,84 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return imageView;
     }
 
-    private void handlePurchase(SeedType seedType, int price, InventoryComponent inventory, Label walletLabel, World world) {
+
+
+    /*private EntityID findSlowestRobot(World world) {
+        List<EntityID> slowestRobots = new ArrayList<>();
+        double slowestInterval = -1;
+
+        for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
+            RobotComponent robot =
+                    (RobotComponent) world.GetComponent(entity, RobotComponent.class);
+
+            /*double interval = robot.getMoveInterval();
+
+            if (interval > slowestInterval) {
+                slowestInterval = interval;
+                slowestRobots.clear();
+                slowestRobots.add(entity);
+            } else if (interval == slowestInterval) {
+                slowestRobots.add(entity);
+            }
+        }
+
+        if (slowestRobots.isEmpty()) {
+            return null;
+        }
+
+        return slowestRobots.get(new Random().nextInt(slowestRobots.size()));
+    }*/
+
+
+
+    private void handlePurchase(Component type, int price, InventoryComponent inventory, Label walletLabel, World world) {
         if (inventory.getWallet() < price) {
             return;
         }
 
-        EntityID robotId = findAvailableRobot(world);
 
-        if (robotId == null) {
-            inventory.addSeeds(seedType);
+        if(type instanceof CropComponent){
+            CropComponent seedComponent = new CropComponent(((CropComponent) type).seedType);
+            seedComponent.isHarvestable = false;
+
+            EntityID itemId = world.createEntity();
+            inventory.addSeeds(seedComponent.seedType, 1);
+        }
+
+        if (type instanceof RobotComponent){
+            EntityID id = new RobotFactory().BaseRobot(world,4,4,10,10);
+            world.addComponent(id,type);
+        }
+
+        if(type instanceof SpeedToolComponent)
+        {
+            //;
+            //world.addComponent();
+            /// skal adde moment speed tool så det virker ind
+
+        }
+        /*if (seedType instanceof SpeedToolComponent speedToolComponent) {
+            EntityID robotId = findSlowestRobot(world);
+
+            if (robotId == null) {
+                return;
+            }
+
+            RobotComponent robot =
+                    (RobotComponent) world.GetComponent(robotId, RobotComponent.class);
+
+            robot.setMoveInterval(speedToolComponent.getSpeedMultiplier());
+        }*/
+
+        //EntityID robotId = findAvailableRobot(world);
+
+        /*if (robotId == null) {
+            inventory.addComponentItem();
             System.out.println(seedType+" seed Kunne tilføjet til en robot. Så er blevet lagt i inventory");
         } else {
             RobotComponent robot = (RobotComponent) world.GetComponent(robotId, RobotComponent.class);
-            robot.seedType = seedType;
-        }
+            //robot.seedType = seedType;
+        }*/
 
         inventory.removeFromWallet(price);
         updateWalletLabel(walletLabel, inventory);
@@ -173,7 +346,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
                 coins = 150*quantity;
                 break;
             case TOMATO:
-                coins = 90*quantity;
+                coins = 100*quantity;
                 break;
         }
         System.out.println("Item Sold");
@@ -206,10 +379,37 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return SellItem(entityID,amount);
     }
 
+    @Override
+    public int getSellPrice(SeedType seedType, int amount) {
+        int coins = 0;
+        switch (seedType) {
+            case BEANSPROUT:
+                coins = 200 * amount;
+                break;
+            case CHILI:
+                coins = 100 * amount;
+                break;
+            case CARROT:
+                coins = 150 * amount;
+                break;
+            case TOMATO:
+                coins = 200 * amount;
+                break;
+        }
+        return coins;
+    }
+
+
+
 
     @Override
-    public boolean isAvailable() {
-        return false;
+    public boolean isAvailable(int price, int wallet ) {
+        boolean isAvalilable= false;
+
+        if (price<=wallet){
+            isAvalilable=true;
+        }
+        return isAvalilable;
     }
 
     @Override
