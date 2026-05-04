@@ -7,6 +7,7 @@ import dk.sdu.se4.group1.Crops.IntercroppingSystem;
 import dk.sdu.se4.group1.Inventory.InventoryPlugin;
 import dk.sdu.se4.group1.Inventory.InventoryFactory;
 import dk.sdu.se4.group1.CommonEcs.World;
+import dk.sdu.se4.group1.Map.MapFactory;
 import dk.sdu.se4.group1.Monitoring.CPUCounter;
 import dk.sdu.se4.group1.Monitoring.FPSCounter;
 import dk.sdu.se4.group1.Monitoring.MemoryCounter;
@@ -45,6 +46,7 @@ public class Main extends Application {
         inventory = new InventoryPlugin(world);
         EntityID inventoryId = InventoryFactory.createInventory(world);
         EntityID shopId = ShopFactory.createShop(world);
+        EntityID mapId = MapFactory.createGrowthMap(world);
         shop = new ShopPlugin(world);
         Pane root = new Pane();
 
