@@ -12,7 +12,7 @@ import java.nio.file.Path;
 
 public class RobotFactory {
 
-    public EntityID BaseRobot(World world, int startX, int startY, int goalX, int goalY) {
+    public EntityID BaseRobot(World world, int startX, int startY, int goalX, int goalY, String spritePath) {
         EntityID robotId = world.createEntity();
         world.addComponent(robotId, new RobotComponent(0,0));
         world.addComponent(robotId, new PositionComponent(startX,startY));
@@ -24,9 +24,9 @@ public class RobotFactory {
         path.goalFixed = true; // travel to this exact goal, don't pick a random one
         world.addComponent(robotId, path);
 
-        try (InputStream spriteStream = RobotFactory.class.getResourceAsStream("/HrFlink.png")) {
+        try (InputStream spriteStream = RobotFactory.class.getResourceAsStream(spritePath)) {
             if (spriteStream == null) {
-                throw new IllegalArgumentException("Sprite not found: /HrFlink.png");
+                throw new IllegalArgumentException("Sprite not found: " + spritePath);
             }
             //Here we add the render the image from the code above
             //Throws an exception if it fails to load HrFlink
@@ -39,19 +39,19 @@ public class RobotFactory {
     }
 
     public EntityID HarvestingRobot(World world, int startX, int startY, int goalX, int goalY) {
-        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY);
+        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY, "/HrFlink_1.png");
         world.addComponent(robotId, new HarvestingComponent());
         return robotId;
     }
 
     public EntityID PlantingRobot(World world, int startX, int startY, int goalX, int goalY) {
-        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY);
+        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY, "/HrFlink_2.png");
         world.addComponent(robotId, new PlantingComponent());
         return robotId;
     }
 
     public EntityID RemoveWeedRobot(World world, int startX, int startY, int goalX, int goalY) {
-        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY);
+        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY, "/HrFlink_3.png");
         world.addComponent(robotId, new RemoveCropComponent());
         return robotId;
     }
