@@ -74,10 +74,19 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         itemList.setStyle("-fx-padding: 8; -fx-background-color: #7a5c2e;");
 
         for (ShopOfferComponent component : shop.getShopItems()) {
-            Button card = createShopCard(component, invitory, walletLabel, world);
-            itemList.getChildren().add(card);
-        }
+            if (component.getComponent() instanceof SpeedToolComponent){
+                itemList.getChildren().add(createSpeedToolCard(component,invitory, walletLabel, world));
+            }
+            else{
+                Button card = createShopCard(component, invitory, walletLabel, world);
+                itemList.getChildren().add(card);
+            }
 
+        }
+        ScrollPane scrollPane = new ScrollPane(itemList);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: #7a5c2e;");
+        layout.getChildren().addAll(title, walletLabel, scrollPane);
         Scene scene = new Scene(layout, 360, 420);
 
 
@@ -85,6 +94,11 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         shopStage.setScene(scene);
         shopStage.setTitle("Shop");
         shopStage.show();
+    }
+
+    @Override
+    public List<EntityID> getShopItems(World world) {
+        return List.of();
     }
 
     private Button createShopCard(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world) {
@@ -122,17 +136,36 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return button;
     }
 
-    private Button createSpeedToolCard(InventoryComponent inventory, Label walletLabel, World world) {
-        int price = 200;
+    private Button createSpeedToolCard(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world) {
+        int price = item.getBuyPrice();
+        var component = item.getComponent();
+        String name = getName(component);
+        String imagePath = getImagePath(component);
+
+        ImageView itemImage = loadImage(imagePath, 52, 52);
         ImageView coinImage = loadImage("/coin.png", 24, 24);
-        Label nameLabel = new Label("Speed Tool");
+
+        Label nameLabel = new Label(name);
         Label priceLabel = new Label("pris: " + price);
         HBox priceRow = new HBox(12, priceLabel, coinImage);
         VBox textBox = new VBox(12, nameLabel, priceRow);
+        HBox content = new HBox(12, itemImage, textBox);
+        content.setStyle("-fx-alignment: center-left;");
+
+
+        /*
+        *
+        *         HBox priceRow = new HBox(12, priceLabel, coinImage);
+        VBox textBox = new VBox(12, nameLabel, priceRow);
+        HBox content = new HBox(12, itemImage, textBox);
+        *
+        * */
+
 
         Button button = new Button();
         button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #7a5c2e; -fx-border-width: 3; -fx-padding: 10;");
-        button.setGraphic(textBox);
+        button.setGraphic(content);
+
         button.setMaxWidth(Double.MAX_VALUE);
         button.getStyleClass().add("shop-item");
 
@@ -274,7 +307,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         }
 
 
-        if(type instanceof CropComponent){
+        if (type instanceof CropComponent) {
             CropComponent seedComponent = new CropComponent(((CropComponent) type).seedType);
             seedComponent.isHarvestable = false;
 
@@ -282,18 +315,19 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             inventory.addSeeds(seedComponent.seedType, 1);
         }
 
-        if (type instanceof RobotComponent){
-            EntityID id = new RobotFactory().BaseRobot(world,4,4,10,10);
-            world.addComponent(id,type);
+        if (type instanceof RobotComponent) {
+            EntityID id = new RobotFactory().BaseRobot(world, 4, 4, 10, 10);
+            world.addComponent(id, type);
         }
 
-        if(type instanceof SpeedToolComponent)
-        {
+        if (type instanceof SpeedToolComponent) {
             //;
             //world.addComponent();
             /// skal adde moment speed tool så det virker ind
 
         }
+        inventory.removeFromWallet(price);
+        updateWalletLabel(walletLabel, inventory);
         /*if (seedType instanceof SpeedToolComponent speedToolComponent) {
             EntityID robotId = findSlowestRobot(world);
 
@@ -320,7 +354,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         inventory.removeFromWallet(price);
         updateWalletLabel(walletLabel, inventory);
     }*/
-
+    }
      private void handleSpeedToolPurchase(EntityID entity, int price, InventoryComponent inventory, Label walletLabel, World world) {
         if (world.hasComponent(entity, SpeedToolComponent.class)) {
             SpeedToolComponent existing = (SpeedToolComponent) world.GetComponent(entity, SpeedToolComponent.class);
