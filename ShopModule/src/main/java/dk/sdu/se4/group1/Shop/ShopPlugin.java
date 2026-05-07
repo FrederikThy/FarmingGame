@@ -4,6 +4,8 @@ import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.*;
 import dk.sdu.se4.group1.Robot.RobotFactory;
+import dk.sdu.se4.group1.CommonEcs.Components.*;
+import dk.sdu.se4.group1.Robot.RobotFactory;
 import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.SpeedToolComponent;
@@ -21,6 +23,7 @@ import javafx.stage.Stage;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Hello world!
@@ -163,10 +166,18 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
 
         Button button = new Button();
-        button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #7a5c2e; -fx-border-width: 3; -fx-padding: 10;");
+        button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
         button.setGraphic(content);
 
         button.setMaxWidth(Double.MAX_VALUE);
+        button.setPrefWidth(330);
+        if (!isAvailable(price,inventory.getWallet())){
+            button.setCancelButton(false);
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.5); // -1.0 = helt sort, 0.0 = normal
+
+            button.setEffect(darken);
+        }
         button.getStyleClass().add("shop-item");
 
         button.setOnAction(e -> {
@@ -456,12 +467,16 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
 
 
+
+
+
+
     @Override
     public boolean isAvailable(int price, int wallet ) {
-        boolean isAvalilable= false;
+        boolean isAvalilable = false;
 
-        if (price<=wallet){
-            isAvalilable=true;
+        if (price <= wallet) {
+            isAvalilable = true;
         }
         return isAvalilable;
     }

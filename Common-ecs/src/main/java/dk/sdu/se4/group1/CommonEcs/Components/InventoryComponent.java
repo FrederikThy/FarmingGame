@@ -12,9 +12,10 @@ import java.util.Map;
 public class InventoryComponent implements Component {
 
 
+    private int Wallet =500;
+
     private final EnumMap<SeedType, Integer> seedsStorage = new EnumMap<>(SeedType.class);
     private final EnumMap<SeedType, Integer> harvestedCrops = new EnumMap<>(SeedType.class);
-    private int Wallet =1000;
 
     public void addSeeds(SeedType seedType,int amount) {
         seedsStorage.merge(seedType, amount, Integer::sum);
