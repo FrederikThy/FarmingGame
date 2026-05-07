@@ -134,7 +134,14 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             button.setEffect(darken);
         }
         button.getStyleClass().add("shop-item");
-        button.setOnAction(e -> handlePurchase(component, price, inventory, walletLabel, world));
+        button.setOnAction(e -> {
+            if (component instanceof RobotComponent) {
+                handleRobotSelect(item, inventory, walletLabel, world);
+            } else {
+                handlePurchase(component, price, inventory, walletLabel, null, world);
+            }
+        });
+        //button.setOnAction(e -> handlePurchase(component, price, inventory, walletLabel, null,world));
 
         return button;
     }
@@ -154,16 +161,6 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         VBox textBox = new VBox(12, nameLabel, priceRow);
         HBox content = new HBox(12, itemImage, textBox);
         content.setStyle("-fx-alignment: center-left;");
-
-
-        /*
-        *
-        *         HBox priceRow = new HBox(12, priceLabel, coinImage);
-        VBox textBox = new VBox(12, nameLabel, priceRow);
-        HBox content = new HBox(12, itemImage, textBox);
-        *
-        * */
-
 
         Button button = new Button();
         button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
@@ -185,6 +182,8 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
             Stage pickStage = new Stage();
             VBox pickLayout = new VBox(10);
+
+            pickLayout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
             pickLayout.setPadding(new javafx.geometry.Insets(20));
             pickLayout.getChildren().add(new Label("Vælg en robot:"));
 
@@ -209,6 +208,61 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             pickStage.setTitle("Vælg Robot");
             pickStage.show();});
         return button;
+    }
+
+
+    private void handleRobotSelect(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world){
+        Stage pickStage = new Stage();
+        pickStage.setTitle("Vælg Robot");
+
+        VBox layout = new VBox(10);
+        layout.setStyle("-fx-padding: 20; -fx-background-color: #f1e0b8;");
+
+        Label title = new Label("Vælg en robot:");
+        title.setStyle("-fx-font-size: 13px;");
+        layout.getChildren().add(title);
+
+        String[] robotTypes = {"HarvestingRobot", "PlantingRobot", "RemoveWeedRobot"};
+
+        for (String robotType : robotTypes) {
+            Button robotBtn = new Button(robotType);
+            robotBtn.setStyle(
+                    "-fx-background-color: white;" +
+                            "-fx-border-color: #5b9bd5;" +
+                            "-fx-border-width: 2;" +
+                            "-fx-padding: 5 15;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            );
+            robotBtn.setPrefWidth(180);
+
+            robotBtn.setOnMouseEntered(e -> robotBtn.setStyle(
+                    "-fx-background-color: #cce4f7;" +
+                            "-fx-border-color: #5b9bd5;" +
+                            "-fx-border-width: 2;" +
+                            "-fx-padding: 5 15;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            ));
+            robotBtn.setOnMouseExited(e -> robotBtn.setStyle(
+                    "-fx-background-color: white;" +
+                            "-fx-border-color: #5b9bd5;" +
+                            "-fx-border-width: 2;" +
+                            "-fx-padding: 5 15;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            ));
+
+            robotBtn.setOnAction(e -> {
+                handlePurchase(item.getComponent(), item.getBuyPrice(), inventory, walletLabel, robotType, world);
+                pickStage.close();
+            });
+
+            layout.getChildren().add(robotBtn);
+        }
+
+        pickStage.setScene(new Scene(layout, 250, 300));
+        pickStage.show();
     }
 
     private String getImagePath(Component component) {
@@ -282,7 +336,9 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return imageView;
     }
 
+    private void handleHrFlinkBuy(){
 
+    }
 
     /*private EntityID findSlowestRobot(World world) {
         List<EntityID> slowestRobots = new ArrayList<>();
@@ -312,7 +368,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
 
 
-    private void handlePurchase(Component type, int price, InventoryComponent inventory, Label walletLabel, World world) {
+    private void handlePurchase(Component type, int price, InventoryComponent inventory, Label walletLabel,String Robottype, World world) {
         if (inventory.getWallet() < price) {
             return;
         }
@@ -327,8 +383,20 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         }
 
         if (type instanceof RobotComponent) {
-            EntityID id = new RobotFactory().BaseRobot(world, 4, 4, 10, 10);
-            world.addComponent(id, type);
+            EntityID id =null;
+            switch (Robottype)
+            {
+                case "HarvestingRobot":
+
+                    id = new RobotFactory().HarvestingRobot(world, 4, 4, 10, 10);
+                    break;
+                case "PlantingRobot":
+                    id = new RobotFactory().PlantingRobot(world, 4, 4, 10, 10);
+                    break;
+                case "RemoveWeedRobot":
+                    id = new RobotFactory().RemoveWeedRobot(world, 4, 4, 10, 10);
+                    break;
+            }
         }
 
         if (type instanceof SpeedToolComponent) {
