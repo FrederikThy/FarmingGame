@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GrowthComponentTest {
+class CropsComponentTests {
 
     /** Test for initial values of each crop */
     @Test
@@ -23,7 +23,6 @@ class GrowthComponentTest {
     void elapsedTimeTest() {
         GrowthComponent growth = new GrowthComponent();
         growth.elapsedGrowthTime += 4.9;
-
         assertEquals(1, growth.growthStage,
                 "Stage must remain 1 when elapsed time has not reached growthTime");
     }
