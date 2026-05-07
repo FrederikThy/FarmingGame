@@ -2,12 +2,18 @@ package dk.sdu.se4.group1.Shop;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.*;
+import dk.sdu.se4.group1.CommonEcs.Components.*;
+import dk.sdu.se4.group1.Robot.RobotFactory;
+import dk.sdu.se4.group1.CommonEcs.Components.*;
+import dk.sdu.se4.group1.Robot.RobotFactory;
 import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.SpeedToolComponent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -15,7 +21,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Hello world!
@@ -51,26 +59,38 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
     public void openShop(World world) {
         var entityInvitory = world.getEntitiesWith(InventoryComponent.class);
         InventoryComponent invitory = (InventoryComponent)world.GetComponent(entityInvitory.iterator().next(),InventoryComponent.class);
-
+        var entityShop = world.getEntitiesWith(ShopComponent.class);
+        ShopComponent shop = (ShopComponent)world.GetComponent(entityShop.iterator().next(),ShopComponent.class);
         VBox layout = new VBox(12);
+        layout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
         layout.getStyleClass().add("shop-root");
 
         Label title = new Label("Shop");
+        title.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
         title.getStyleClass().add("shop-title");
 
         Label walletLabel = new Label();
+        walletLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         updateWalletLabel(walletLabel, invitory);
 
-        layout.getChildren().addAll(title, walletLabel);
+        VBox itemList = new VBox(12);
+        itemList.setStyle("-fx-padding: 8; -fx-background-color: #7a5c2e;");
 
-        for (SeedType seedType : SeedType.values()) {
-            Button card = createSeedCard(seedType, invitory, walletLabel, world);
-            card.setLayoutX(100);
-            layout.getChildren().add(card);
+        for (ShopOfferComponent component : shop.getShopItems()) {
+            if (component.getComponent() instanceof SpeedToolComponent){
+                itemList.getChildren().add(createSpeedToolCard(component,invitory, walletLabel, world));
+            }
+            else{
+                Button card = createShopCard(component, invitory, walletLabel, world);
+                itemList.getChildren().add(card);
+            }
+
         }
-
-        layout.getChildren().add(createSpeedToolCard(invitory, walletLabel, world));
-        Scene scene = new Scene(layout, 360, 520);
+        ScrollPane scrollPane = new ScrollPane(itemList);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background: #7a5c2e;");
+        layout.getChildren().addAll(title, walletLabel, scrollPane);
+        Scene scene = new Scene(layout, 360, 420);
 
 
         Stage shopStage = new Stage();
@@ -79,41 +99,82 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         shopStage.show();
     }
 
-    private Button createSeedCard(SeedType seedType, InventoryComponent inventory, Label walletLabel, World world) {
-        int price = getBuyPrice(seedType);
+    @Override
+    public List<EntityID> getShopItems(World world) {
+        return List.of();
+    }
 
-        ImageView seedImage = loadImage("/" + seedType.name().toLowerCase() + ".png", 52, 52);
+    private Button createShopCard(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world) {
+        int price = item.getBuyPrice();
+        var component = item.getComponent();
+        String name = getName(component);
+        String imagePath = getImagePath(component);
+
+        ImageView itemImage = loadImage(imagePath, 52, 52);
         ImageView coinImage = loadImage("/coin.png", 24, 24);
 
-        Label nameLabel = new Label(formatSeedName(seedType)+" Seed");
+        Label nameLabel = new Label(name);
         Label priceLabel = new Label("pris: " + price);
 
         HBox priceRow = new HBox(12, priceLabel, coinImage);
         VBox textBox = new VBox(12, nameLabel, priceRow);
-        HBox content = new HBox(12, seedImage, textBox);
+        HBox content = new HBox(12, itemImage, textBox);
+        content.setStyle("-fx-alignment: center-left;");
 
         Button button = new Button();
-        button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #7a5c2e; -fx-border-width: 3; -fx-padding: 10;");
+        button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
         button.setGraphic(content);
         button.setMaxWidth(Double.MAX_VALUE);
+        button.setPrefWidth(330);
+        if (!isAvailable(price,inventory.getWallet())){
+            button.setCancelButton(false);
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.5); // -1.0 = helt sort, 0.0 = normal
+
+            button.setEffect(darken);
+        }
         button.getStyleClass().add("shop-item");
-        button.setOnAction(e -> handlePurchase(seedType, price, inventory, walletLabel, world));
+        button.setOnAction(e -> {
+            if (component instanceof RobotComponent) {
+                handleRobotSelect(item, inventory, walletLabel, world);
+            } else {
+                handlePurchase(component, price, inventory, walletLabel, null, world);
+            }
+        });
+        //button.setOnAction(e -> handlePurchase(component, price, inventory, walletLabel, null,world));
 
         return button;
     }
 
-    private Button createSpeedToolCard(InventoryComponent inventory, Label walletLabel, World world) {
-        int price = 200;
+    private Button createSpeedToolCard(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world) {
+        int price = item.getBuyPrice();
+        var component = item.getComponent();
+        String name = getName(component);
+        String imagePath = getImagePath(component);
+
+        ImageView itemImage = loadImage(imagePath, 52, 52);
         ImageView coinImage = loadImage("/coin.png", 24, 24);
-        Label nameLabel = new Label("Speed Tool");
+
+        Label nameLabel = new Label(name);
         Label priceLabel = new Label("pris: " + price);
         HBox priceRow = new HBox(12, priceLabel, coinImage);
         VBox textBox = new VBox(12, nameLabel, priceRow);
+        HBox content = new HBox(12, itemImage, textBox);
+        content.setStyle("-fx-alignment: center-left;");
 
         Button button = new Button();
-        button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #7a5c2e; -fx-border-width: 3; -fx-padding: 10;");
-        button.setGraphic(textBox);
+        button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
+        button.setGraphic(content);
+
         button.setMaxWidth(Double.MAX_VALUE);
+        button.setPrefWidth(330);
+        if (!isAvailable(price,inventory.getWallet())){
+            button.setCancelButton(false);
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.5); // -1.0 = helt sort, 0.0 = normal
+
+            button.setEffect(darken);
+        }
         button.getStyleClass().add("shop-item");
 
         button.setOnAction(e -> {
@@ -121,6 +182,8 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
             Stage pickStage = new Stage();
             VBox pickLayout = new VBox(10);
+
+            pickLayout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
             pickLayout.setPadding(new javafx.geometry.Insets(20));
             pickLayout.getChildren().add(new Label("Vælg en robot:"));
 
@@ -147,8 +210,113 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return button;
     }
 
-    private String formatSeedName(SeedType seedType) {
-        String lower = seedType.name().toLowerCase();
+
+    private void handleRobotSelect(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world){
+        Stage pickStage = new Stage();
+        pickStage.setTitle("Vælg Robot");
+
+        VBox layout = new VBox(10);
+        layout.setStyle("-fx-padding: 20; -fx-background-color: #f1e0b8;");
+
+        Label title = new Label("Vælg en robot:");
+        title.setStyle("-fx-font-size: 13px;");
+        layout.getChildren().add(title);
+
+        String[] robotTypes = {"HarvestingRobot", "PlantingRobot", "RemoveWeedRobot"};
+
+        for (String robotType : robotTypes) {
+            Button robotBtn = new Button(robotType);
+            robotBtn.setStyle(
+                    "-fx-background-color: white;" +
+                            "-fx-border-color: #5b9bd5;" +
+                            "-fx-border-width: 2;" +
+                            "-fx-padding: 5 15;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            );
+            robotBtn.setPrefWidth(180);
+
+            robotBtn.setOnMouseEntered(e -> robotBtn.setStyle(
+                    "-fx-background-color: #cce4f7;" +
+                            "-fx-border-color: #5b9bd5;" +
+                            "-fx-border-width: 2;" +
+                            "-fx-padding: 5 15;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            ));
+            robotBtn.setOnMouseExited(e -> robotBtn.setStyle(
+                    "-fx-background-color: white;" +
+                            "-fx-border-color: #5b9bd5;" +
+                            "-fx-border-width: 2;" +
+                            "-fx-padding: 5 15;" +
+                            "-fx-font-size: 13px;" +
+                            "-fx-cursor: hand;"
+            ));
+
+            robotBtn.setOnAction(e -> {
+                handlePurchase(item.getComponent(), item.getBuyPrice(), inventory, walletLabel, robotType, world);
+                pickStage.close();
+            });
+
+            layout.getChildren().add(robotBtn);
+        }
+
+        pickStage.setScene(new Scene(layout, 250, 300));
+        pickStage.show();
+    }
+
+    private String getImagePath(Component component) {
+        if (component instanceof CropComponent cropComponent) {
+            return "/" + cropComponent.seedType.name().toLowerCase() + ".png";
+        }
+
+        if (component instanceof SpeedToolComponent) {
+            return "/Speed_Tool.png";
+        }
+
+        if (component instanceof PlantingComponent) {
+            return "/Planting_Tool.png";
+        }
+
+        if (component instanceof HarvestingComponent) {
+            return "/Harvesting_Tool.png";
+        }
+        if(component instanceof RobotComponent){
+            return "/HrFlink.png";
+        }
+        return "/item_slot.png";
+    }
+
+
+
+    private String getName(Component component) {
+        if (component instanceof CropComponent cropComponent) {
+            return formatSeedName(cropComponent.seedType.toString()) + " Seed";
+        }
+
+        if (component instanceof SpeedToolComponent) {
+            return "Speed Tool";
+        }
+
+        if (component instanceof PlantingComponent) {
+            return "Planting Tool";
+        }
+
+        if (component instanceof HarvestingComponent) {
+            return "Harvesting Tool";
+        }
+        if (component instanceof RobotComponent){
+            return "Hr Flink";
+        }
+
+        return component.getClass().getSimpleName();
+    }
+    private int getPrice(ShopOfferComponent component) {
+       return component.getBuyPrice();
+    }
+
+    private String formatSeedName(String seedType) {
+        String lower = seedType.toLowerCase();
         return lower.substring(0, 1).toUpperCase() + lower.substring(1);
     }
 
@@ -168,15 +336,94 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return imageView;
     }
 
-    private void handlePurchase(SeedType seedType, int price, InventoryComponent inventory, Label walletLabel, World world) {
+    private void handleHrFlinkBuy(){
+
+    }
+
+    /*private EntityID findSlowestRobot(World world) {
+        List<EntityID> slowestRobots = new ArrayList<>();
+        double slowestInterval = -1;
+
+        for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
+            RobotComponent robot =
+                    (RobotComponent) world.GetComponent(entity, RobotComponent.class);
+
+            /*double interval = robot.getMoveInterval();
+
+            if (interval > slowestInterval) {
+                slowestInterval = interval;
+                slowestRobots.clear();
+                slowestRobots.add(entity);
+            } else if (interval == slowestInterval) {
+                slowestRobots.add(entity);
+            }
+        }
+
+        if (slowestRobots.isEmpty()) {
+            return null;
+        }
+
+        return slowestRobots.get(new Random().nextInt(slowestRobots.size()));
+    }*/
+
+
+
+    private void handlePurchase(Component type, int price, InventoryComponent inventory, Label walletLabel,String Robottype, World world) {
         if (inventory.getWallet() < price) {
             return;
         }
 
-        EntityID robotId = findAvailableRobot(world);
 
-        if (robotId == null) {
-            inventory.addSeeds(seedType);
+        if (type instanceof CropComponent) {
+            CropComponent seedComponent = new CropComponent(((CropComponent) type).seedType);
+            seedComponent.isHarvestable = false;
+
+            EntityID itemId = world.createEntity();
+            inventory.addSeeds(seedComponent.seedType, 1);
+        }
+
+        if (type instanceof RobotComponent) {
+            EntityID id =null;
+            switch (Robottype)
+            {
+                case "HarvestingRobot":
+
+                    id = new RobotFactory().HarvestingRobot(world, 4, 4, 10, 10);
+                    break;
+                case "PlantingRobot":
+                    id = new RobotFactory().PlantingRobot(world, 4, 4, 10, 10);
+                    break;
+                case "RemoveWeedRobot":
+                    id = new RobotFactory().RemoveWeedRobot(world, 4, 4, 10, 10);
+                    break;
+            }
+        }
+
+        if (type instanceof SpeedToolComponent) {
+            //;
+            //world.addComponent();
+            /// skal adde moment speed tool så det virker ind
+
+        }
+        inventory.removeFromWallet(price);
+        updateWalletLabel(walletLabel, inventory);
+        /*if (seedType instanceof SpeedToolComponent speedToolComponent) {
+            EntityID robotId = findSlowestRobot(world);
+
+            if (robotId == null) {
+                return;
+            }
+
+            RobotComponent robot =
+                    (RobotComponent) world.GetComponent(robotId, RobotComponent.class);
+
+            robot.setMoveInterval(speedToolComponent.getSpeedMultiplier());
+        }*/
+
+        //EntityID robotId = findAvailableRobot(world);
+
+        /*if (robotId == null) {
+            inventory.addComponentItem();
             System.out.println(seedType+" seed Kunne tilføjet til en robot. Så er blevet lagt i inventory");
         } else {
             RobotComponent robot = (RobotComponent) world.GetComponent(robotId, RobotComponent.class);
@@ -185,9 +432,9 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
         inventory.removeFromWallet(price);
         updateWalletLabel(walletLabel, inventory);
+    }*/
     }
-
-    private void handleSpeedToolPurchase(EntityID entity, int price, InventoryComponent inventory, Label walletLabel, World world) {
+     private void handleSpeedToolPurchase(EntityID entity, int price, InventoryComponent inventory, Label walletLabel, World world) {
         if (world.hasComponent(entity, SpeedToolComponent.class)) {
             SpeedToolComponent existing = (SpeedToolComponent) world.GetComponent(entity, SpeedToolComponent.class);
             world.addComponent(entity, new SpeedToolComponent(existing.getSpeedMultiplier() + 1.0));
@@ -199,10 +446,10 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         System.out.println("Speed tool upgraded on robot " + entity.id());
     }
 
-    @Override
+    /*@Override
     public List<EntityID> getShopItems(World world) {
         return List.of();
-    }
+    }*/
 
     private void updateWalletLabel(Label walletLabel, InventoryComponent inventory) {
         walletLabel.setText("Coins: " + inventory.getWallet());
@@ -232,7 +479,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
                 coins = 150*quantity;
                 break;
             case TOMATO:
-                coins = 90*quantity;
+                coins = 100*quantity;
                 break;
         }
         System.out.println("Item Sold");
@@ -265,10 +512,41 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return SellItem(entityID,amount);
     }
 
+    @Override
+    public int getSellPrice(SeedType seedType, int amount) {
+        int coins = 0;
+        switch (seedType) {
+            case BEANSPROUT:
+                coins = 200 * amount;
+                break;
+            case CHILI:
+                coins = 100 * amount;
+                break;
+            case CARROT:
+                coins = 150 * amount;
+                break;
+            case TOMATO:
+                coins = 200 * amount;
+                break;
+        }
+        return coins;
+    }
+
+
+
+
+
+
+
 
     @Override
-    public boolean isAvailable() {
-        return false;
+    public boolean isAvailable(int price, int wallet ) {
+        boolean isAvalilable = false;
+
+        if (price <= wallet) {
+            isAvalilable = true;
+        }
+        return isAvalilable;
     }
 
     @Override

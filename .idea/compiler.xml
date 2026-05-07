@@ -6,18 +6,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="InventoryModule" />
         <module name="Common-api" />
-        <module name="WeedModule" />
         <module name="Core-engine" />
-        <module name="CropsModule" />
         <module name="RobotModule" />
         <module name="Common-ecs" />
-        <module name="MapModule" />
         <module name="ShopModule" />
+        <module name="ToolsModule" />
+        <module name="InventoryModule" />
+        <module name="ShopModule (1)" />
+        <module name="WeedModule" />
+        <module name="CropsModule" />
+        <module name="MapModule" />
         <module name="MonitoringModule" />
         <module name="PathfindingModule" />
-        <module name="ToolsModule" />
       </profile>
     </annotationProcessing>
   </component>

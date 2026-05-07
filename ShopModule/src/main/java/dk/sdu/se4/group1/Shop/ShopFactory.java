@@ -1,6 +1,7 @@
 package dk.sdu.se4.group1.Shop;
 
-import dk.sdu.se4.group1.CommonEcs.Components.ShopComponent;
+import dk.sdu.se4.group1.CommonApi.SeedType;
+import dk.sdu.se4.group1.CommonEcs.Components.*;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
 
@@ -8,7 +9,18 @@ public class ShopFactory {
     public static EntityID createShop(World world)
     {
         EntityID shopId = world.createEntity();
-        world.addComponent(shopId,new ShopComponent());
+        ShopComponent shopComponent = new ShopComponent();
+
+        shopComponent.addShopItem(new CropComponent(SeedType.CARROT),100);
+        shopComponent.addShopItem(new CropComponent(SeedType.TOMATO),70);
+        shopComponent.addShopItem(new CropComponent(SeedType.CHILI),50);
+        shopComponent.addShopItem(new CropComponent(SeedType.BEANSPROUT),100);
+
+        shopComponent.addShopItem(new PlantingComponent(),150);
+        shopComponent.addShopItem(new HarvestingComponent(),200);
+        shopComponent.addShopItem(new SpeedToolComponent(0.15),250);
+        shopComponent.addShopItem(new RobotComponent(0,0),1000);
+        world.addComponent(shopId, shopComponent);
         return shopId;
     }
 }

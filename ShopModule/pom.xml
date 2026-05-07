@@ -51,6 +51,12 @@
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
     </dependency>
+      <dependency>
+          <groupId>dk.sdu.se4</groupId>
+          <artifactId>RobotModule</artifactId>
+          <version>1.0.1-SNAPSHOT</version>
+          <scope>compile</scope>
+      </dependency>
   </dependencies>
 
   <build>
