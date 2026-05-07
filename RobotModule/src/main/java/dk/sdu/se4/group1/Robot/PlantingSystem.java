@@ -40,11 +40,6 @@ public class PlantingSystem implements EcsSystem {
 
     private void tryPlantSeed(World world, PositionComponent robotPos) {
 
-        // Chance for om den planter. 50% chance. Måske lidt unødvendigt?
-        int chance = random.nextInt(10);
-        if (chance > 5) {
-            return;
-        }
 
         // Henter inventory. kommentar om iterator.next i harvestingSystem.
         EntityID inventoryEntity = world.getEntitiesWith(InventoryComponent.class).iterator().next();
