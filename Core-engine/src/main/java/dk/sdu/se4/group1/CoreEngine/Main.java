@@ -3,6 +3,7 @@ package dk.sdu.se4.group1.CoreEngine;
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
+import dk.sdu.se4.group1.CommonEcs.MapSize;
 import dk.sdu.se4.group1.Crops.IntercroppingSystem;
 import dk.sdu.se4.group1.Inventory.InventoryPlugin;
 import dk.sdu.se4.group1.Inventory.InventoryFactory;
@@ -30,6 +31,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import dk.sdu.se4.group1.Map.MappingSystem;
 import dk.sdu.se4.group1.Crops.cropSystem;
+
+import java.util.Random;
 
 
 public class Main extends Application {
@@ -85,6 +88,7 @@ public class Main extends Application {
         // Change these four numbers to set any A→B route.
         RobotFactory robotFactory = new RobotFactory();
 
+       // spawnStressTestRobots(world, robotFactory);
 
         EntityID firstrobotid = robotFactory.HarvestingRobot(world,1,1,2,2);
 
@@ -107,6 +111,21 @@ public class Main extends Application {
         timer.start();
     }
 
+    /*private void spawnStressTestRobots(World world, RobotFactory robotFactory) {
+        Random random = new Random();
+        int mapWidth  = MapSize.MAP_WIDTH;
+        int mapHeight = MapSize.MAP_HEIGHT;
+
+        for (int i = 0; i < 6000; i++) {
+            int startX = random.nextInt(mapWidth);
+            int startY = random.nextInt(mapHeight);
+            int goalX  = random.nextInt(mapWidth);
+            int goalY  = random.nextInt(mapHeight);
+            robotFactory.HarvestingRobot(world, startX, startY, goalX, goalY);
+        }
+
+        System.out.println("Spawned 1000 stress test robots");
+    }*/
     private void registerSystems(SystemRegistry registry, GraphicsContext gc) {
         registry.register(new PathfindingSystem(PathfindingAlgorithm.create())); // must be before MovementSystem — change algorithm in PathfindingAlgorithm.ACTIVE
         registry.register(new MovementSystem()); // steps robots along their PathComponent waypoints
