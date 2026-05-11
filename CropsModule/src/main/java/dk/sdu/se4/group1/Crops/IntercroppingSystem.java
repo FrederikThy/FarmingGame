@@ -21,20 +21,36 @@ public class IntercroppingSystem implements EcsSystem{
             PositionComponent cropPos = (PositionComponent) world.GetComponent(crop, PositionComponent.class);
             GrowthComponent growth = (GrowthComponent) world.GetComponent(crop, GrowthComponent.class);
 
+
             for(EntityID nextCrop : world.getEntitiesWith(GrowthComponent.class)){
                 PositionComponent nextCropPos = (PositionComponent) world.GetComponent(nextCrop, PositionComponent.class);
 
+                CropComponent cropComp = (CropComponent) world.GetComponent(crop, CropComponent.class);
+                CropComponent nextCropComp = (CropComponent) world.GetComponent(crop, CropComponent.class);
+
                 if(cropPos.x+1 == nextCropPos.x && cropPos.y == nextCropPos.y){
-                    growth.growthTime -= 2.5;
+                    if(nextCropComp.seedType != cropComp.seedType)
+                    {
+                        growth.growthTime -= 2.5;
+                    }
                 }
                 if(cropPos.x-1 == nextCropPos.x && cropPos.y == nextCropPos.y){
-                    growth.growthTime -= 2.5;
+                    if(nextCropComp.seedType != cropComp.seedType)
+                    {
+                        growth.growthTime -= 2.5;
+                    }
                 }
                 if(cropPos.x == nextCropPos.x && cropPos.y+1 == nextCropPos.y){
-                    growth.growthTime -= 2.5;
+                    if(nextCropComp.seedType != cropComp.seedType)
+                    {
+                        growth.growthTime -= 2.5;
+                    }
                 }
                 if(cropPos.x == nextCropPos.x && cropPos.y-1 == nextCropPos.y){
-                    growth.growthTime -= 2.5;
+                    if(nextCropComp.seedType != cropComp.seedType)
+                    {
+                        growth.growthTime -= 2.5;
+                    }
                 }
             }
         }
