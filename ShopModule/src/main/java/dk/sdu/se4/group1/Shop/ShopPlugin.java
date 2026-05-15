@@ -89,6 +89,42 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         ScrollPane scrollPane = new ScrollPane(itemList);
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background: #7a5c2e;");
+
+        var growthMapEntities = world.getEntitiesWith(GrowthMapComponent.class);
+        if (growthMapEntities.iterator().hasNext()) {
+            EntityID growthMapEntity = growthMapEntities.iterator().next();
+            GrowthMapComponent growthMap = (GrowthMapComponent) world.GetComponent(growthMapEntity, GrowthMapComponent.class);
+
+            int soilUpgradePrice = 300;
+            Label soilLabel = new Label("Soil Level: " + growthMap.getUnlockedMapLevel());
+            soilLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+            Button soilUpgradeBtn = new Button("Upgrade Soil Level - " + soilUpgradePrice + " coins");
+            soilUpgradeBtn.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
+            soilUpgradeBtn.setMaxWidth(Double.MAX_VALUE);
+            soilUpgradeBtn.setPrefWidth(330);
+
+            if (growthMap.getUnlockedMapLevel() >= 2 || !isAvailable(soilUpgradePrice, invitory.getWallet())) {
+                ColorAdjust darken = new ColorAdjust();
+                darken.setBrightness(-0.5);
+                soilUpgradeBtn.setEffect(darken);
+            }
+
+            soilUpgradeBtn.setOnAction(e -> {
+                int nextLevel = growthMap.getUnlockedMapLevel() + 1;
+                if (nextLevel > 2 || invitory.getWallet() < soilUpgradePrice) return;
+                boolean upgraded = growthMap.unlockMap(nextLevel);
+                if (upgraded) {
+                    invitory.removeFromWallet(soilUpgradePrice);
+                    updateWalletLabel(walletLabel, invitory);
+                    soilLabel.setText("Soil Level: " + growthMap.getUnlockedMapLevel());
+                    System.out.println("Soil upgraded to level " + growthMap.getUnlockedMapLevel());
+                }
+            });
+
+            itemList.getChildren().addAll(soilLabel, soilUpgradeBtn);
+        }
+
         layout.getChildren().addAll(title, walletLabel, scrollPane);
         Scene scene = new Scene(layout, 360, 420);
 
@@ -531,13 +567,6 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         }
         return coins;
     }
-
-
-
-
-
-
-
 
     @Override
     public boolean isAvailable(int price, int wallet ) {
