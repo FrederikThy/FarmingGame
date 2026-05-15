@@ -96,30 +96,28 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             GrowthMapComponent growthMap = (GrowthMapComponent) world.GetComponent(growthMapEntity, GrowthMapComponent.class);
 
             int soilUpgradePrice = 300;
-            Label soilLabel = new Label("Soil Level: " + growthMap.getUnlockedMapLevel());
+            Label soilLabel = new Label();
             soilLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white;");
 
-            Button soilUpgradeBtn = new Button("Upgrade Soil Level - " + soilUpgradePrice + " coins");
+            Button soilUpgradeBtn = new Button();
             soilUpgradeBtn.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
             soilUpgradeBtn.setMaxWidth(Double.MAX_VALUE);
             soilUpgradeBtn.setPrefWidth(330);
 
-            if (growthMap.getUnlockedMapLevel() >= 2 || !isAvailable(soilUpgradePrice, invitory.getWallet())) {
-                ColorAdjust darken = new ColorAdjust();
-                darken.setBrightness(-0.5);
-                soilUpgradeBtn.setEffect(darken);
-            }
+            refreshSoilUpgradeUI(soilLabel, soilUpgradeBtn, growthMap, invitory, soilUpgradePrice);
 
             soilUpgradeBtn.setOnAction(e -> {
                 int nextLevel = growthMap.getUnlockedMapLevel() + 1;
                 if (nextLevel > 2 || invitory.getWallet() < soilUpgradePrice) return;
+
                 boolean upgraded = growthMap.unlockMap(nextLevel);
                 if (upgraded) {
                     invitory.removeFromWallet(soilUpgradePrice);
                     updateWalletLabel(walletLabel, invitory);
-                    soilLabel.setText("Soil Level: " + growthMap.getUnlockedMapLevel());
                     System.out.println("Soil upgraded to level " + growthMap.getUnlockedMapLevel());
                 }
+
+                refreshSoilUpgradeUI(soilLabel, soilUpgradeBtn, growthMap, invitory, soilUpgradePrice);
             });
 
             itemList.getChildren().addAll(soilLabel, soilUpgradeBtn);
@@ -489,6 +487,28 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
     private void updateWalletLabel(Label walletLabel, InventoryComponent inventory) {
         walletLabel.setText("Coins: " + inventory.getWallet());
+    }
+
+    private void refreshSoilUpgradeUI(Label soilLabel, Button soilUpgradeBtn, GrowthMapComponent growthMap,
+                                      InventoryComponent inventory, int soilUpgradePrice) {
+        int currentLevel = growthMap.getUnlockedMapLevel();
+        boolean isMaxLevel = currentLevel >= 2;
+        boolean canAfford = isAvailable(soilUpgradePrice, inventory.getWallet());
+
+        soilLabel.setText("Soil Level: " + currentLevel);
+        soilUpgradeBtn.setText(isMaxLevel
+                ? "Soil Level Maxed"
+                : "Upgrade Soil Level - " + soilUpgradePrice + " coins");
+
+        boolean disableButton = isMaxLevel || !canAfford;
+        soilUpgradeBtn.setDisable(disableButton);
+        if (disableButton) {
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.5);
+            soilUpgradeBtn.setEffect(darken);
+        } else {
+            soilUpgradeBtn.setEffect(null);
+        }
     }
 
 
