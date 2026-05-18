@@ -1,3 +1,5 @@
+import dk.sdu.se4.group1.CommonEcs.IGamePlugin;
+
 module RobotModule
 {
     // Har tilføjet Common-Ecs som dependency i pom, så vi kan bruge den
@@ -13,4 +15,5 @@ module RobotModule
              dk.sdu.se4.group1.Robot.PlantingSystem,
              dk.sdu.se4.group1.Robot.RemoveWeedSystem,
              dk.sdu.se4.group1.Robot.RobotTaskSystem;
+    provides IGamePlugin with dk.sdu.se4.group1.Robot.RobotPlugin;
 }
