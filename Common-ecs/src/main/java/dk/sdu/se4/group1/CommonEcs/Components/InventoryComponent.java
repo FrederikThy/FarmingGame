@@ -12,7 +12,7 @@ import java.util.Map;
 public class InventoryComponent implements Component {
 
 
-    private int Wallet =500;
+    private int Wallet = 1000;
 
     private final EnumMap<SeedType, Integer> seedsStorage = new EnumMap<>(SeedType.class);
     private final EnumMap<SeedType, Integer> harvestedCrops = new EnumMap<>(SeedType.class);

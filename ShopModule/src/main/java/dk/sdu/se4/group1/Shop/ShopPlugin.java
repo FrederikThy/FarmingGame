@@ -496,9 +496,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         boolean canAfford = isAvailable(soilUpgradePrice, inventory.getWallet());
 
         soilLabel.setText("Soil Level: " + currentLevel);
-        soilUpgradeBtn.setText(isMaxLevel
-                ? "Soil Level Maxed"
-                : "Upgrade Soil Level - " + soilUpgradePrice + " coins");
+        soilUpgradeBtn.setText(isMaxLevel ? "Soil Level Maxed" : "Upgrade Soil Level - " + soilUpgradePrice + " coins");
 
         boolean disableButton = isMaxLevel || !canAfford;
         soilUpgradeBtn.setDisable(disableButton);

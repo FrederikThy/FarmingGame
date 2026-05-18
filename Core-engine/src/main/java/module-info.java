@@ -17,4 +17,5 @@ module Core.engine {
     requires ShopModule;
     requires InventoryModule;
     exports dk.sdu.se4.group1.CoreEngine;
+    uses dk.sdu.se4.group1.CommonEcs.EcsSystem;
 }

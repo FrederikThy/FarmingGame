@@ -6,4 +6,11 @@ module RobotModule
     requires javafx.graphics;
 
     exports dk.sdu.se4.group1.Robot;
+
+    provides dk.sdu.se4.group1.CommonEcs.EcsSystem
+        with dk.sdu.se4.group1.Robot.MovementSystem,
+             dk.sdu.se4.group1.Robot.HarvestingSystem,
+             dk.sdu.se4.group1.Robot.PlantingSystem,
+             dk.sdu.se4.group1.Robot.RemoveWeedSystem,
+             dk.sdu.se4.group1.Robot.RobotTaskSystem;
 }

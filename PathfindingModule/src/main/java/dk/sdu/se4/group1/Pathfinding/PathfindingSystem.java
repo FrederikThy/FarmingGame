@@ -27,9 +27,18 @@ public class PathfindingSystem implements EcsSystem {
     // How many random tiles to try before giving up on finding a free goal this tick
     private static final int GOAL_SEARCH_ATTEMPTS = 50;
 
+    /** No-arg constructor for JPMS ServiceLoader — uses the currently configured algorithm. */
+    public PathfindingSystem() {
+        this(PathfindingAlgorithm.create());
+    }
+
     public PathfindingSystem(IPathfinding pathfinding) {
         this.pathfinding = pathfinding;
     }
+
+    /** Runs before all systems with priority 0 (e.g. MovementSystem). */
+    @Override
+    public int priority() { return -10; }
 
     @Override
     public void update(World world, double deltaTime) {
