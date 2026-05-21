@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/Common-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Common-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Common-ecs/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Common-ecs/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Core-engine/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Core-engine/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/CropsModule/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/CropsModule/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/InventoryModule/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/InventoryModule/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MapModule/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MapModule/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MonitoringModule/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/MonitoringModule/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/PathfindingModule/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/PathfindingModule/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/RobotModule/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/RobotModule/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ShopModule/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ShopModule/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ToolsModule/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ToolsModule/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WeedModule/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WeedModule/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+  </component>
+</project>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="Common-api" />
+        <module name="Core-engine" />
+        <module name="RobotModule" />
+        <module name="Common-ecs" />
+        <module name="ShopModule" />
+        <module name="ToolsModule" />
+        <module name="InventoryModule" />
+        <module name="ShopModule (1)" />
+        <module name="WeedModule" />
+        <module name="CropsModule" />
+        <module name="MapModule" />
+        <module name="MonitoringModule" />
+        <module name="PathfindingModule" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>

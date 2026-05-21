@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "Core.engine/dk.sdu.se4.group1.CoreEngine.Main",
+            "projectName": "Core-engine"
+        }
+    ]
+}
