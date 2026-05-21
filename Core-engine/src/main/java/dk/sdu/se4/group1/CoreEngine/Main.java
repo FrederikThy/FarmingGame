@@ -51,7 +51,7 @@ public class Main extends Application {
         EntityID shopId = ShopFactory.createShop(world);
         EntityID mapId = MapFactory.createGrowthMap(world);
 
-        // Pathfinding upgrade entity — starts at BFS, upgradeable in shop
+        // Pathfinding upgrade entitys
         EntityID pathfindingUpgradeId = world.createEntity();
         world.addComponent(pathfindingUpgradeId, new PathfindingUpgradeComponent());
 

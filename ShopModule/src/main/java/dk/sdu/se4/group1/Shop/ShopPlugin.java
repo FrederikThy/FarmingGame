@@ -364,7 +364,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             return "/HrFlink.png";
         }
         if (component instanceof PathfindingAlgorithmComponent) {
-            return "/item_slot.png";
+            return "/gear.png";
         }
         return "/item_slot.png";
     }

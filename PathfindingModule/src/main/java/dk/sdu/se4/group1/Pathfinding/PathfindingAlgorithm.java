@@ -3,11 +3,9 @@ package dk.sdu.se4.group1.Pathfinding;
 import dk.sdu.se4.group1.CommonEcs.Components.PathfindingUpgradeComponent;
 import dk.sdu.se4.group1.CommonEcs.IPathfinding;
 
-/**
- * Stateless factory. Returns the IPathfinding implementation for a given tier.
- * The hardcoded ACTIVE constant has been removed — the active algorithm is
- * determined at runtime from PathfindingUpgradeComponent in the world.
- */
+
+ // Stateless factory. Returns the IPathfinding implementation for a given tier.
+ 
 public class PathfindingAlgorithm {
 
     private PathfindingAlgorithm() {}
