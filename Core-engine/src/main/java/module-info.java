@@ -9,12 +9,8 @@ module Core.engine {
     requires spring.expression;
     requires Common.ecs;
     requires MapModule;
-    requires WeedModule;
-    requires CropsModule;
-    requires RobotModule;
-    requires PathfindingModule;
-    requires MonitoringModule;
-    requires ShopModule;
-    requires InventoryModule;
     exports dk.sdu.se4.group1.CoreEngine;
+    uses dk.sdu.se4.group1.CommonEcs.EcsSystem;
+    uses dk.sdu.se4.group1.CommonEcs.IGamePlugin;
+    uses dk.sdu.se4.group1.CommonEcs.IUiPlugin;
 }
