@@ -9,10 +9,11 @@ import dk.sdu.se4.group1.Inventory.InventoryPlugin;
 import dk.sdu.se4.group1.Inventory.InventoryFactory;
 import dk.sdu.se4.group1.CommonEcs.World;
 import dk.sdu.se4.group1.Map.MapFactory;
+import dk.sdu.se4.group1.CommonEcs.Components.PathfindingUpgradeComponent;
 import dk.sdu.se4.group1.Monitoring.CPUCounter;
 import dk.sdu.se4.group1.Monitoring.FPSCounter;
 import dk.sdu.se4.group1.Monitoring.MemoryCounter;
-import dk.sdu.se4.group1.Pathfinding.PathfindingAlgorithm;
+import dk.sdu.se4.group1.Monitoring.PathfindingHUDLabel;
 import dk.sdu.se4.group1.Pathfinding.PathfindingSystem;
 import dk.sdu.se4.group1.Robot.*;
 import dk.sdu.se4.group1.Shop.ShopStore;
@@ -49,6 +50,11 @@ public class Main extends Application {
         EntityID inventoryId = InventoryFactory.createInventory(world);
         EntityID shopId = ShopFactory.createShop(world);
         EntityID mapId = MapFactory.createGrowthMap(world);
+
+        // Pathfinding upgrade entitys
+        EntityID pathfindingUpgradeId = world.createEntity();
+        world.addComponent(pathfindingUpgradeId, new PathfindingUpgradeComponent());
+
         shop = new ShopPlugin(world);
         inventory = new InventoryPlugin(world, shop);
         Pane root = new Pane();
@@ -65,10 +71,11 @@ public class Main extends Application {
         root.getChildren().addAll(backgroundView, canvas);
 
         // Monitoring overlays (from MonitoringModule)
-        FPSCounter    fpsCounter    = new FPSCounter();
-        CPUCounter    cpuCounter    = new CPUCounter();
-        MemoryCounter memoryCounter = new MemoryCounter();
-        root.getChildren().addAll(fpsCounter, cpuCounter, memoryCounter);
+        FPSCounter          fpsCounter          = new FPSCounter();
+        CPUCounter          cpuCounter          = new CPUCounter();
+        MemoryCounter       memoryCounter       = new MemoryCounter();
+        PathfindingHUDLabel pathfindingLabel    = new PathfindingHUDLabel(world);
+        root.getChildren().addAll(fpsCounter, cpuCounter, memoryCounter, pathfindingLabel);
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -106,6 +113,7 @@ public class Main extends Application {
                 fpsCounter.OnFrame(dt);
                 cpuCounter.OnFrame(dt);
                 memoryCounter.OnFrame(dt);
+                pathfindingLabel.onFrame();
             }
         };
         timer.start();
@@ -127,7 +135,7 @@ public class Main extends Application {
         System.out.println("Spawned 1000 stress test robots");
     }*/
     private void registerSystems(SystemRegistry registry, GraphicsContext gc) {
-        registry.register(new PathfindingSystem(PathfindingAlgorithm.create())); // must be before MovementSystem — change algorithm in PathfindingAlgorithm.ACTIVE
+        registry.register(new PathfindingSystem()); // algorithm read live from PathfindingUpgradeComponent — upgrade in shop
         registry.register(new MovementSystem()); // steps robots along their PathComponent waypoints
         registry.register(new HarvestingSystem());   // harvests crops adjacent to HarvestingRobots
         registry.register(new PlantingSystem());     // plants seeds near PlantingRobots

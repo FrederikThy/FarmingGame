@@ -20,6 +20,13 @@ public class ShopFactory {
         shopComponent.addShopItem(new HarvestingComponent(),200);
         shopComponent.addShopItem(new SpeedToolComponent(0.15),250);
         shopComponent.addShopItem(new RobotComponent(0,0),1000);
+
+        // Pathfinding algorithm upgrades — BFS is free/default
+        shopComponent.addShopItem(
+                new PathfindingAlgorithmComponent(PathfindingUpgradeComponent.AlgorithmTier.DIJKSTRA), 500);
+        shopComponent.addShopItem(
+                new PathfindingAlgorithmComponent(PathfindingUpgradeComponent.AlgorithmTier.A_STAR), 1500);
+
         world.addComponent(shopId, shopComponent);
         return shopId;
     }

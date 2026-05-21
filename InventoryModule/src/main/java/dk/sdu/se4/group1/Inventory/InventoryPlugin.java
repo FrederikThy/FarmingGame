@@ -21,7 +21,13 @@ import java.util.*;
 public class InventoryPlugin extends Button implements IInventoryService, EcsSystem {
 
     World world;
+    private VBox localSeedList;
+    private VBox localHarvestList;
+    private Label localWalletLabel;
+    private InventoryComponent localInventory;
+    private Stage LocalStage;
     private final IShopService shopService;
+    private double InvUpdateTimer = 0.0;
 
     public InventoryPlugin(World world){
         this(world, null);
@@ -78,24 +84,7 @@ public class InventoryPlugin extends Button implements IInventoryService, EcsSys
         VBox seedList = new VBox(8);
         seedList.setStyle("-fx-padding: 8; -fx-background-color: #7a5c2e;");
 
-        if (invitory.getSeedStorage().entrySet().isEmpty()) {
-            Label empty = new Label("No Seeds Leftover");
-            empty.setStyle("-fx-text-fill: black;");
-            seedList.getChildren().add(empty);
-        } else {
-            for (var entry : invitory.getSeedStorage().entrySet()) {
-                Label seedLabel = new Label(entry.getKey() + " x " + entry.getValue() + " Seeds");
-                seedLabel.setStyle(
-                        "-fx-background-color: #c8a96e;" +
-                                "-fx-border-color: #3f2d17;" +
-                                "-fx-border-width: 3;" +
-                                "-fx-padding: 10;" +
-                                "-fx-font-size: 13px;"
-                );
-                seedLabel.setMaxWidth(Double.MAX_VALUE);
-                seedList.getChildren().add(seedLabel);
-            }
-        }
+       updateSeedList(seedList,invitory);
 
         // Harvest sektion
         Label harvestTitle = new Label("Harvested Plants");
@@ -104,50 +93,14 @@ public class InventoryPlugin extends Button implements IInventoryService, EcsSys
         VBox harvestList = new VBox(8);
         harvestList.setStyle("-fx-padding: 8; -fx-background-color: #7a5c2e;");
 
-        if (invitory.getharvestedCrops().entrySet().isEmpty()) {
-            Label empty = new Label("Ingen Item Harvested");
-            empty.setStyle("-fx-text-fill: black;");
-            harvestList.getChildren().add(empty);
-        } else {
-            for (var entry : invitory.getharvestedCrops().entrySet()) {
-                var key = entry.getKey();
-                var value = entry.getValue();
+        updateHarvestList(harvestList,invitory,walletLabel);
 
-                Label cropLabel = new Label(key + " x " + value + " Harvested");
-                cropLabel.setStyle("-fx-font-size: 13px;");
+        localSeedList = seedList;
+        localHarvestList = harvestList;
+        localWalletLabel = walletLabel;
+        localInventory = invitory;
+        LocalStage = stage;
 
-                Button sellButton = new Button("Sell");
-                sellButton.setStyle(
-                        "-fx-background-color: #5a8a3c;" +
-                                "-fx-text-fill: white;" +
-                                "-fx-border-color: #3f2d17;" +
-                                "-fx-border-width: 2;" +
-                                "-fx-padding: 5 12;" +
-                                "-fx-font-weight: bold;" +
-                                "-fx-cursor: hand;"
-                );
-
-                sellButton.setOnAction(e -> {
-                    boolean sold = invitory.removeHarvest(key, value);
-                    if (sold) {
-                        invitory.addToWallet(getSellPrice(key, value));
-                        stage.close();
-                        showInventory(world);
-                    }
-                });
-
-                HBox row = new HBox(10, cropLabel, sellButton);
-                row.setStyle(
-                        "-fx-background-color: #c8a96e;" +
-                                "-fx-border-color: #3f2d17;" +
-                                "-fx-border-width: 3;" +
-                                "-fx-padding: 10;" +
-                                "-fx-alignment: center-left;"
-                );
-                row.setMaxWidth(Double.MAX_VALUE);
-                harvestList.getChildren().add(row);
-            }
-        }
 
         ScrollPane scrollPane = new ScrollPane();
         VBox content = new VBox(12, seedTitle, seedList, harvestTitle, harvestList);
@@ -160,6 +113,14 @@ public class InventoryPlugin extends Button implements IInventoryService, EcsSys
         stage.setScene(new Scene(layout, 360, 420));
         stage.setTitle("Inventory");
         stage.show();
+
+        stage.setOnHidden(e-> {
+            localSeedList = null;
+            localHarvestList = null;
+            localWalletLabel = null;
+            localInventory = null;
+            LocalStage = null;
+        });
     }
 
     @Override
@@ -199,6 +160,66 @@ public class InventoryPlugin extends Button implements IInventoryService, EcsSys
         );
     }
 
+    private void updateSeedList(VBox seedList,InventoryComponent inventory){
+        seedList.getChildren().clear();
+
+        if (inventory.getSeedStorage().isEmpty()){
+            Label empty = new Label("No Seeds Leftover");
+            empty.setStyle("-fx-text-fill: black;");
+            seedList.getChildren().add(empty);
+            return;
+        }
+        for (var entry : inventory.getSeedStorage().entrySet()){
+            Label seedLabel = new Label(entry.getKey() + " x " + entry.getValue() + " Seeds");
+            seedLabel.setStyle(
+                    "-fx-background-color: #c8a96e;" +
+                    "-fx-border-color: #3f2d17;" +
+                    "-fx-border-width: 3;" +
+                    "-fx-padding: 10;" +
+                    "-fx-font-size: 13px;"
+            );
+            seedLabel.setMaxWidth(Double.MAX_VALUE);
+            seedList.getChildren().add(seedLabel);
+        }
+
+    }
+    private void updateHarvestList(VBox HarvestList,InventoryComponent inventory,Label walletLabel){
+        HarvestList.getChildren().clear();
+        if(inventory.getharvestedCrops().isEmpty()){
+            Label empty = new Label("No Crops Harvested");
+            empty.setStyle("-fx-text-fill: black;");
+            HarvestList.getChildren().add(empty);
+            return;
+        }
+        for (var entry : inventory.getharvestedCrops().entrySet()){
+            SeedType seedType = entry.getKey();
+            int amount = entry.getValue();
+
+            Label cropLabel = new Label(seedType + " x "+amount + "Harvested");
+
+            Button sellButton = new Button("Sell");
+            sellButton.setOnAction(e->{
+                boolean sold = inventory.removeHarvest(seedType,amount);
+
+                if (sold)
+                {
+                    inventory.addToWallet(getSellPrice(seedType,amount));
+                    walletLabel.setText("Coins: " + inventory.getWallet());
+                    updateHarvestList(HarvestList,inventory,walletLabel);
+                }
+            });
+            HBox row = new HBox(10, cropLabel, sellButton);
+            row.setStyle(
+                    "-fx-background-color: #c8a96e;" +
+                    "-fx-border-color: #3f2d17;" +
+                    "-fx-border-width: 3;" +
+                    "-fx-padding: 10;" +
+                    "-fx-alignment: center-left;"
+            );
+            row.setMaxWidth(Double.MAX_VALUE);
+            HarvestList.getChildren().add(row);
+        }
+    }
 
 
     @Override
@@ -286,6 +307,20 @@ public class InventoryPlugin extends Button implements IInventoryService, EcsSys
 
     @Override
     public void update(World world, double deltaTime) {
+        if(localSeedList == null || localHarvestList == null || localInventory == null){
+            return;
+        }
 
+        InvUpdateTimer +=deltaTime;
+
+        if (InvUpdateTimer<1.1) {
+            return;
+        }
+        InvUpdateTimer =0.0;
+        localWalletLabel.setText("Coins: "+localInventory.getWallet());
+
+        updateSeedList(localSeedList,localInventory);
+        updateHarvestList(localHarvestList,localInventory,localWalletLabel);
     }
+
 }

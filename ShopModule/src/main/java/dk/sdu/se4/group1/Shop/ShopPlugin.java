@@ -4,22 +4,17 @@ import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.*;
 import dk.sdu.se4.group1.Robot.RobotFactory;
-import dk.sdu.se4.group1.CommonEcs.Components.*;
-import dk.sdu.se4.group1.Robot.RobotFactory;
-import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.SpeedToolComponent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +25,15 @@ import java.util.Random;
  */
 public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
+    private VBox activeAllList;
+    private VBox activeCropList;
+    private VBox activeSpeedList;
+    private VBox activeRobotList;
 
+    private ShopComponent activeShop;
+    private InventoryComponent activeInventory;
+    private Label activeWallet;
+    private double shopUpdateTimer = 0.0;
 
     public ShopPlugin(World world){
         this.setLayoutX(710);
@@ -55,6 +58,20 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         }
         return null;
     }
+    private VBox createTabList() {
+        VBox list = new VBox(12);
+        list.setStyle("-fx-padding: 8; -fx-background-color: #7a5c2e;");
+        return list;
+    }
+
+
+    private ScrollPane createScrollPane(VBox content) {
+        ScrollPane scrollPane = new ScrollPane(content);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setStyle("-fx-background: #7a5c2e;");
+        return scrollPane;
+    }
     @Override
     public void openShop(World world) {
         var entityInvitory = world.getEntitiesWith(InventoryComponent.class);
@@ -72,75 +89,94 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         Label walletLabel = new Label();
         walletLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         updateWalletLabel(walletLabel, invitory);
+        VBox allList = createTabList();
+        VBox cropList = createTabList();
+        VBox speedList = createTabList();
+        VBox robotList = createTabList();
 
-        VBox itemList = new VBox(12);
-        itemList.setStyle("-fx-padding: 8; -fx-background-color: #7a5c2e;");
+        Tab allTab = new Tab("All", createScrollPane(allList));
+        allTab.setClosable(false);
+        Tab cropTab = new Tab("Crop", createScrollPane(cropList));
+        cropTab.setClosable(false);
 
-        for (ShopOfferComponent component : shop.getShopItems()) {
-            if (component.getComponent() instanceof SpeedToolComponent){
-                itemList.getChildren().add(createSpeedToolCard(component,invitory, walletLabel, world));
-            }
-            else{
-                Button card = createShopCard(component, invitory, walletLabel, world);
-                itemList.getChildren().add(card);
-            }
+        Tab speedTab = new Tab("Speed", createScrollPane(speedList));
+        speedTab.setClosable(false);
 
-        }
-        ScrollPane scrollPane = new ScrollPane(itemList);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background: #7a5c2e;");
-
-        var growthMapEntities = world.getEntitiesWith(GrowthMapComponent.class);
-        if (growthMapEntities.iterator().hasNext()) {
-            EntityID growthMapEntity = growthMapEntities.iterator().next();
-            GrowthMapComponent growthMap = (GrowthMapComponent) world.GetComponent(growthMapEntity, GrowthMapComponent.class);
-
-            int soilUpgradePrice = 300;
-            Label soilLabel = new Label();
-            soilLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white;");
-
-            Button soilUpgradeBtn = new Button();
-            soilUpgradeBtn.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
-            soilUpgradeBtn.setMaxWidth(Double.MAX_VALUE);
-            soilUpgradeBtn.setPrefWidth(330);
-
-            refreshSoilUpgradeUI(soilLabel, soilUpgradeBtn, growthMap, invitory, soilUpgradePrice);
-
-            soilUpgradeBtn.setOnAction(e -> {
-                int nextLevel = growthMap.getUnlockedMapLevel() + 1;
-                if (nextLevel > 2 || invitory.getWallet() < soilUpgradePrice) return;
-
-                boolean upgraded = growthMap.unlockMap(nextLevel);
-                if (upgraded) {
-                    invitory.removeFromWallet(soilUpgradePrice);
-                    updateWalletLabel(walletLabel, invitory);
-                    System.out.println("Soil upgraded to level " + growthMap.getUnlockedMapLevel());
-                }
-
-                refreshSoilUpgradeUI(soilLabel, soilUpgradeBtn, growthMap, invitory, soilUpgradePrice);
-            });
-
-            itemList.getChildren().addAll(soilLabel, soilUpgradeBtn);
-        }
-
-        layout.getChildren().addAll(title, walletLabel, scrollPane);
+        Tab robotTab = new Tab("Robot", createScrollPane(robotList));
+        robotTab.setClosable(false);
+        TabPane tabPane = new TabPane();
+        tabPane.getTabs().addAll(allTab,cropTab,speedTab,robotTab);
+        updateShopContent(allList,cropList,speedList,robotList, shop, invitory, walletLabel, world);
+        activeAllList = allList;
+        activeCropList = cropList;
+        activeSpeedList = speedList;
+        activeRobotList = robotList;
+        activeShop = shop;
+        activeInventory = invitory;
+        activeWallet = walletLabel;
+        layout.getChildren().addAll(title, walletLabel, tabPane);
         Scene scene = new Scene(layout, 360, 420);
 
 
         Stage shopStage = new Stage();
         shopStage.setScene(scene);
         shopStage.setTitle("Shop");
+
         shopStage.show();
+        shopStage.setOnHidden(e->{
+            activeAllList = null;
+            activeCropList = null;
+            activeSpeedList = null;
+            activeRobotList = null;
+            activeShop = null;
+            activeInventory = null;
+            activeWallet = null;
+            shopUpdateTimer = 0.0;
+        });
     }
+    private void updateShopContent(
+            VBox allList,
+            VBox cropList,
+            VBox speedList,
+            VBox robotList,
+            ShopComponent shop,
+            InventoryComponent inventory,
+            Label walletLabel,
+            World world
+    ) {
+
+        allList.getChildren().clear();
+        cropList.getChildren().clear();
+        speedList.getChildren().clear();
+        robotList.getChildren().clear();
+
+        for (ShopOfferComponent item : shop.getShopItems()) {
+            Component component = item.getComponent();
+
+            allList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
+            if (component instanceof CropComponent) {
+                cropList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
+            } else if (component instanceof SpeedToolComponent) {
+                speedList.getChildren().add(createSpeedToolCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
+            } else if (component instanceof RobotComponent) {
+                robotList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
+            } else if (component instanceof PathfindingAlgorithmComponent) {
+                robotList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
+            }
+        }
+    }
+
 
     @Override
     public List<EntityID> getShopItems(World world) {
         return List.of();
     }
 
-    private Button createShopCard(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world) {
+    private Button createShopCard(ShopOfferComponent item,InventoryComponent inventory,Label walletLabel,World world,VBox allList ,VBox cropList,VBox speedList,VBox robotList,ShopComponent shop)
+    {
         int price = item.getBuyPrice();
-        var component = item.getComponent();
+        Component component = item.getComponent();
+
         String name = getName(component);
         String imagePath = getImagePath(component);
 
@@ -160,27 +196,32 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         button.setGraphic(content);
         button.setMaxWidth(Double.MAX_VALUE);
         button.setPrefWidth(330);
-        if (!isAvailable(price,inventory.getWallet())){
-            button.setCancelButton(false);
-            ColorAdjust darken = new ColorAdjust();
-            darken.setBrightness(-0.5); // -1.0 = helt sort, 0.0 = normal
 
+        if (!isAvailable(price, inventory.getWallet())) {
+            button.setDisable(true);
+
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.5);
             button.setEffect(darken);
         }
-        button.getStyleClass().add("shop-item");
+
         button.setOnAction(e -> {
-            if (component instanceof RobotComponent) {
-                handleRobotSelect(item, inventory, walletLabel, world);
-            } else {
-                handlePurchase(component, price, inventory, walletLabel, null, world);
-            }
+        if(component instanceof RobotComponent){
+
+            handleRobotSelect(item, inventory, walletLabel, world,allList,cropList,speedList,robotList,shop);
+        }
+        else{
+            handlePurchase(component, price, inventory, walletLabel, null, world);
+        }
+
+            updateWalletLabel(walletLabel, inventory);
+            updateShopContent(allList,cropList, speedList, robotList, shop, inventory, walletLabel, world);
         });
-        //button.setOnAction(e -> handlePurchase(component, price, inventory, walletLabel, null,world));
 
         return button;
     }
 
-    private Button createSpeedToolCard(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world) {
+    private Button createSpeedToolCard(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world,VBox allList ,VBox cropList,VBox speedList,VBox robotList,ShopComponent shop) {
         int price = item.getBuyPrice();
         var component = item.getComponent();
         String name = getName(component);
@@ -234,18 +275,20 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
                 Button robotBtn = new Button(label);
                 robotBtn.setOnAction(ev -> {
                     handleSpeedToolPurchase(entity, price, inventory, walletLabel, world);
+                    updateShopContent(allList , cropList, speedList, robotList, shop, inventory, walletLabel, world);
                     pickStage.close();
                 });
-                pickLayout.getChildren().add(robotBtn);}
-
+                pickLayout.getChildren().add(robotBtn);
+            }
             pickStage.setScene(new Scene(pickLayout, 250, 300));
             pickStage.setTitle("Vælg Robot");
             pickStage.show();});
+
         return button;
     }
 
 
-    private void handleRobotSelect(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world){
+    private void handleRobotSelect(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world,VBox allList, VBox cropList,VBox speedList,VBox robotList,ShopComponent shop){
         Stage pickStage = new Stage();
         pickStage.setTitle("Vælg Robot");
 
@@ -289,6 +332,8 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
             robotBtn.setOnAction(e -> {
                 handlePurchase(item.getComponent(), item.getBuyPrice(), inventory, walletLabel, robotType, world);
+                updateWalletLabel(walletLabel,inventory);
+                updateShopContent(allList, cropList, speedList, robotList, shop, inventory, walletLabel, world);
                 pickStage.close();
             });
 
@@ -318,6 +363,9 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         if(component instanceof RobotComponent){
             return "/HrFlink.png";
         }
+        if (component instanceof PathfindingAlgorithmComponent) {
+            return "/gear.png";
+        }
         return "/item_slot.png";
     }
 
@@ -341,6 +389,13 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         }
         if (component instanceof RobotComponent){
             return "Hr Flink";
+        }
+        if (component instanceof PathfindingAlgorithmComponent algoComponent) {
+            return switch (algoComponent.tier) {
+                case DIJKSTRA -> "Dijkstra Pathfinding";
+                case A_STAR   -> "A* Pathfinding";
+                default       -> algoComponent.tier.displayName + " Pathfinding";
+            };
         }
 
         return component.getClass().getSimpleName();
@@ -408,6 +463,18 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         }
 
 
+        if (type instanceof PathfindingAlgorithmComponent algoComponent) {
+            var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeComponent.class);
+            if (upgradeEntities != null && upgradeEntities.iterator().hasNext()) {
+                PathfindingUpgradeComponent upgrade = (PathfindingUpgradeComponent)
+                        world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeComponent.class);
+                if (upgrade.activeTier.tier < algoComponent.tier.tier) {
+                    upgrade.activeTier = algoComponent.tier;
+                    System.out.println("[Shop] Pathfinding upgraded to: " + algoComponent.tier.displayName);
+                }
+            }
+        }
+
         if (type instanceof CropComponent) {
             CropComponent seedComponent = new CropComponent(((CropComponent) type).seedType);
             seedComponent.isHarvestable = false;
@@ -422,13 +489,13 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             {
                 case "HarvestingRobot":
 
-                    id = new RobotFactory().HarvestingRobot(world, 4, 4, 10, 10);
+                    id = new RobotFactory().HarvestingRobot(world, 9, 9, 1, 1);
                     break;
                 case "PlantingRobot":
-                    id = new RobotFactory().PlantingRobot(world, 4, 4, 10, 10);
+                    id = new RobotFactory().PlantingRobot(world, 9, 9, 1, 1);
                     break;
                 case "RemoveWeedRobot":
-                    id = new RobotFactory().RemoveWeedRobot(world, 4, 4, 10, 10);
+                    id = new RobotFactory().RemoveWeedRobot(world, 9, 9, 1, 1);
                     break;
             }
         }
@@ -437,6 +504,10 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             //;
             //world.addComponent();
             /// skal adde moment speed tool så det virker ind
+
+        }
+
+        if (type instanceof SoilLevel){
 
         }
         inventory.removeFromWallet(price);
@@ -487,28 +558,6 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
     private void updateWalletLabel(Label walletLabel, InventoryComponent inventory) {
         walletLabel.setText("Coins: " + inventory.getWallet());
-    }
-
-    private void refreshSoilUpgradeUI(Label soilLabel, Button soilUpgradeBtn, GrowthMapComponent growthMap,
-                                      InventoryComponent inventory, int soilUpgradePrice) {
-        int currentLevel = growthMap.getUnlockedMapLevel();
-        boolean isMaxLevel = currentLevel >= 2;
-        boolean canAfford = isAvailable(soilUpgradePrice, inventory.getWallet());
-
-        soilLabel.setText("Soil Level: " + currentLevel);
-        soilUpgradeBtn.setText(isMaxLevel
-                ? "Soil Level Maxed"
-                : "Upgrade Soil Level - " + soilUpgradePrice + " coins");
-
-        boolean disableButton = isMaxLevel || !canAfford;
-        soilUpgradeBtn.setDisable(disableButton);
-        if (disableButton) {
-            ColorAdjust darken = new ColorAdjust();
-            darken.setBrightness(-0.5);
-            soilUpgradeBtn.setEffect(darken);
-        } else {
-            soilUpgradeBtn.setEffect(null);
-        }
     }
 
 
@@ -588,6 +637,13 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return coins;
     }
 
+
+
+
+
+
+
+
     @Override
     public boolean isAvailable(int price, int wallet ) {
         boolean isAvalilable = false;
@@ -600,6 +656,26 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
     @Override
     public void update(World world, double deltaTime) {
+        if (activeShop == null || activeInventory == null || activeWallet == null){
+            return;
+        }
 
+        shopUpdateTimer += deltaTime;
+        if (shopUpdateTimer < 1.1) {
+            return;
+        }
+        shopUpdateTimer = 0.0;
+        updateWalletLabel(activeWallet,activeInventory);
+
+        updateShopContent(
+                activeAllList,
+                activeCropList,
+                activeSpeedList,
+                activeRobotList,
+                activeShop,
+                activeInventory,
+                activeWallet,
+                world
+        );
     }
 }
