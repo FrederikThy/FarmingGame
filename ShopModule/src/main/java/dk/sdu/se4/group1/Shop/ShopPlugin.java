@@ -23,7 +23,7 @@ import java.util.Random;
 /**
  * Hello world!
  */
-public class ShopPlugin extends Button implements IShopService,EcsSystem {
+public class ShopPlugin extends Button implements IShopService, EcsSystem {
 
     private VBox activeAllList;
     private VBox activeCropList;

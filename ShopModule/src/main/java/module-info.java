@@ -8,5 +8,8 @@ module ShopModule {
     requires jdk.compiler;
     requires RobotModule;
 
-
+    provides dk.sdu.se4.group1.CommonEcs.IUiPlugin with dk.sdu.se4.group1.Shop.ShopUIPlugin;
+    provides dk.sdu.se4.group1.CommonEcs.IGamePlugin with dk.sdu.se4.group1.Shop.ShopGamePlugin;
 }
+
+

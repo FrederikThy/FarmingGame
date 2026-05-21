@@ -1,4 +1,3 @@
-import dk.sdu.se4.group1.Inventory.InventoryPlugin;
 
 module InventoryModule {
     exports dk.sdu.se4.group1.Inventory;

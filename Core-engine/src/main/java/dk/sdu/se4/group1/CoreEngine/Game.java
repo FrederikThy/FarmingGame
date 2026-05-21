@@ -12,8 +12,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-
-// Midlertidig import
 import dk.sdu.se4.group1.Map.MappingSystem;
 
 import java.util.ArrayList;
@@ -61,7 +59,7 @@ public class Game {
         // A list of all systems loaded from the ServiceLoader
         List<EcsSystem> allSystems = new ArrayList<>(discoveredSystems);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        // Midliertidigt, fordi jeg ikke kan fikse det før Rafn har pushed sit map op
+
         allSystems.add(new MappingSystem(gc));
 
         // add nodes from UI plugins. if the UI also implements EcsSystem, add it to allSystems as well.

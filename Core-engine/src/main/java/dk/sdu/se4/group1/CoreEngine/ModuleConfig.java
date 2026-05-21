@@ -24,6 +24,10 @@ public class ModuleConfig {
         List<EcsSystem> services = new ArrayList<>();
         ServiceLoader.load(EcsSystem.class).forEach(services::add);
         services.sort(Comparator.comparingInt(EcsSystem::priority));
+        System.out.println("[DEBUG] Loaded " + services.size() + " ECS systems:");
+        for (EcsSystem s : services) {
+            System.out.println("  - " + s.getClass().getName());
+        }
         return services;
     }
 
@@ -31,12 +35,20 @@ public class ModuleConfig {
     public List<IGamePlugin> gamePlugins() {
         List<IGamePlugin> plugins = new ArrayList<>();
         ServiceLoader.load(IGamePlugin.class).forEach(plugins::add);
+        System.out.println("[DEBUG] Loaded " + plugins.size() + " game plugins:");
+        for (IGamePlugin p : plugins) {
+            System.out.println("  - " + p.getClass().getName());
+        }
         return plugins;
     }
     @Bean
     public List<IUiPlugin> uiPlugins() {
         List<IUiPlugin> plugins = new ArrayList<>();
         ServiceLoader.load(IUiPlugin.class).forEach(plugins::add);
+        System.out.println("[DEBUG] Loaded " + plugins.size() + " UI plugins:");
+        for (IUiPlugin p : plugins) {
+            System.out.println("  - " + p.getClass().getName());
+        }
         return plugins;
     }
 }

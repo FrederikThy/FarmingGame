@@ -3,4 +3,10 @@ module CropsModule {
     requires javafx.graphics;
 
     exports dk.sdu.se4.group1.Crops;
+
+    provides dk.sdu.se4.group1.CommonEcs.EcsSystem
+        with dk.sdu.se4.group1.Crops.cropSystem,
+             dk.sdu.se4.group1.Crops.IntercroppingSystem;
+
+    provides dk.sdu.se4.group1.CommonEcs.IGamePlugin with dk.sdu.se4.group1.Crops.CropsGamePlugin;
 }
