@@ -205,6 +205,21 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             button.setEffect(darken);
         }
 
+        if (component instanceof PathfindingAlgorithmComponent algoComponent) {
+            var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeComponent.class);
+            if (upgradeEntities != null && upgradeEntities.iterator().hasNext()) {
+                PathfindingUpgradeComponent upgrade = (PathfindingUpgradeComponent)
+                        world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeComponent.class);
+                if (upgrade.activeTier.tier >= algoComponent.tier.tier) {
+                    button.setDisable(true);
+                    priceLabel.setText("Purchased");
+                    ColorAdjust darken = new ColorAdjust();
+                    darken.setBrightness(-0.5);
+                    button.setEffect(darken);
+                }
+            }
+        }
+
         button.setOnAction(e -> {
         if(component instanceof RobotComponent){
 
@@ -468,11 +483,15 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             if (upgradeEntities != null && upgradeEntities.iterator().hasNext()) {
                 PathfindingUpgradeComponent upgrade = (PathfindingUpgradeComponent)
                         world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeComponent.class);
-                if (upgrade.activeTier.tier < algoComponent.tier.tier) {
-                    upgrade.activeTier = algoComponent.tier;
-                    System.out.println("[Shop] Pathfinding upgraded to: " + algoComponent.tier.displayName);
+                if (upgrade.activeTier.tier >= algoComponent.tier.tier) {
+                    return;
                 }
+                upgrade.activeTier = algoComponent.tier;
+                System.out.println("[Shop] Pathfinding upgraded to: " + algoComponent.tier.displayName);
             }
+            inventory.removeFromWallet(price);
+            updateWalletLabel(walletLabel, inventory);
+            return;
         }
 
         if (type instanceof CropComponent) {
