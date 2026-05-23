@@ -61,7 +61,7 @@ public class Game {
         // A list of all systems loaded from the ServiceLoader
         List<EcsSystem> allSystems = new ArrayList<>(discoveredSystems);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        // Midliertidigt, fordi jeg ikke kan fikse det før Rafn har pushed sit map op
+        // Midliertidigt, fordi mappingSystem bruger GraphicsContext
         allSystems.add(new MappingSystem(gc));
 
         // add nodes from UI plugins. if the UI also implements EcsSystem, add it to allSystems as well.
