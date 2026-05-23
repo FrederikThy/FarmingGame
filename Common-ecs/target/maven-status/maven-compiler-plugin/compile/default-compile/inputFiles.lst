@@ -12,6 +12,8 @@
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/RemoveCropComponent.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/RenderComponent.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/RobotComponent.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/RobotStatusComponent.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/RobotType.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/ShopComponent.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/ShopOfferComponent.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/SpeedToolComponent.java

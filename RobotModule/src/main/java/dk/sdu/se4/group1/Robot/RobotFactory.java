@@ -12,11 +12,12 @@ import java.nio.file.Path;
 
 public class RobotFactory {
 
-    public EntityID BaseRobot(World world, int startX, int startY, int goalX, int goalY, String spritePath) {
+    public EntityID BaseRobot(World world, int startX, int startY, int goalX, int goalY, String spritePath, RobotType robotType) {
         EntityID robotId = world.createEntity();
-        world.addComponent(robotId, new RobotComponent(0,0));
+        world.addComponent(robotId, new RobotComponent(0,0, robotType));
         world.addComponent(robotId, new PositionComponent(startX,startY));
         world.addComponent(robotId, new MovementComponent());
+        world.addComponent(robotId, new RobotStatusComponent("idle"));
 
         PathComponent path = new PathComponent();
         path.goalX     = goalX;
@@ -39,19 +40,19 @@ public class RobotFactory {
     }
 
     public EntityID HarvestingRobot(World world, int startX, int startY, int goalX, int goalY) {
-        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY, "/HrFlink_1.png");
+        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY, "/HrFlink_1.png", RobotType.HARVEST);
         world.addComponent(robotId, new HarvestingComponent());
         return robotId;
     }
 
     public EntityID PlantingRobot(World world, int startX, int startY, int goalX, int goalY) {
-        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY, "/HrFlink_2.png");
+        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY, "/HrFlink_2.png",  RobotType.PLANT);
         world.addComponent(robotId, new PlantingComponent());
         return robotId;
     }
 
     public EntityID RemoveWeedRobot(World world, int startX, int startY, int goalX, int goalY) {
-        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY, "/HrFlink_3.png");
+        EntityID robotId = BaseRobot(world, startX, startY, goalX, goalY, "/HrFlink_3.png", RobotType.WEED_REMOVER);
         world.addComponent(robotId, new RemoveCropComponent());
         return robotId;
     }

@@ -19,7 +19,7 @@ public class ShopFactory {
         shopComponent.addShopItem(new PlantingComponent(),150);
         shopComponent.addShopItem(new HarvestingComponent(),200);
         shopComponent.addShopItem(new SpeedToolComponent(0.15),250);
-        shopComponent.addShopItem(new RobotComponent(0,0),1000);
+        shopComponent.addShopItem(new RobotComponent(0,0,RobotType.WEED_REMOVER),1000);
 
         // Pathfinding algorithm upgrades — BFS is free/default
         shopComponent.addShopItem(

@@ -28,7 +28,7 @@ public class PlantingSystem implements EcsSystem {
 
 
             if (shouldCheckPlanting) {
-                tryPlantSeed(world, robotPos);
+                tryPlantSeed(world, entity, robotPos);
             }
         }
 
@@ -38,7 +38,7 @@ public class PlantingSystem implements EcsSystem {
         }
     }
 
-    private void tryPlantSeed(World world, PositionComponent robotPos) {
+    private void tryPlantSeed(World world,EntityID entity, PositionComponent robotPos) {
 
 
         // Henter inventory. kommentar om iterator.next i harvestingSystem.
@@ -81,6 +81,7 @@ public class PlantingSystem implements EcsSystem {
 
         // Tilføjer til seedQueue
         world.addSeedToQueue(plantTile[0], plantTile[1], seedType);
+        setStatus(world, entity, "Planting");
 
     }
 
@@ -115,5 +116,12 @@ public class PlantingSystem implements EcsSystem {
 
     private boolean isInsideMap(int x, int y) {
         return x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT;
+    }
+
+    private void setStatus(World world, EntityID entity, String text){
+        if (world.hasComponent(entity, RobotStatusComponent.class)){
+            RobotStatusComponent status =  (RobotStatusComponent) world.GetComponent(entity, RobotStatusComponent.class);
+            status.status = text;
+        }
     }
 }

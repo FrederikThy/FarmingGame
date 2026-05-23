@@ -1,9 +1,6 @@
 package dk.sdu.se4.group1.Robot;
 
-import dk.sdu.se4.group1.CommonEcs.Components.MovementComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.PathComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.SpeedToolComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.*;
 import dk.sdu.se4.group1.CommonEcs.EcsSystem;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.Node;
@@ -48,4 +45,6 @@ public class MovementSystem implements EcsSystem {
             }
         }
     }
+
+
 }

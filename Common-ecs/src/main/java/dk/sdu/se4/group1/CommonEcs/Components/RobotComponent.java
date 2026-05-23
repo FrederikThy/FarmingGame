@@ -11,10 +11,20 @@ public class RobotComponent implements Component {
         private final int mapLength;
         private final int mapHeight;
 
+        public final RobotType robotType;
 
-        public RobotComponent(int mapLength, int mapHeight) {
+        public RobotComponent(int mapLength, int mapHeight,  RobotType robotType) {
             this.mapHeight = mapHeight;
             this.mapLength = mapLength;
+            this.robotType = robotType;
+        }
+
+        public String GetType(){
+            return switch (robotType){
+                case HARVEST ->  "HARVEST";
+                case PLANT ->   "PLANT";
+                case WEED_REMOVER ->   "WEED";
+            };
         }
 
         public double getX() {
