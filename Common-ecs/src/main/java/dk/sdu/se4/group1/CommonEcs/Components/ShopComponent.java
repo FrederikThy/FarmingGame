@@ -17,5 +17,11 @@ public class ShopComponent implements Component {
         return shopItems;
     }
 
+    public void removeFromShopItem(Component component){
+        //if(shopItems.stream().findAny().stream().
+    }
+
+
+
 }
 

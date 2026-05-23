@@ -3,7 +3,9 @@ package dk.sdu.se4.group1.Shop;
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.CropComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.ShopComponent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,6 +17,18 @@ import java.util.List;
 
 
 public class ShopStore implements IShopService,EcsSystem {
+
+    private double shopUpdateTimer = 0.0;
+
+    private VBox activeAllList;
+    private VBox activeCropList;
+    private VBox activeSpeedList;
+    private VBox activeRobotList;
+
+    private ShopComponent activeShop;
+    private InventoryComponent activeInventory;
+    private Label activeWalletLabel;
+    private World activeWorld;
 
     private EntityID findAvailableRobot(World world) {
         for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
