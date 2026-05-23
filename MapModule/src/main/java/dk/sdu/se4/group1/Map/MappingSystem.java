@@ -9,20 +9,29 @@ import javafx.scene.paint.Color;
 
 
 
-public class MappingSystem implements EcsSystem{
+public class MappingSystem implements EcsSystem, IRenderSystem{
 
     private final int mapHeight = MapSize.MAP_HEIGHT;
     private final int mapWidth = MapSize.MAP_WIDTH;
 
     //map variables
     private static final int tileSize = 64;
-    private final GraphicsContext gc;
+    private GraphicsContext gc;
 
-    //constructer injecting the Grapical context
-    public MappingSystem(GraphicsContext gc){
+    public MappingSystem() {
+    }
+
+    // Used to instantiate GraphipcsContext
+    public MappingSystem(GraphicsContext gc) {
         this.gc = gc;
     }
 
+
+    @Override
+    public EcsSystem create(GraphicsContext gc) {
+        this.gc = gc;
+        return this;
+    }
     //update method
     @Override
     public void update(World world, double deltaTime) {

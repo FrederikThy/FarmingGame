@@ -5,6 +5,8 @@
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/InventoryComponent.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/MovementComponent.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/PathComponent.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/PathfindingAlgorithmComponent.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/PathfindingUpgradeComponent.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/PlantingComponent.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/PositionComponent.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Components/RemoveCropComponent.java
@@ -21,6 +23,7 @@
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/IInventoryService.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/IMoniteringService.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/IPathfinding.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/IRenderSystem.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/IShopService.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/IUiPlugin.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/InviItme.java

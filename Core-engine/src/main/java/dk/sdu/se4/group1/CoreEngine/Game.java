@@ -1,9 +1,6 @@
 package dk.sdu.se4.group1.CoreEngine;
 
-import dk.sdu.se4.group1.CommonEcs.IGamePlugin;
-import dk.sdu.se4.group1.CommonEcs.EcsSystem;
-import dk.sdu.se4.group1.CommonEcs.IUiPlugin;
-import dk.sdu.se4.group1.CommonEcs.World;
+import dk.sdu.se4.group1.CommonEcs.*;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -13,8 +10,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-// Midlertidig import
-import dk.sdu.se4.group1.Map.MappingSystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +22,15 @@ public class Game {
     private final List<IGamePlugin> plugins;
     // UI plugins that inject javafx nodes into the scene
     private final List<IUiPlugin> uiPlugins;
+
+    private final List<IRenderSystem> renderSystems;
     private long lastTime = 0;
 
-    Game(List<EcsSystem> discoveredSystems, List<IGamePlugin> plugins, List<IUiPlugin> uiPlugins) {
+    Game(List<EcsSystem> discoveredSystems, List<IGamePlugin> plugins, List<IUiPlugin> uiPlugins, List<IRenderSystem> renderSystems) {
         this.discoveredSystems = discoveredSystems;
         this.plugins = plugins;
         this.uiPlugins = uiPlugins;
+        this.renderSystems = renderSystems;
     }
 
     public void start(Stage window) {
@@ -61,8 +59,10 @@ public class Game {
         // A list of all systems loaded from the ServiceLoader
         List<EcsSystem> allSystems = new ArrayList<>(discoveredSystems);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        // Midliertidigt, fordi mappingSystem bruger GraphicsContext
-        allSystems.add(new MappingSystem(gc));
+
+        for (IRenderSystem renderSystem : renderSystems) {
+            allSystems.add(renderSystem.create(gc));
+        }
 
         // add nodes from UI plugins. if the UI also implements EcsSystem, add it to allSystems as well.
         for (IUiPlugin plugin : uiPlugins) {
