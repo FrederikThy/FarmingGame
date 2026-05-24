@@ -45,11 +45,40 @@ public class MappingSystem implements EcsSystem, IRenderSystem{
             }
         }
 
-        for(EntityID entity : world.getEntities()){
-            if(world.hasComponent(entity, PositionComponent.class) && (world.hasComponent(entity, RenderComponent.class))){
+        for (EntityID entity : world.getEntities()) {
+            if (world.hasComponent(entity, RainOverlayComponent.class)) {
+                continue;
+            }
+
+            if (world.hasComponent(entity, PositionComponent.class) &&
+                    world.hasComponent(entity, RenderComponent.class)) {
+
                 PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
                 RenderComponent renderComponent = (RenderComponent) world.GetComponent(entity, RenderComponent.class);
+
                 RenderTile(pos.x, pos.y, renderComponent);
+            }
+        }
+
+        for (EntityID entity : world.getEntities()) {
+            if (!world.hasComponent(entity, RainOverlayComponent.class)) {
+                continue;
+            }
+
+            if (world.hasComponent(entity, RenderComponent.class)) {
+                RenderComponent renderComponent = (RenderComponent) world.GetComponent(entity, RenderComponent.class);
+
+                if (renderComponent.sprite != null) {
+                    gc.drawImage(renderComponent.sprite, 0, 0, 960, 960);
+                }
+            }
+        }
+
+        for (EntityID entity : world.getEntities()) {
+            if (world.hasComponent(entity, PositionComponent.class) &&
+                    world.hasComponent(entity, RobotComponent.class)) {
+
+                PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
                 RenderRobotLabel(world, entity, pos);
             }
         }
