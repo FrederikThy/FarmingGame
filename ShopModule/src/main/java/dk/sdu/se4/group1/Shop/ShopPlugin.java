@@ -3,7 +3,6 @@ package dk.sdu.se4.group1.Shop;
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.*;
-import dk.sdu.se4.group1.Robot.RobotFactory;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
@@ -12,13 +11,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.ServiceLoader;
 
 /**
  * Hello world!
@@ -220,14 +215,10 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             }
         }
 
+        // We dont have to check if its a robotComponent, because we do that in handlePurchase
         button.setOnAction(e -> {
-        if(component instanceof RobotComponent){
 
-            handleRobotSelect(item, inventory, walletLabel, world,allList,cropList,speedList,robotList,shop);
-        }
-        else{
             handlePurchase(component, price, inventory, walletLabel, null, world);
-        }
 
             updateWalletLabel(walletLabel, inventory);
             updateShopContent(allList,cropList, speedList, robotList, shop, inventory, walletLabel, world);
@@ -375,8 +366,13 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         if (component instanceof HarvestingComponent) {
             return "/Harvesting_Tool.png";
         }
-        if(component instanceof RobotComponent){
-            return "/HrFlink.png";
+        // Picture for each of the robots
+        if(component instanceof RobotComponent robotComponent) {
+            return switch (robotComponent.robotType){
+                case HARVEST -> "/HrFlink_1.png";
+                case PLANT -> "/HrFlink_2.png";
+                case WEED_REMOVER ->  "/HrFlink_3.png";
+            };
         }
         if (component instanceof PathfindingAlgorithmComponent) {
             return "/gear.png";
@@ -402,8 +398,13 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         if (component instanceof HarvestingComponent) {
             return "Harvesting Tool";
         }
-        if (component instanceof RobotComponent){
-            return "Hr Flink";
+        // Instead of only one robot to pick, we have three
+        if (component instanceof RobotComponent robotComponent) {
+            return switch (robotComponent.robotType){
+                case WEED_REMOVER ->  "Weed Remover";
+                case HARVEST ->  "Harvest";
+                case PLANT ->  "Planting";
+            };
         }
         if (component instanceof PathfindingAlgorithmComponent algoComponent) {
             return switch (algoComponent.tier) {
@@ -502,21 +503,10 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             inventory.addSeeds(seedComponent.seedType, 1);
         }
 
-        if (type instanceof RobotComponent) {
-            EntityID id =null;
-            switch (Robottype)
-            {
-                case "HarvestingRobot":
+        if (type instanceof RobotComponent robotComponent) {
+            ICreateRobot robotCreator = ServiceLoader.load(ICreateRobot.class).findFirst().orElseThrow( () -> new RuntimeException("Can't find createRobot"));
 
-                    id = new RobotFactory().HarvestingRobot(world, 9, 9, 1, 1);
-                    break;
-                case "PlantingRobot":
-                    id = new RobotFactory().PlantingRobot(world, 9, 9, 1, 1);
-                    break;
-                case "RemoveWeedRobot":
-                    id = new RobotFactory().RemoveWeedRobot(world, 9, 9, 1, 1);
-                    break;
-            }
+            robotCreator.createRobot(world, robotComponent.robotType, 9, 9, 1, 1);
         }
 
         if (type instanceof SpeedToolComponent) {

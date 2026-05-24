@@ -1,3 +1,4 @@
+import dk.sdu.se4.group1.CommonEcs.ICreateRobot;
 import dk.sdu.se4.group1.CommonEcs.IGamePlugin;
 
 module RobotModule
@@ -16,4 +17,5 @@ module RobotModule
              dk.sdu.se4.group1.Robot.RemoveWeedSystem,
              dk.sdu.se4.group1.Robot.RobotTaskSystem;
     provides IGamePlugin with dk.sdu.se4.group1.Robot.RobotPlugin;
+    provides ICreateRobot with dk.sdu.se4.group1.Robot.RobotFactory;
 }

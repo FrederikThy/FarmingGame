@@ -21,6 +21,7 @@
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/EcsSystem.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/Entity.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/EntityID.java
+/Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/ICreateRobot.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/IGamePlugin.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/IInventoryService.java
 /Users/frederikthygesen/IdeaProjects/FarmingGame/Common-ecs/src/main/java/dk/sdu/se4/group1/CommonEcs/IMoniteringService.java
