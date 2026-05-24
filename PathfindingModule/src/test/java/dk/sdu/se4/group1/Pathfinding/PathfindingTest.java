@@ -28,18 +28,22 @@ void setUp() {
 void algorithmsPathTest() {
     List<Node> aStarPath = aStar.findPath(0, 0, 4, 4, W, H, emptyWorld);
     List<Node> bfsPath   = bfs.findPath(0, 0, 4, 4, W, H, emptyWorld);
-
     assertFalse(aStarPath.isEmpty(), "A* must find a path on a clear grid");
     assertFalse(bfsPath.isEmpty(),   "BFS must find a path on a clear grid");
-
+    
     // Start at 0 check
     assertEquals(0, aStarPath.get(0).getX());
     assertEquals(0, aStarPath.get(0).getY());
-
+    assertEquals(0, bfsPath.get(0).getX());
+    assertEquals(0, bfsPath.get(0).getY());
+    
     // Check goal
     Node aStarGoal = aStarPath.get(aStarPath.size() - 1);
+    Node bfsGoal = bfsPath.get(bfsPath.size() - 1);
     assertEquals(4, aStarGoal.getX());
     assertEquals(4, aStarGoal.getY());
+    assertEquals(4, bfsGoal.getX());
+    assertEquals(4, bfsGoal.getY());
 }
 
 /** Test to see if the algorithms return one node if the start and goal are the same - edge case testing */
