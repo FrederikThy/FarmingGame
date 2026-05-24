@@ -81,7 +81,6 @@ public class PlantingSystem implements EcsSystem {
 
         // Tilføjer til seedQueue
         world.addSeedToQueue(plantTile[0], plantTile[1], seedType);
-        setStatus(world, entity, "Planting");
 
     }
 
@@ -118,10 +117,4 @@ public class PlantingSystem implements EcsSystem {
         return x >= 0 && x < MAP_WIDTH && y >= 0 && y < MAP_HEIGHT;
     }
 
-    private void setStatus(World world, EntityID entity, String text){
-        if (world.hasComponent(entity, RobotStatusComponent.class)){
-            RobotStatusComponent status =  (RobotStatusComponent) world.GetComponent(entity, RobotStatusComponent.class);
-            status.status = text;
-        }
-    }
 }

@@ -2,7 +2,6 @@ package dk.sdu.se4.group1.Robot;
 
 import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.RemoveCropComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RobotStatusComponent;
 import dk.sdu.se4.group1.CommonEcs.Components.WeedComponent;
 import dk.sdu.se4.group1.CommonEcs.EcsSystem;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
@@ -20,7 +19,6 @@ public class RemoveWeedSystem implements EcsSystem {
             EntityID weed = FindWeedAtPosition(world, pos);
 
             if (weed != null){
-                setStatus(world, entity, "Removing weed");
                 world.RemoveEntity(weed);
             }
         }
@@ -76,10 +74,4 @@ public class RemoveWeedSystem implements EcsSystem {
         return null;
     }
 
-    private void setStatus(World world, EntityID entity, String text){
-        if (world.hasComponent(entity, RobotStatusComponent.class)){
-            RobotStatusComponent status =  (RobotStatusComponent) world.GetComponent(entity, RobotStatusComponent.class);
-            status.status = text;
-        }
-    }
 }

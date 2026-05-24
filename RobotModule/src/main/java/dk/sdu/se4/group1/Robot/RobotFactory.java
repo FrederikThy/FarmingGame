@@ -18,7 +18,6 @@ public class RobotFactory implements ICreateRobot {
         world.addComponent(robotId, new RobotComponent(0,0, robotType));
         world.addComponent(robotId, new PositionComponent(startX,startY));
         world.addComponent(robotId, new MovementComponent());
-        world.addComponent(robotId, new RobotStatusComponent("idle"));
 
         PathComponent path = new PathComponent();
         path.goalX     = goalX;

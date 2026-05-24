@@ -22,7 +22,6 @@ public class HarvestingSystem implements EcsSystem {
 
             if (crop != null) {
 
-                setStatus(world, entity, "Harvesting");
                 inventory.addToWallet(100);
                 world.RemoveEntity(crop);
             }
@@ -69,10 +68,4 @@ public class HarvestingSystem implements EcsSystem {
         return null;
     }
 
-    private void setStatus(World world, EntityID entity, String text){
-        if (world.hasComponent(entity, RobotStatusComponent.class)){
-            RobotStatusComponent status =  (RobotStatusComponent) world.GetComponent(entity, RobotStatusComponent.class);
-            status.status = text;
-        }
-    }
 }

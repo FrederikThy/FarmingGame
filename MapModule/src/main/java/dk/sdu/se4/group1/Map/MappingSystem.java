@@ -111,39 +111,29 @@ public class MappingSystem implements EcsSystem, IRenderSystem{
     }
 
     private void RenderRobotLabel(World world, EntityID entity, PositionComponent pos) {
-        if (!world.hasComponent(entity, RobotComponent.class)) {
-            return;
-        }
-
         RobotComponent robotComponent = (RobotComponent) world.GetComponent(entity, RobotComponent.class);
-
-        String statusText = "Idle";
-        if (world.hasComponent(entity, RobotStatusComponent.class)) {
-            RobotStatusComponent robotStatusComponent = (RobotStatusComponent) world.GetComponent(entity, RobotStatusComponent.class);
-            statusText = robotStatusComponent.status;
-        }
 
         String typeText = "[" + robotComponent.GetType() + "]";
 
-        double centerX = pos.x * tileSize + tileSize / 2;
-        double topY = pos.y * tileSize - 8;
+        double tileX = pos.x * tileSize;
+        double tileY = pos.y * tileSize;
+        double centerX = tileX + tileSize / 2;
+
+        Color typeColor = switch (robotComponent.robotType){
+            case PLANT ->  Color.LIMEGREEN;
+            case HARVEST -> Color.GOLD;
+            case WEED_REMOVER ->   Color.SADDLEBROWN;
+        };
 
         gc.setTextAlign(TextAlignment.CENTER);
 
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 10));
-        gc.setFill(Color.rgb(255, 255, 255, 0.85));
-        gc.fillRoundRect(centerX - 34, topY - 12, 68, 26, 6, 6);
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 9));
+        gc.setFill(Color.BLACK);
+        gc.fillRoundRect(tileX + 8, tileY + 4, tileSize - 16, 14, 7, 7);
 
-        gc.setStroke(Color.rgb(40, 35, 25));
-        gc.strokeRoundRect(centerX - 34, topY - 12, 68, 26, 6, 6);
-
-        gc.setFill(Color.rgb(35, 25, 15));
-        gc.fillText(typeText, centerX, topY);
-
-        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 9));
-        gc.fillText(statusText, centerX, topY + 11);
+        gc.setFill(typeColor);
+        gc.fillText(typeText, centerX, tileY + 14);
 
         gc.setTextAlign(TextAlignment.LEFT);
-
     }
 }
