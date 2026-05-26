@@ -30,7 +30,7 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
     private Label activeWallet;
     private Label activeSoilLevelLabel;
     private Button activeSoilUpgradeButton;
-    private GrowthMapComponent activeGrowthMap;
+    private GrowthMapIComponentService activeGrowthMap;
     private double shopUpdateTimer = 0.0;
     private static final int SOIL_UPGRADE_PRICE = 300;
 
@@ -108,7 +108,7 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
 
         Label soilLabel = null;
         Button soilUpgradeBtn = null;
-        GrowthMapComponent growthMap = findGrowthMapComponent(world);
+        GrowthMapIComponentService growthMap = findGrowthMapComponent(world);
         if (growthMap != null) {
             soilLabel = new Label();
             soilLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #3f2d17;");
@@ -168,17 +168,17 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
         });
     }
 
-    private GrowthMapComponent findGrowthMapComponent(World world) {
-        var growthMapEntities = world.getEntitiesWith(GrowthMapComponent.class);
+    private GrowthMapIComponentService findGrowthMapComponent(World world) {
+        var growthMapEntities = world.getEntitiesWith(GrowthMapIComponentService.class);
         if (growthMapEntities != null && growthMapEntities.iterator().hasNext()) {
             EntityID growthMapEntity = growthMapEntities.iterator().next();
-            return (GrowthMapComponent) world.GetComponent(growthMapEntity, GrowthMapComponent.class);
+            return (GrowthMapIComponentService) world.GetComponent(growthMapEntity, GrowthMapIComponentService.class);
         }
         return null;
     }
 
-    private void handleSoilUpgradePurchase(int price, InventoryComponent inventory, Label walletLabel, World world) {
-        GrowthMapComponent growthMap = findGrowthMapComponent(world);
+    private void handleSoilUpgradePurchase(int price, InventoryIComponentService inventory, Label walletLabel, World world) {
+        GrowthMapIComponentService growthMap = findGrowthMapComponent(world);
         if (growthMap == null || inventory.getWallet() < price) {
             return;
         }
@@ -211,16 +211,16 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
         robotList.getChildren().clear();
 
         for (ShopOfferIComponentService item : shop.getShopItems()) {
-            IComponentService IComponentService = item.getComponent();
+            IComponentService component = item.getComponent();
 
             allList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
-            if (IComponentService instanceof CropIComponentService) {
+            if (component instanceof CropIComponentService) {
                 cropList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
-            } else if (IComponentService instanceof SpeedToolIComponentService) {
+            } else if (component instanceof SpeedToolIComponentService) {
                 speedList.getChildren().add(createSpeedToolCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
-            } else if (IComponentService instanceof RobotIComponentService) {
+            } else if (component instanceof RobotIComponentService) {
                 robotList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
-            } else if (IComponentService instanceof PathfindingAlgorithmIComponentService) {
+            } else if (component instanceof PathfindingAlgorithmIComponentService) {
                 robotList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
             }
         }
@@ -235,10 +235,10 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
     private Button createShopCard(ShopOfferIComponentService item, InventoryIComponentService inventory, Label walletLabel, World world, VBox allList , VBox cropList, VBox speedList, VBox robotList, ShopIComponentService shop)
     {
         int price = item.getBuyPrice();
-        IComponentService IComponentService = item.getComponent();
+            IComponentService component = item.getComponent();
 
-        String name = getName(IComponentService);
-        String imagePath = getImagePath(IComponentService);
+        String name = getName(component);
+        String imagePath = getImagePath(component);
 
         ImageView itemImage = loadImage(imagePath, 52, 52);
         ImageView coinImage = loadImage("/coin.png", 24, 24);
@@ -265,7 +265,7 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
             button.setEffect(darken);
         }
 
-        if (IComponentService instanceof PathfindingAlgorithmIComponentService algoComponent) {
+        if (component instanceof PathfindingAlgorithmIComponentService algoComponent) {
             var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeIComponentService.class);
             if (upgradeEntities != null && upgradeEntities.iterator().hasNext()) {
                 PathfindingUpgradeIComponentService upgrade = (PathfindingUpgradeIComponentService)
@@ -283,7 +283,7 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
         // We dont have to check if its a robotComponent, because we do that in handlePurchase
         button.setOnAction(e -> {
 
-            handlePurchase(IComponentService, price, inventory, walletLabel, null, world);
+            handlePurchase(component, price, inventory, walletLabel, null, world);
 
             updateWalletLabel(walletLabel, inventory);
             updateShopContent(allList,cropList, speedList, robotList, shop, inventory, walletLabel, world);
@@ -584,7 +584,7 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
         if (type instanceof SoilLevel){
             handleSoilUpgradePurchase(price, inventory, walletLabel, world);
             if (activeSoilLevelLabel != null && activeSoilUpgradeButton != null) {
-                GrowthMapComponent growthMap = findGrowthMapComponent(world);
+                GrowthMapIComponentService growthMap = findGrowthMapComponent(world);
                 if (growthMap != null) {
                     refreshSoilUpgradeUI(activeSoilLevelLabel, activeSoilUpgradeButton, growthMap, inventory, price);
                 }
@@ -641,8 +641,8 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
         walletLabel.setText("Coins: " + inventory.getWallet());
     }
 
-    private void refreshSoilUpgradeUI(Label soilLabel, Button soilUpgradeBtn, GrowthMapComponent growthMap,
-                                      InventoryComponent inventory, int soilUpgradePrice) {
+    private void refreshSoilUpgradeUI(Label soilLabel, Button soilUpgradeBtn, GrowthMapIComponentService growthMap,
+                                      InventoryIComponentService inventory, int soilUpgradePrice) {
         int currentLevel = growthMap.getUnlockedMapLevel();
         boolean isMaxLevel = currentLevel >= 2;
         boolean canAfford = isAvailable(soilUpgradePrice, inventory.getWallet());
