@@ -28,7 +28,11 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
     private ShopComponent activeShop;
     private InventoryComponent activeInventory;
     private Label activeWallet;
+    private Label activeSoilLevelLabel;
+    private Button activeSoilUpgradeButton;
+    private GrowthMapComponent activeGrowthMap;
     private double shopUpdateTimer = 0.0;
+    private static final int SOIL_UPGRADE_PRICE = 300;
 
     public ShopPlugin(World world){
         this.setLayoutX(710);
@@ -101,6 +105,30 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         robotTab.setClosable(false);
         TabPane tabPane = new TabPane();
         tabPane.getTabs().addAll(allTab,cropTab,speedTab,robotTab);
+
+        Label soilLabel = null;
+        Button soilUpgradeBtn = null;
+        GrowthMapComponent growthMap = findGrowthMapComponent(world);
+        if (growthMap != null) {
+            soilLabel = new Label();
+            soilLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #3f2d17;");
+
+            soilUpgradeBtn = new Button();
+            soilUpgradeBtn.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
+            soilUpgradeBtn.setMaxWidth(Double.MAX_VALUE);
+            soilUpgradeBtn.setPrefWidth(330);
+
+            refreshSoilUpgradeUI(soilLabel, soilUpgradeBtn, growthMap, invitory, SOIL_UPGRADE_PRICE);
+
+            Label finalSoilLabel = soilLabel;
+            Button finalSoilUpgradeBtn = soilUpgradeBtn;
+            soilUpgradeBtn.setOnAction(e -> {
+                handleSoilUpgradePurchase(SOIL_UPGRADE_PRICE, invitory, walletLabel, world);
+                refreshSoilUpgradeUI(finalSoilLabel, finalSoilUpgradeBtn, growthMap, invitory, SOIL_UPGRADE_PRICE);
+                updateShopContent(allList,cropList,speedList,robotList, shop, invitory, walletLabel, world);
+            });
+        }
+
         updateShopContent(allList,cropList,speedList,robotList, shop, invitory, walletLabel, world);
         activeAllList = allList;
         activeCropList = cropList;
@@ -109,7 +137,14 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         activeShop = shop;
         activeInventory = invitory;
         activeWallet = walletLabel;
+        activeSoilLevelLabel = soilLabel;
+        activeSoilUpgradeButton = soilUpgradeBtn;
+        activeGrowthMap = growthMap;
+
         layout.getChildren().addAll(title, walletLabel, tabPane);
+        if (soilLabel != null) {
+            layout.getChildren().addAll(soilLabel, soilUpgradeBtn);
+        }
         Scene scene = new Scene(layout, 360, 420);
 
 
@@ -126,8 +161,38 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             activeShop = null;
             activeInventory = null;
             activeWallet = null;
+            activeSoilLevelLabel = null;
+            activeSoilUpgradeButton = null;
+            activeGrowthMap = null;
             shopUpdateTimer = 0.0;
         });
+    }
+
+    private GrowthMapComponent findGrowthMapComponent(World world) {
+        var growthMapEntities = world.getEntitiesWith(GrowthMapComponent.class);
+        if (growthMapEntities != null && growthMapEntities.iterator().hasNext()) {
+            EntityID growthMapEntity = growthMapEntities.iterator().next();
+            return (GrowthMapComponent) world.GetComponent(growthMapEntity, GrowthMapComponent.class);
+        }
+        return null;
+    }
+
+    private void handleSoilUpgradePurchase(int price, InventoryComponent inventory, Label walletLabel, World world) {
+        GrowthMapComponent growthMap = findGrowthMapComponent(world);
+        if (growthMap == null || inventory.getWallet() < price) {
+            return;
+        }
+
+        int nextLevel = growthMap.getUnlockedMapLevel() + 1;
+        if (nextLevel > 2) {
+            return;
+        }
+
+        if (growthMap.unlockMap(nextLevel)) {
+            inventory.removeFromWallet(price);
+            updateWalletLabel(walletLabel, inventory);
+            System.out.println("Soil upgraded to level " + growthMap.getUnlockedMapLevel());
+        }
     }
     private void updateShopContent(
             VBox allList,
@@ -517,7 +582,14 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         }
 
         if (type instanceof SoilLevel){
-
+            handleSoilUpgradePurchase(price, inventory, walletLabel, world);
+            if (activeSoilLevelLabel != null && activeSoilUpgradeButton != null) {
+                GrowthMapComponent growthMap = findGrowthMapComponent(world);
+                if (growthMap != null) {
+                    refreshSoilUpgradeUI(activeSoilLevelLabel, activeSoilUpgradeButton, growthMap, inventory, price);
+                }
+            }
+            return;
         }
         inventory.removeFromWallet(price);
         updateWalletLabel(walletLabel, inventory);
@@ -567,6 +639,28 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
     private void updateWalletLabel(Label walletLabel, InventoryComponent inventory) {
         walletLabel.setText("Coins: " + inventory.getWallet());
+    }
+
+    private void refreshSoilUpgradeUI(Label soilLabel, Button soilUpgradeBtn, GrowthMapComponent growthMap,
+                                      InventoryComponent inventory, int soilUpgradePrice) {
+        int currentLevel = growthMap.getUnlockedMapLevel();
+        boolean isMaxLevel = currentLevel >= 2;
+        boolean canAfford = isAvailable(soilUpgradePrice, inventory.getWallet());
+
+        soilLabel.setText("Soil Level: " + currentLevel);
+        soilUpgradeBtn.setText(isMaxLevel
+                ? "Soil Level Maxed"
+                : "Upgrade Soil Level - " + soilUpgradePrice + " coins");
+
+        boolean disableButton = isMaxLevel || !canAfford;
+        soilUpgradeBtn.setDisable(disableButton);
+        if (disableButton) {
+            ColorAdjust darken = new ColorAdjust();
+            darken.setBrightness(-0.5);
+            soilUpgradeBtn.setEffect(darken);
+        } else {
+            soilUpgradeBtn.setEffect(null);
+        }
     }
 
 
@@ -686,5 +780,9 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
                 activeWallet,
                 world
         );
+
+        if (activeSoilLevelLabel != null && activeSoilUpgradeButton != null && activeGrowthMap != null) {
+            refreshSoilUpgradeUI(activeSoilLevelLabel, activeSoilUpgradeButton, activeGrowthMap, activeInventory, SOIL_UPGRADE_PRICE);
+        }
     }
 }
