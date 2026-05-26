@@ -9,7 +9,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 
-public class MappingSystem implements EcsSystem, IRenderSystem{
+public class MappingSystem implements IEntityProcessingService, IMapService {
 
     private final int mapHeight = MapSize.MAP_HEIGHT;
     private final int mapWidth = MapSize.MAP_WIDTH;
@@ -28,10 +28,11 @@ public class MappingSystem implements EcsSystem, IRenderSystem{
 
 
     @Override
-    public EcsSystem create(GraphicsContext gc) {
+    public IEntityProcessingService create(GraphicsContext gc) {
         this.gc = gc;
         return this;
     }
+
     //update method
     @Override
     public void update(World world, double deltaTime) {
@@ -46,27 +47,27 @@ public class MappingSystem implements EcsSystem, IRenderSystem{
         }
 
         for (EntityID entity : world.getEntities()) {
-            if (world.hasComponent(entity, RainOverlayComponent.class)) {
+            if (world.hasComponent(entity, RainOverlayIComponentService.class)) {
                 continue;
             }
 
-            if (world.hasComponent(entity, PositionComponent.class) &&
-                    world.hasComponent(entity, RenderComponent.class)) {
+            if (world.hasComponent(entity, PositionIComponentService.class) &&
+                    world.hasComponent(entity, RenderIComponentService.class)) {
 
-                PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
-                RenderComponent renderComponent = (RenderComponent) world.GetComponent(entity, RenderComponent.class);
+                PositionIComponentService pos = (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
+                RenderIComponentService renderComponent = (RenderIComponentService) world.GetComponent(entity, RenderIComponentService.class);
 
                 RenderTile(pos.x, pos.y, renderComponent);
             }
         }
 
         for (EntityID entity : world.getEntities()) {
-            if (!world.hasComponent(entity, RainOverlayComponent.class)) {
+            if (!world.hasComponent(entity, RainOverlayIComponentService.class)) {
                 continue;
             }
 
-            if (world.hasComponent(entity, RenderComponent.class)) {
-                RenderComponent renderComponent = (RenderComponent) world.GetComponent(entity, RenderComponent.class);
+            if (world.hasComponent(entity, RenderIComponentService.class)) {
+                RenderIComponentService renderComponent = (RenderIComponentService) world.GetComponent(entity, RenderIComponentService.class);
 
                 if (renderComponent.sprite != null) {
                     gc.drawImage(renderComponent.sprite, 0, 0, 960, 960);
@@ -75,10 +76,10 @@ public class MappingSystem implements EcsSystem, IRenderSystem{
         }
 
         for (EntityID entity : world.getEntities()) {
-            if (world.hasComponent(entity, PositionComponent.class) &&
-                    world.hasComponent(entity, RobotComponent.class)) {
+            if (world.hasComponent(entity, PositionIComponentService.class) &&
+                    world.hasComponent(entity, RobotIComponentService.class)) {
 
-                PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
+                PositionIComponentService pos = (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
                 RenderRobotLabel(world, entity, pos);
             }
         }
@@ -96,7 +97,7 @@ public class MappingSystem implements EcsSystem, IRenderSystem{
                 tileSize);
     }
 
-    private void RenderTile(int x, int y, RenderComponent renderComponent) {
+    private void RenderTile(int x, int y, RenderIComponentService renderComponent) {
         double drawX =x * tileSize;
         double drawY =y * tileSize;
 
@@ -110,8 +111,8 @@ public class MappingSystem implements EcsSystem, IRenderSystem{
         RenderTile(x, y, renderComponent.color != null ? renderComponent.color : Color.GRAY);
     }
 
-    private void RenderRobotLabel(World world, EntityID entity, PositionComponent pos) {
-        RobotComponent robotComponent = (RobotComponent) world.GetComponent(entity, RobotComponent.class);
+    private void RenderRobotLabel(World world, EntityID entity, PositionIComponentService pos) {
+        RobotIComponentService robotComponent = (RobotIComponentService) world.GetComponent(entity, RobotIComponentService.class);
 
         String typeText = "[" + robotComponent.GetType() + "]";
 

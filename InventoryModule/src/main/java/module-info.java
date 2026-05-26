@@ -1,6 +1,6 @@
 import dk.sdu.se4.group1.CommonEcs.IGamePlugin;
-import dk.sdu.se4.group1.CommonEcs.IUiPlugin;
-import dk.sdu.se4.group1.Inventory.InventoryPlugin;
+import dk.sdu.se4.group1.CommonEcs.IUiPluginService;
+import dk.sdu.se4.group1.Inventory.InventoryUiPluginService;
 
 module InventoryModule {
     exports dk.sdu.se4.group1.Inventory;
@@ -9,5 +9,5 @@ module InventoryModule {
     requires javafx.graphics;
 
     provides IGamePlugin with dk.sdu.se4.group1.Inventory.InventoryGamePlugin;
-    provides IUiPlugin with dk.sdu.se4.group1.Inventory.InventoryUiPlugin;
+    provides IUiPluginService with InventoryUiPluginService;
 }

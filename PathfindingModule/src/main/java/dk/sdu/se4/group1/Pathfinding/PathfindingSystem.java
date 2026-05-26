@@ -1,12 +1,12 @@
 package dk.sdu.se4.group1.Pathfinding;
 
-import dk.sdu.se4.group1.CommonEcs.Components.PathComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.PathfindingUpgradeComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
-import dk.sdu.se4.group1.CommonEcs.EcsSystem;
+import dk.sdu.se4.group1.CommonEcs.Components.PathIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.PathfindingUpgradeIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.RobotIComponentService;
+import dk.sdu.se4.group1.CommonEcs.IEntityProcessingService;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
-import dk.sdu.se4.group1.CommonEcs.IPathfinding;
+import dk.sdu.se4.group1.CommonEcs.IPathfindingService;
 import dk.sdu.se4.group1.CommonEcs.MapSize;
 import dk.sdu.se4.group1.CommonEcs.Node;
 import dk.sdu.se4.group1.CommonEcs.World;
@@ -17,10 +17,10 @@ import java.util.Random;
 // ECS system that decides where each robot should go and fills its PathComponent with a route.
 // Algorithm is read live from PathfindingUpgradeComponent — upgrade it in the shop.
 // Runs every tick before MovementSystem so paths are ready when the robot tries to move.
-public class PathfindingSystem implements EcsSystem {
+public class PathfindingSystem implements IEntityProcessingService {
 
-    private IPathfinding pathfinding = PathfindingAlgorithm.createDefault(); // starts as BFS
-    private PathfindingUpgradeComponent.AlgorithmTier cachedTier = PathfindingUpgradeComponent.AlgorithmTier.BFS;
+    private IPathfindingService pathfinding = PathfindingAlgorithm.createDefault(); // starts as BFS
+    private PathfindingUpgradeIComponentService.AlgorithmTier cachedTier = PathfindingUpgradeIComponentService.AlgorithmTier.BFS;
     private final Random random = new Random();
 
     private static final int MAP_WIDTH  = MapSize.MAP_WIDTH;
@@ -31,12 +31,12 @@ public class PathfindingSystem implements EcsSystem {
     public void update(World world, double deltaTime) {
         refreshAlgorithmIfNeeded(world);
 
-        for (EntityID entity : world.getEntitiesWith(PathComponent.class)) {
-            if (!world.hasComponent(entity, RobotComponent.class))    continue;
-            if (!world.hasComponent(entity, PositionComponent.class)) continue;
+        for (EntityID entity : world.getEntitiesWith(PathIComponentService.class)) {
+            if (!world.hasComponent(entity, RobotIComponentService.class))    continue;
+            if (!world.hasComponent(entity, PositionIComponentService.class)) continue;
 
-            PathComponent     path = (PathComponent)     world.GetComponent(entity, PathComponent.class);
-            PositionComponent pos  = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
+            PathIComponentService path = (PathIComponentService)     world.GetComponent(entity, PathIComponentService.class);
+            PositionIComponentService pos  = (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
 
             if (path.arrived)     continue;
             if (path.pathPending) continue;
@@ -62,11 +62,11 @@ public class PathfindingSystem implements EcsSystem {
     }
 
     private void refreshAlgorithmIfNeeded(World world) {
-        var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeComponent.class);
+        var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeIComponentService.class);
         if (upgradeEntities == null || !upgradeEntities.iterator().hasNext()) return;
 
-        PathfindingUpgradeComponent upgrade = (PathfindingUpgradeComponent)
-                world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeComponent.class);
+        PathfindingUpgradeIComponentService upgrade = (PathfindingUpgradeIComponentService)
+                world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeIComponentService.class);
 
         if (upgrade.activeTier != cachedTier) {
             cachedTier  = upgrade.activeTier;
@@ -75,7 +75,7 @@ public class PathfindingSystem implements EcsSystem {
         }
     }
 
-    private void computePath(World world, PathComponent path, PositionComponent pos) {
+    private void computePath(World world, PathIComponentService path, PositionIComponentService pos) {
         path.pathPending = true;
         List<Node> computed = pathfinding.findPath(
                 pos.x, pos.y, path.goalX, path.goalY, MAP_WIDTH, MAP_HEIGHT, world);

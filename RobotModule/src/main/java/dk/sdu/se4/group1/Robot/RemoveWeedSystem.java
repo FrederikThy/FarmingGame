@@ -1,20 +1,20 @@
 package dk.sdu.se4.group1.Robot;
 
-import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RemoveCropComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.WeedComponent;
-import dk.sdu.se4.group1.CommonEcs.EcsSystem;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.RemoveCropIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.WeedIComponentService;
+import dk.sdu.se4.group1.CommonEcs.IEntityProcessingService;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
 
 
-public class RemoveWeedSystem implements EcsSystem {
+public class RemoveWeedSystem implements IEntityProcessingService {
 
 
     @Override
     public void update(World world, double deltaTime) {
-        for (EntityID entity : world.getEntitiesWith(RemoveCropComponent.class)){
-            PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
+        for (EntityID entity : world.getEntitiesWith(RemoveCropIComponentService.class)){
+            PositionIComponentService pos = (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
 
             EntityID weed = FindWeedAtPosition(world, pos);
 
@@ -32,7 +32,7 @@ public class RemoveWeedSystem implements EcsSystem {
     // Men når vi får implementeret vores algoritme, giver det ikke længere mening. Der synes jeg vi skal ændre det til
     // at robots kan bevæge sig frit på mappet.
     // Det her kommer også til at se meget pænere ud efter det.
-    private EntityID FindWeedAtPosition(World world, PositionComponent pos){
+    private EntityID FindWeedAtPosition(World world, PositionIComponentService pos){
         //Oppe
         EntityID weed = FindWeedAt(world, pos.x, pos.y - 1);
         if (weed != null){
@@ -62,8 +62,8 @@ public class RemoveWeedSystem implements EcsSystem {
 
     // Bruger til at finde alle entities med WeedComponent.
     private EntityID FindWeedAt(World world, int x, int y){
-        for (EntityID entity : world.getEntitiesWith(WeedComponent.class)){
-            PositionComponent posWeed = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
+        for (EntityID entity : world.getEntitiesWith(WeedIComponentService.class)){
+            PositionIComponentService posWeed = (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
             if(posWeed ==  null){
                 continue;
             }

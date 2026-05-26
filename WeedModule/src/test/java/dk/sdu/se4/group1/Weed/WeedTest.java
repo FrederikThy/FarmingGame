@@ -1,7 +1,7 @@
 package dk.sdu.se4.group1.Weed;
 
-import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.WeedComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.WeedIComponentService;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,8 +25,8 @@ class WeedTest {
     @Test
     void weedOccupies1Tile() {
         EntityID weed = world.createEntity();
-        world.addComponent(weed, new WeedComponent());
-        world.addComponent(weed, new PositionComponent(3, 7));
+        world.addComponent(weed, new WeedIComponentService());
+        world.addComponent(weed, new PositionIComponentService(3, 7));
 
         assertFalse(world.isTileFree(3, 7), "The tile is occupied with weed");
         assertTrue(world.isTileFree(3, 8),  "Tiles around the weed should remain free");
@@ -43,8 +43,8 @@ class WeedTest {
     @Test
     void removingWeedTest() {
         EntityID weed = world.createEntity();
-        world.addComponent(weed, new WeedComponent());
-        world.addComponent(weed, new PositionComponent(2, 2));
+        world.addComponent(weed, new WeedIComponentService());
+        world.addComponent(weed, new PositionIComponentService(2, 2));
         world.RemoveEntity(weed);
         assertTrue(world.isTileFree(2, 2), "Tile should be free");
     }
@@ -53,16 +53,16 @@ class WeedTest {
     @Test
     void getEntitiesWith_returnsOnlyWeedEntities() {
         EntityID weed1 = world.createEntity();
-        world.addComponent(weed1, new WeedComponent());
-        world.addComponent(weed1, new PositionComponent(1, 1));
+        world.addComponent(weed1, new WeedIComponentService());
+        world.addComponent(weed1, new PositionIComponentService(1, 1));
 
         EntityID weed2 = world.createEntity();
-        world.addComponent(weed2, new WeedComponent());
-        world.addComponent(weed2, new PositionComponent(9, 9));
+        world.addComponent(weed2, new WeedIComponentService());
+        world.addComponent(weed2, new PositionIComponentService(9, 9));
 
         EntityID robot = world.createEntity();
-        world.addComponent(robot, new PositionComponent(0, 0));
-        Set<EntityID> weeds = world.getEntitiesWith(WeedComponent.class);
+        world.addComponent(robot, new PositionIComponentService(0, 0));
+        Set<EntityID> weeds = world.getEntitiesWith(WeedIComponentService.class);
 
         assertEquals(2, weeds.size(), "Only 2 weeds exist");
         assertTrue(weeds.contains(weed1));

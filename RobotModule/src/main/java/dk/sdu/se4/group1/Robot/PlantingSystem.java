@@ -2,13 +2,13 @@ package dk.sdu.se4.group1.Robot;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.Components.*;
-import dk.sdu.se4.group1.CommonEcs.EcsSystem;
+import dk.sdu.se4.group1.CommonEcs.IEntityProcessingService;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
 
 import java.util.Random;
 
-public class PlantingSystem implements EcsSystem {
+public class PlantingSystem implements IEntityProcessingService {
 
     private final Random random = new Random();
     private double timeSinceLastPlantCheck = 0.0;
@@ -22,9 +22,9 @@ public class PlantingSystem implements EcsSystem {
 
         boolean shouldCheckPlanting = timeSinceLastPlantCheck >= PLANT_INTERVAL;
 
-        for (EntityID entity : world.getEntitiesWith(PlantingComponent.class)) {
-            PositionComponent robotPos =
-                    (PositionComponent) world.GetComponent(entity, PositionComponent.class);
+        for (EntityID entity : world.getEntitiesWith(PlantingIComponentService.class)) {
+            PositionIComponentService robotPos =
+                    (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
 
 
             if (shouldCheckPlanting) {
@@ -38,13 +38,13 @@ public class PlantingSystem implements EcsSystem {
         }
     }
 
-    private void tryPlantSeed(World world,EntityID entity, PositionComponent robotPos) {
+    private void tryPlantSeed(World world,EntityID entity, PositionIComponentService robotPos) {
 
 
         // Henter inventory. kommentar om iterator.next i harvestingSystem.
-        EntityID inventoryEntity = world.getEntitiesWith(InventoryComponent.class).iterator().next();
+        EntityID inventoryEntity = world.getEntitiesWith(InventoryIComponentService.class).iterator().next();
 
-        InventoryComponent inventory = (InventoryComponent) world.GetComponent(inventoryEntity, InventoryComponent.class);
+        InventoryIComponentService inventory = (InventoryIComponentService) world.GetComponent(inventoryEntity, InventoryIComponentService.class);
 
         int[] plantTile = findFreeAdjacentTile(world, robotPos.x,  robotPos.y);
 

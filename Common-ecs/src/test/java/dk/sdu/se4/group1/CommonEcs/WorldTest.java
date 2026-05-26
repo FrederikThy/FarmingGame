@@ -1,11 +1,9 @@
 package dk.sdu.se4.group1.CommonEcs;
 
-import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.WeedComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.WeedIComponentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,10 +36,10 @@ class WorldTest {
     @Test
     void AddAndGetComponentTest() {
         EntityID entity = world.createEntity();
-        PositionComponent position = new PositionComponent(5, 10);
+        PositionIComponentService position = new PositionIComponentService(5, 10);
 
         world.addComponent(entity, position);
-        PositionComponent retrieved = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
+        PositionIComponentService retrieved = (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
 
         assertSame(position, retrieved, "should return the same instance that was added");
         assertEquals(5,  retrieved.x);
@@ -52,8 +50,8 @@ class WorldTest {
     @Test
     void RemoveEntityTest() {
         EntityID entity = world.createEntity();
-        world.addComponent(entity, new PositionComponent(1, 1));
-        world.addComponent(entity, new WeedComponent());
+        world.addComponent(entity, new PositionIComponentService(1, 1));
+        world.addComponent(entity, new WeedIComponentService());
         world.RemoveEntity(entity);
         assertFalse(world.getEntities().contains(entity), "Removed entity should no longer exist");
     }

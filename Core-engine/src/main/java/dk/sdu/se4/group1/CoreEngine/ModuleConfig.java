@@ -1,9 +1,9 @@
 package dk.sdu.se4.group1.CoreEngine;
 
 import dk.sdu.se4.group1.CommonEcs.IGamePlugin;
-import dk.sdu.se4.group1.CommonEcs.EcsSystem;
-import dk.sdu.se4.group1.CommonEcs.IRenderSystem;
-import dk.sdu.se4.group1.CommonEcs.IUiPlugin;
+import dk.sdu.se4.group1.CommonEcs.IEntityProcessingService;
+import dk.sdu.se4.group1.CommonEcs.IMapService;
+import dk.sdu.se4.group1.CommonEcs.IUiPluginService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,16 +16,16 @@ import java.util.ServiceLoader;
 public class ModuleConfig {
 
     @Bean
-    public Game game(List<EcsSystem> ecsSystems,  List<IGamePlugin> plugins, List<IUiPlugin> uiPlugins, List<IRenderSystem> renderSystems) {
-        return new Game(ecsSystems, plugins, uiPlugins, renderSystems);
+    public Game game(List<IEntityProcessingService> IEntityProcessingServices, List<IGamePlugin> plugins, List<IUiPluginService> uiPlugins, List<IMapService> renderSystems) {
+        return new Game(IEntityProcessingServices, plugins, uiPlugins, renderSystems);
     }
 
     // Regular systems
     @Bean
-    public List<EcsSystem> ecsSystems() {
-        List<EcsSystem> services = new ArrayList<>();
-        ServiceLoader.load(EcsSystem.class).forEach(services::add);
-        services.sort(Comparator.comparingInt(EcsSystem::priority));
+    public List<IEntityProcessingService> ecsSystems() {
+        List<IEntityProcessingService> services = new ArrayList<>();
+        ServiceLoader.load(IEntityProcessingService.class).forEach(services::add);
+        services.sort(Comparator.comparingInt(IEntityProcessingService::priority));
         return services;
     }
 
@@ -39,17 +39,17 @@ public class ModuleConfig {
 
     // For modules with plugins that contains javafx elements
     @Bean
-    public List<IUiPlugin> uiPlugins() {
-        List<IUiPlugin> plugins = new ArrayList<>();
-        ServiceLoader.load(IUiPlugin.class).forEach(plugins::add);
+    public List<IUiPluginService> uiPlugins() {
+        List<IUiPluginService> plugins = new ArrayList<>();
+        ServiceLoader.load(IUiPluginService.class).forEach(plugins::add);
         return plugins;
     }
 
     // Since our mappingSystem uses GraphicalContext, we need to have a serviceloader for that single system
     @Bean
-    public List<IRenderSystem> renderSystems() {
-        List<IRenderSystem> systems = new ArrayList<>();
-        ServiceLoader.load(IRenderSystem.class).forEach(systems::add);
+    public List<IMapService> renderSystems() {
+        List<IMapService> systems = new ArrayList<>();
+        ServiceLoader.load(IMapService.class).forEach(systems::add);
         return systems;
     }
 }

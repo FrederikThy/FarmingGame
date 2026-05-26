@@ -1,17 +1,17 @@
 package dk.sdu.se4.group1.Crops;
 
-import dk.sdu.se4.group1.CommonEcs.EcsSystem;
+import dk.sdu.se4.group1.CommonEcs.IEntityProcessingService;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
-import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RenderComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RainOverlayComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.RenderIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.RainOverlayIComponentService;
 import javafx.scene.image.Image;
 
 import java.io.InputStream;
 import java.util.Random;
 
-public class RainOverlaySystem implements EcsSystem {
+public class RainOverlaySystem implements IEntityProcessingService {
 
     private static final double CHECK_INTERVAL_SECONDS = 20.0;
     private static final double RAIN_DURATION_SECONDS = 20.0;
@@ -67,9 +67,9 @@ public class RainOverlaySystem implements EcsSystem {
 
         rainEntity = world.createEntity();
 
-        world.addComponent(rainEntity, new PositionComponent(0, 0));
-        world.addComponent(rainEntity, new RenderComponent(rainOverlayImage));
-        world.addComponent(rainEntity, new RainOverlayComponent());
+        world.addComponent(rainEntity, new PositionIComponentService(0, 0));
+        world.addComponent(rainEntity, new RenderIComponentService(rainOverlayImage));
+        world.addComponent(rainEntity, new RainOverlayIComponentService());
     }
 
     private void stopRain(World world) {
@@ -84,8 +84,8 @@ public class RainOverlaySystem implements EcsSystem {
     }
 
     private void makeCropsGrowFaster(World world, double deltaTime) {
-        for (EntityID crop : world.getEntitiesWith(GrowthComponent.class)) {
-            GrowthComponent growth = (GrowthComponent) world.GetComponent(crop, GrowthComponent.class);
+        for (EntityID crop : world.getEntitiesWith(GrowthIComponentService.class)) {
+            GrowthIComponentService growth = (GrowthIComponentService) world.GetComponent(crop, GrowthIComponentService.class);
 
             growth.growthTime -= RAIN_GROWTH_BONUS_PER_SECOND * deltaTime;
 

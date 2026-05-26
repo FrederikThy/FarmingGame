@@ -2,10 +2,9 @@ package dk.sdu.se4.group1.Shop;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.*;
-import dk.sdu.se4.group1.CommonEcs.Components.CropComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.InventoryComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RobotComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.ShopComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.InventoryIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.RobotIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.ShopIComponentService;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,7 +15,7 @@ import javafx.stage.Stage;
 import java.util.List;
 
 
-public class ShopStore implements IShopService,EcsSystem {
+public class ShopStore implements IShopService, IEntityProcessingService {
 
     private double shopUpdateTimer = 0.0;
 
@@ -25,15 +24,15 @@ public class ShopStore implements IShopService,EcsSystem {
     private VBox activeSpeedList;
     private VBox activeRobotList;
 
-    private ShopComponent activeShop;
-    private InventoryComponent activeInventory;
+    private ShopIComponentService activeShop;
+    private InventoryIComponentService activeInventory;
     private Label activeWalletLabel;
     private World activeWorld;
 
     private EntityID findAvailableRobot(World world) {
-        for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
-            RobotComponent robot =
-                    (RobotComponent) world.GetComponent(entity, RobotComponent.class);
+        for (EntityID entity : world.getEntitiesWith(RobotIComponentService.class)) {
+            RobotIComponentService robot =
+                    (RobotIComponentService) world.GetComponent(entity, RobotIComponentService.class);
 
 
             if (robot.seedType == null) {
@@ -59,8 +58,8 @@ public class ShopStore implements IShopService,EcsSystem {
                     return;
                 }
 
-                RobotComponent robot =
-                        (RobotComponent) world.GetComponent(robotId, RobotComponent.class);
+                RobotIComponentService robot =
+                        (RobotIComponentService) world.GetComponent(robotId, RobotIComponentService.class);
 
                 robot.seedType = seedType;
                 System.out.println("Gav " + seedType + " til robot " +robotId.id());
@@ -76,7 +75,7 @@ public class ShopStore implements IShopService,EcsSystem {
     }
 
     @Override
-    public List<EntityID> getShopItems(World world) {
+    public List<EntityID> getShopItems() {
         return List.of();
     }
 

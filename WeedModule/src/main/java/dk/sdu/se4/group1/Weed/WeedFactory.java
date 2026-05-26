@@ -1,10 +1,10 @@
 package dk.sdu.se4.group1.Weed;
 
-import dk.sdu.se4.group1.CommonEcs.Components.WeedComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.WeedIComponentService;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
-import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RenderComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.RenderIComponentService;
 import javafx.scene.image.Image;
 
 import java.io.IOException;
@@ -16,8 +16,8 @@ public class WeedFactory {
     public static void CreateWeed(World world, int x, int y) {
         EntityID WeedId = world.createEntity();
 
-        world.addComponent(WeedId, new WeedComponent());
-        world.addComponent(WeedId, new PositionComponent(x, y));
+        world.addComponent(WeedId, new WeedIComponentService());
+        world.addComponent(WeedId, new PositionIComponentService(x, y));
 
 
         try (InputStream spriteStream = WeedFactory.class.getResourceAsStream("/Weed.png")) {
@@ -26,7 +26,7 @@ public class WeedFactory {
             }
             //Here we add the render the image from the code above
             //Throws an exception if it fails to load 317046.png mrBad picture
-            world.addComponent(WeedId, new RenderComponent(new Image(spriteStream)));
+            world.addComponent(WeedId, new RenderIComponentService(new Image(spriteStream)));
         } catch (IOException e) {
             throw new RuntimeException("Failed to close sprite stream", e);
         }

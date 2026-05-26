@@ -16,7 +16,7 @@ public interface IShopService {
         return sharedInstance[0];
     }*/
     void openShop(World world);
-    List<EntityID> getShopItems(World world);
+    List<EntityID> getShopItems();
     boolean buyItem(int EntityID,Item item,int quantity);
     int SellItem(int EntityID, int quantity);
     int getBuyPrice(SeedType type);

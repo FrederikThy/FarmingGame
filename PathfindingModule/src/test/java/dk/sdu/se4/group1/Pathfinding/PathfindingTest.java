@@ -13,14 +13,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PathfindingTest {
 private static final int W = 10, H = 10;
 private World emptyWorld;
-private AStarPathfinding aStar;
-private BFSPathfinding   bfs;
+private AStarPathfindingService aStar;
+private BFSPathfindingService bfs;
 
 @BeforeEach
 void setUp() {
     emptyWorld = new World();
-    aStar      = new AStarPathfinding();
-    bfs        = new BFSPathfinding();
+    aStar      = new AStarPathfindingService();
+    bfs        = new BFSPathfindingService();
 }
 
 /** Test to see if algorithms work and return a valid path */

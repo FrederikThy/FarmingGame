@@ -1,19 +1,19 @@
 package dk.sdu.se4.group1.Crops;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
-import dk.sdu.se4.group1.CommonEcs.Components.CropComponent;
-import dk.sdu.se4.group1.CommonEcs.Components.RenderComponent;
-import dk.sdu.se4.group1.CommonEcs.EcsSystem;
+import dk.sdu.se4.group1.CommonEcs.Components.CropIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.RenderIComponentService;
+import dk.sdu.se4.group1.CommonEcs.IEntityProcessingService;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.SeedRequest;
 import dk.sdu.se4.group1.CommonEcs.World;
-import dk.sdu.se4.group1.CommonEcs.Components.GrowthMapComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.GrowthMapIComponentService;
 import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class cropSystem implements EcsSystem {
+public class cropSystem implements IEntityProcessingService {
 
     @Override
     public void update(World world, double deltaTime) {
@@ -36,10 +36,10 @@ public class cropSystem implements EcsSystem {
         //If that crop has been at the same growth stage for more than 5 seconds
         //Increase that growth stage and change the sprite to the new one
         //Max growth stage is 4 and then the crops isharvestable turns true
-        for(EntityID crop : world.getEntitiesWith(CropComponent.class)){
-            GrowthComponent Growth =(GrowthComponent) world.GetComponent(crop, GrowthComponent.class);
-            CropComponent Crop = (CropComponent) world.GetComponent(crop, CropComponent.class);
-            RenderComponent Render = (RenderComponent) world.GetComponent(crop, RenderComponent.class);
+        for(EntityID crop : world.getEntitiesWith(CropIComponentService.class)){
+            GrowthIComponentService Growth =(GrowthIComponentService) world.GetComponent(crop, GrowthIComponentService.class);
+            CropIComponentService Crop = (CropIComponentService) world.GetComponent(crop, CropIComponentService.class);
+            RenderIComponentService Render = (RenderIComponentService) world.GetComponent(crop, RenderIComponentService.class);
 
             //Return here would stop the whole system update so we use continue instead
             if(Growth.growthStage == 4 ){
@@ -68,7 +68,7 @@ public class cropSystem implements EcsSystem {
                     }
                     //Here we add the render the image from the code above
                     //Throws an exception if it fails to load the crop
-                    world.addComponent(crop, new RenderComponent(new Image(spriteStream)));
+                    world.addComponent(crop, new RenderIComponentService(new Image(spriteStream)));
                 } catch (IOException e) {
                     throw new RuntimeException("Failed to close sprite stream", e);
                 }
@@ -89,9 +89,9 @@ public class cropSystem implements EcsSystem {
 
     //Checks for growth map in the world and if true then it returns the growth rate from that map
     private double getGrowthRate(World world) {
-        for (EntityID entity : world.getEntitiesWith(GrowthMapComponent.class)) {
-            GrowthMapComponent growthMap =
-                    (GrowthMapComponent) world.GetComponent(entity, GrowthMapComponent.class);
+        for (EntityID entity : world.getEntitiesWith(GrowthMapIComponentService.class)) {
+            GrowthMapIComponentService growthMap =
+                    (GrowthMapIComponentService) world.GetComponent(entity, GrowthMapIComponentService.class);
             return growthMap.
                     getGrowthRate();
         }

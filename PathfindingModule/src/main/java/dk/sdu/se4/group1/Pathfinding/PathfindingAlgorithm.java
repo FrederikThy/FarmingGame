@@ -1,7 +1,7 @@
 package dk.sdu.se4.group1.Pathfinding;
 
-import dk.sdu.se4.group1.CommonEcs.Components.PathfindingUpgradeComponent;
-import dk.sdu.se4.group1.CommonEcs.IPathfinding;
+import dk.sdu.se4.group1.CommonEcs.Components.PathfindingUpgradeIComponentService;
+import dk.sdu.se4.group1.CommonEcs.IPathfindingService;
 
 
  // Stateless factory. Returns the IPathfinding implementation for a given tier.
@@ -10,15 +10,15 @@ public class PathfindingAlgorithm {
 
     private PathfindingAlgorithm() {}
 
-    public static IPathfinding create(PathfindingUpgradeComponent.AlgorithmTier tier) {
+    public static IPathfindingService create(PathfindingUpgradeIComponentService.AlgorithmTier tier) {
         return switch (tier) {
-            case BFS      -> new BFSPathfinding();
-            case DIJKSTRA -> new DijkstraPathfinding();
-            case A_STAR   -> new AStarPathfinding();
+            case BFS      -> new BFSPathfindingService();
+            case DIJKSTRA -> new DijkstraPathfindingService();
+            case A_STAR   -> new AStarPathfindingService();
         };
     }
 
-    public static IPathfinding createDefault() {
-        return new BFSPathfinding();
+    public static IPathfindingService createDefault() {
+        return new BFSPathfindingService();
     }
 }

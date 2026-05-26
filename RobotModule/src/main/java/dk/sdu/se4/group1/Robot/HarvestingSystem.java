@@ -2,22 +2,19 @@ package dk.sdu.se4.group1.Robot;
 
 import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.*;
-import javafx.geometry.Pos;
 
-import java.util.Set;
-
-public class HarvestingSystem implements EcsSystem {
+public class HarvestingSystem implements IEntityProcessingService {
 
     @Override
     public void update(World world, double deltaTime) {
         // the variable expects an EntityID as a return. It gets a Set<> because of getentitiesWith.
         // iterator.next gets the first element in the list, and returns it as EntityID
-        EntityID inventoryEntity = world.getEntitiesWith(InventoryComponent.class).iterator().next();
+        EntityID inventoryEntity = world.getEntitiesWith(InventoryIComponentService.class).iterator().next();
 
-        InventoryComponent inventory = (InventoryComponent) world.GetComponent(inventoryEntity, InventoryComponent.class);
+        InventoryIComponentService inventory = (InventoryIComponentService) world.GetComponent(inventoryEntity, InventoryIComponentService.class);
 
-        for (EntityID entity : world.getEntitiesWith(HarvestingComponent.class)) {
-            PositionComponent pos = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
+        for (EntityID entity : world.getEntitiesWith(HarvestingIComponentService.class)) {
+            PositionIComponentService pos = (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
             EntityID crop = FindCropAtPosition(world, pos);
 
             if (crop != null) {
@@ -28,7 +25,7 @@ public class HarvestingSystem implements EcsSystem {
         }
     }
 
-    private EntityID FindCropAtPosition(World world, PositionComponent pos) {
+    private EntityID FindCropAtPosition(World world, PositionIComponentService pos) {
        // Oppe
         EntityID crop = FindCropAt(world, pos.x, pos.y - 1);
         if(crop != null) {
@@ -54,9 +51,9 @@ public class HarvestingSystem implements EcsSystem {
     }
 
     private EntityID FindCropAt(World world, double x, double y) {
-        for (EntityID entity : world.getEntitiesWith(CropComponent.class)) {
-            PositionComponent posCrop = (PositionComponent) world.GetComponent(entity, PositionComponent.class);
-            CropComponent cropComponent = (CropComponent) world.GetComponent(entity, CropComponent.class);
+        for (EntityID entity : world.getEntitiesWith(CropIComponentService.class)) {
+            PositionIComponentService posCrop = (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
+            CropIComponentService cropComponent = (CropIComponentService) world.GetComponent(entity, CropIComponentService.class);
             if (posCrop == null){
                 continue;
             }

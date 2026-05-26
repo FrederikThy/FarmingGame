@@ -17,16 +17,16 @@ import java.util.List;
 public class Game {
 
     // Systems loaded via ServiceLoader
-    private final List<EcsSystem> discoveredSystems;
+    private final List<IEntityProcessingService> discoveredSystems;
     // Startup plugins. Initializing entity spawning etc.
     private final List<IGamePlugin> plugins;
     // UI plugins that inject javafx nodes into the scene
-    private final List<IUiPlugin> uiPlugins;
+    private final List<IUiPluginService> uiPlugins;
 
-    private final List<IRenderSystem> renderSystems;
+    private final List<IMapService> renderSystems;
     private long lastTime = 0;
 
-    Game(List<EcsSystem> discoveredSystems, List<IGamePlugin> plugins, List<IUiPlugin> uiPlugins, List<IRenderSystem> renderSystems) {
+    Game(List<IEntityProcessingService> discoveredSystems, List<IGamePlugin> plugins, List<IUiPluginService> uiPlugins, List<IMapService> renderSystems) {
         this.discoveredSystems = discoveredSystems;
         this.plugins = plugins;
         this.uiPlugins = uiPlugins;
@@ -57,20 +57,20 @@ public class Game {
         root.getChildren().addAll(backgroundView, canvas);
 
         // A list of all systems loaded from the ServiceLoader
-        List<EcsSystem> allSystems = new ArrayList<>(discoveredSystems);
+        List<IEntityProcessingService> allSystems = new ArrayList<>(discoveredSystems);
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        for (IRenderSystem renderSystem : renderSystems) {
+        for (IMapService renderSystem : renderSystems) {
             allSystems.add(renderSystem.create(gc));
         }
 
         // add nodes from UI plugins. if the UI also implements EcsSystem, add it to allSystems as well.
-        for (IUiPlugin plugin : uiPlugins) {
+        for (IUiPluginService plugin : uiPlugins) {
             var node = plugin.createNode(world);
 
             root.getChildren().add(node);
 
-            if (node instanceof EcsSystem system) {
+            if (node instanceof IEntityProcessingService system) {
                 allSystems.add(system);
             }
         }
@@ -92,7 +92,7 @@ public class Game {
                 double dt = (now - lastTime) / 1_000_000_000.0;
                 lastTime = now;
 
-                for (EcsSystem system : allSystems) {
+                for (IEntityProcessingService system : allSystems) {
                     system.update(world, dt);
                 }
             }

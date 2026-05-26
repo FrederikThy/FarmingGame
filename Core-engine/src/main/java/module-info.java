@@ -1,3 +1,7 @@
+import dk.sdu.se4.group1.CommonEcs.IEntityProcessingService;
+import dk.sdu.se4.group1.CommonEcs.IMapService;
+import dk.sdu.se4.group1.CommonEcs.IUiPluginService;
+
 module Core.engine {
     requires javafx.controls;
     requires javafx.graphics;
@@ -9,8 +13,8 @@ module Core.engine {
     requires spring.expression;
     requires Common.ecs;
     exports dk.sdu.se4.group1.CoreEngine;
-    uses dk.sdu.se4.group1.CommonEcs.EcsSystem;
+    uses IEntityProcessingService;
     uses dk.sdu.se4.group1.CommonEcs.IGamePlugin;
-    uses dk.sdu.se4.group1.CommonEcs.IUiPlugin;
-    uses dk.sdu.se4.group1.CommonEcs.IRenderSystem;
+    uses IUiPluginService;
+    uses IMapService;
 }

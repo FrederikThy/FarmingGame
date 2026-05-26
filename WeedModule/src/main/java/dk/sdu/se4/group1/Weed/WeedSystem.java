@@ -1,12 +1,12 @@
 package dk.sdu.se4.group1.Weed;
 
-import dk.sdu.se4.group1.CommonEcs.EcsSystem;
+import dk.sdu.se4.group1.CommonEcs.IEntityProcessingService;
 import dk.sdu.se4.group1.CommonEcs.MapSize;
 import dk.sdu.se4.group1.CommonEcs.World;
 
 import java.util.Random;
 
-public class WeedSystem implements EcsSystem {
+public class WeedSystem implements IEntityProcessingService {
     private double timePassed = 0;
     private double spawnChance = 0.5;
 

@@ -1,6 +1,7 @@
 import dk.sdu.se4.group1.CommonEcs.IGamePlugin;
-import dk.sdu.se4.group1.CommonEcs.IUiPlugin;
-import dk.sdu.se4.group1.Shop.ShopPlugin;
+import dk.sdu.se4.group1.CommonEcs.RobotSPI;
+import dk.sdu.se4.group1.CommonEcs.IUiPluginService;
+import dk.sdu.se4.group1.Shop.ShopUiPluginService;
 
 module ShopModule {
     exports dk.sdu.se4.group1.Shop;
@@ -11,8 +12,8 @@ module ShopModule {
     requires java.naming;
     requires jdk.compiler;
 
-    uses dk.sdu.se4.group1.CommonEcs.ICreateRobot;
+    uses RobotSPI;
 
     provides IGamePlugin with dk.sdu.se4.group1.Shop.ShopGamePlugin;
-    provides IUiPlugin with dk.sdu.se4.group1.Shop.ShopUiPlugin;
+    provides IUiPluginService with ShopUiPluginService;
 }

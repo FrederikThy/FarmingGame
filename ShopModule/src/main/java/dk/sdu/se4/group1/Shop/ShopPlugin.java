@@ -18,15 +18,15 @@ import java.util.ServiceLoader;
 /**
  * Hello world!
  */
-public class ShopPlugin extends Button implements IShopService,EcsSystem {
+public class ShopPlugin extends Button implements IShopService, IEntityProcessingService {
 
     private VBox activeAllList;
     private VBox activeCropList;
     private VBox activeSpeedList;
     private VBox activeRobotList;
 
-    private ShopComponent activeShop;
-    private InventoryComponent activeInventory;
+    private ShopIComponentService activeShop;
+    private InventoryIComponentService activeInventory;
     private Label activeWallet;
     private double shopUpdateTimer = 0.0;
 
@@ -42,9 +42,9 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
     }
 
     private EntityID findAvailableRobot(World world) {
-        for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
-            RobotComponent robot =
-                    (RobotComponent) world.GetComponent(entity, RobotComponent.class);
+        for (EntityID entity : world.getEntitiesWith(RobotIComponentService.class)) {
+            RobotIComponentService robot =
+                    (RobotIComponentService) world.GetComponent(entity, RobotIComponentService.class);
 
 
             if (robot.seedType == null) {
@@ -69,10 +69,10 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
     }
     @Override
     public void openShop(World world) {
-        var entityInvitory = world.getEntitiesWith(InventoryComponent.class);
-        InventoryComponent invitory = (InventoryComponent)world.GetComponent(entityInvitory.iterator().next(),InventoryComponent.class);
-        var entityShop = world.getEntitiesWith(ShopComponent.class);
-        ShopComponent shop = (ShopComponent)world.GetComponent(entityShop.iterator().next(),ShopComponent.class);
+        var entityInvitory = world.getEntitiesWith(InventoryIComponentService.class);
+        InventoryIComponentService invitory = (InventoryIComponentService)world.GetComponent(entityInvitory.iterator().next(), InventoryIComponentService.class);
+        var entityShop = world.getEntitiesWith(ShopIComponentService.class);
+        ShopIComponentService shop = (ShopIComponentService)world.GetComponent(entityShop.iterator().next(), ShopIComponentService.class);
         VBox layout = new VBox(12);
         layout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
         layout.getStyleClass().add("shop-root");
@@ -134,8 +134,8 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             VBox cropList,
             VBox speedList,
             VBox robotList,
-            ShopComponent shop,
-            InventoryComponent inventory,
+            ShopIComponentService shop,
+            InventoryIComponentService inventory,
             Label walletLabel,
             World world
     ) {
@@ -145,17 +145,17 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         speedList.getChildren().clear();
         robotList.getChildren().clear();
 
-        for (ShopOfferComponent item : shop.getShopItems()) {
-            Component component = item.getComponent();
+        for (ShopOfferIComponentService item : shop.getShopItems()) {
+            IComponentService IComponentService = item.getComponent();
 
             allList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
-            if (component instanceof CropComponent) {
+            if (IComponentService instanceof CropIComponentService) {
                 cropList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
-            } else if (component instanceof SpeedToolComponent) {
+            } else if (IComponentService instanceof SpeedToolIComponentService) {
                 speedList.getChildren().add(createSpeedToolCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
-            } else if (component instanceof RobotComponent) {
+            } else if (IComponentService instanceof RobotIComponentService) {
                 robotList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
-            } else if (component instanceof PathfindingAlgorithmComponent) {
+            } else if (IComponentService instanceof PathfindingAlgorithmIComponentService) {
                 robotList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
             }
         }
@@ -163,17 +163,17 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
 
     @Override
-    public List<EntityID> getShopItems(World world) {
+    public List<EntityID> getShopItems() {
         return List.of();
     }
 
-    private Button createShopCard(ShopOfferComponent item,InventoryComponent inventory,Label walletLabel,World world,VBox allList ,VBox cropList,VBox speedList,VBox robotList,ShopComponent shop)
+    private Button createShopCard(ShopOfferIComponentService item, InventoryIComponentService inventory, Label walletLabel, World world, VBox allList , VBox cropList, VBox speedList, VBox robotList, ShopIComponentService shop)
     {
         int price = item.getBuyPrice();
-        Component component = item.getComponent();
+        IComponentService IComponentService = item.getComponent();
 
-        String name = getName(component);
-        String imagePath = getImagePath(component);
+        String name = getName(IComponentService);
+        String imagePath = getImagePath(IComponentService);
 
         ImageView itemImage = loadImage(imagePath, 52, 52);
         ImageView coinImage = loadImage("/coin.png", 24, 24);
@@ -200,11 +200,11 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             button.setEffect(darken);
         }
 
-        if (component instanceof PathfindingAlgorithmComponent algoComponent) {
-            var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeComponent.class);
+        if (IComponentService instanceof PathfindingAlgorithmIComponentService algoComponent) {
+            var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeIComponentService.class);
             if (upgradeEntities != null && upgradeEntities.iterator().hasNext()) {
-                PathfindingUpgradeComponent upgrade = (PathfindingUpgradeComponent)
-                        world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeComponent.class);
+                PathfindingUpgradeIComponentService upgrade = (PathfindingUpgradeIComponentService)
+                        world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeIComponentService.class);
                 if (upgrade.activeTier.tier >= algoComponent.tier.tier) {
                     button.setDisable(true);
                     priceLabel.setText("Purchased");
@@ -218,7 +218,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         // We dont have to check if its a robotComponent, because we do that in handlePurchase
         button.setOnAction(e -> {
 
-            handlePurchase(component, price, inventory, walletLabel, null, world);
+            handlePurchase(IComponentService, price, inventory, walletLabel, null, world);
 
             updateWalletLabel(walletLabel, inventory);
             updateShopContent(allList,cropList, speedList, robotList, shop, inventory, walletLabel, world);
@@ -227,7 +227,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return button;
     }
 
-    private Button createSpeedToolCard(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world,VBox allList ,VBox cropList,VBox speedList,VBox robotList,ShopComponent shop) {
+    private Button createSpeedToolCard(ShopOfferIComponentService item, InventoryIComponentService inventory, Label walletLabel, World world, VBox allList , VBox cropList, VBox speedList, VBox robotList, ShopIComponentService shop) {
         int price = item.getBuyPrice();
         var component = item.getComponent();
         String name = getName(component);
@@ -268,12 +268,12 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             pickLayout.setPadding(new javafx.geometry.Insets(20));
             pickLayout.getChildren().add(new Label("Vælg en robot:"));
 
-            for (EntityID entity : world.getEntitiesWith(RobotComponent.class)) {
-                boolean alreadyEquipped = world.hasComponent(entity, SpeedToolComponent.class);
+            for (EntityID entity : world.getEntitiesWith(RobotIComponentService.class)) {
+                boolean alreadyEquipped = world.hasComponent(entity, SpeedToolIComponentService.class);
 
                 String label;
                 if (alreadyEquipped){
-                   label = "Robot " + entity.id() + " (level " + (int)((SpeedToolComponent) world.GetComponent(entity, SpeedToolComponent.class)).getSpeedMultiplier() + ")";
+                   label = "Robot " + entity.id() + " (level " + (int)((SpeedToolIComponentService) world.GetComponent(entity, SpeedToolIComponentService.class)).getSpeedMultiplier() + ")";
                 } else {
                     label = "Robot " + entity.id();
                 }
@@ -294,7 +294,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
     }
 
 
-    private void handleRobotSelect(ShopOfferComponent item, InventoryComponent inventory, Label walletLabel, World world,VBox allList, VBox cropList,VBox speedList,VBox robotList,ShopComponent shop){
+    private void handleRobotSelect(ShopOfferIComponentService item, InventoryIComponentService inventory, Label walletLabel, World world, VBox allList, VBox cropList, VBox speedList, VBox robotList, ShopIComponentService shop){
         Stage pickStage = new Stage();
         pickStage.setTitle("Vælg Robot");
 
@@ -350,31 +350,31 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         pickStage.show();
     }
 
-    private String getImagePath(Component component) {
-        if (component instanceof CropComponent cropComponent) {
+    private String getImagePath(IComponentService IComponentService) {
+        if (IComponentService instanceof CropIComponentService cropComponent) {
             return "/" + cropComponent.seedType.name().toLowerCase() + ".png";
         }
 
-        if (component instanceof SpeedToolComponent) {
+        if (IComponentService instanceof SpeedToolIComponentService) {
             return "/Speed_Tool.png";
         }
 
-        if (component instanceof PlantingComponent) {
+        if (IComponentService instanceof PlantingIComponentService) {
             return "/Planting_Tool.png";
         }
 
-        if (component instanceof HarvestingComponent) {
+        if (IComponentService instanceof HarvestingIComponentService) {
             return "/Harvesting_Tool.png";
         }
         // Picture for each of the robots
-        if(component instanceof RobotComponent robotComponent) {
+        if(IComponentService instanceof RobotIComponentService robotComponent) {
             return switch (robotComponent.robotType){
                 case HARVEST -> "/HrFlink_1.png";
                 case PLANT -> "/HrFlink_2.png";
                 case WEED_REMOVER ->  "/HrFlink_3.png";
             };
         }
-        if (component instanceof PathfindingAlgorithmComponent) {
+        if (IComponentService instanceof PathfindingAlgorithmIComponentService) {
             return "/gear.png";
         }
         return "/item_slot.png";
@@ -382,31 +382,31 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
 
 
-    private String getName(Component component) {
-        if (component instanceof CropComponent cropComponent) {
+    private String getName(IComponentService IComponentService) {
+        if (IComponentService instanceof CropIComponentService cropComponent) {
             return formatSeedName(cropComponent.seedType.toString()) + " Seed";
         }
 
-        if (component instanceof SpeedToolComponent) {
+        if (IComponentService instanceof SpeedToolIComponentService) {
             return "Speed Tool";
         }
 
-        if (component instanceof PlantingComponent) {
+        if (IComponentService instanceof PlantingIComponentService) {
             return "Planting Tool";
         }
 
-        if (component instanceof HarvestingComponent) {
+        if (IComponentService instanceof HarvestingIComponentService) {
             return "Harvesting Tool";
         }
         // Instead of only one robot to pick, we have three
-        if (component instanceof RobotComponent robotComponent) {
+        if (IComponentService instanceof RobotIComponentService robotComponent) {
             return switch (robotComponent.robotType){
                 case WEED_REMOVER ->  "Weed Remover";
                 case HARVEST ->  "Harvest";
                 case PLANT ->  "Planting";
             };
         }
-        if (component instanceof PathfindingAlgorithmComponent algoComponent) {
+        if (IComponentService instanceof PathfindingAlgorithmIComponentService algoComponent) {
             return switch (algoComponent.tier) {
                 case DIJKSTRA -> "Dijkstra Pathfinding";
                 case A_STAR   -> "A* Pathfinding";
@@ -414,9 +414,9 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             };
         }
 
-        return component.getClass().getSimpleName();
+        return IComponentService.getClass().getSimpleName();
     }
-    private int getPrice(ShopOfferComponent component) {
+    private int getPrice(ShopOfferIComponentService component) {
        return component.getBuyPrice();
     }
 
@@ -473,17 +473,17 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
 
 
 
-    private void handlePurchase(Component type, int price, InventoryComponent inventory, Label walletLabel,String Robottype, World world) {
+    private void handlePurchase(IComponentService type, int price, InventoryIComponentService inventory, Label walletLabel, String Robottype, World world) {
         if (inventory.getWallet() < price) {
             return;
         }
 
 
-        if (type instanceof PathfindingAlgorithmComponent algoComponent) {
-            var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeComponent.class);
+        if (type instanceof PathfindingAlgorithmIComponentService algoComponent) {
+            var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeIComponentService.class);
             if (upgradeEntities != null && upgradeEntities.iterator().hasNext()) {
-                PathfindingUpgradeComponent upgrade = (PathfindingUpgradeComponent)
-                        world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeComponent.class);
+                PathfindingUpgradeIComponentService upgrade = (PathfindingUpgradeIComponentService)
+                        world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeIComponentService.class);
                 if (upgrade.activeTier.tier >= algoComponent.tier.tier) {
                     return;
                 }
@@ -495,21 +495,21 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
             return;
         }
 
-        if (type instanceof CropComponent) {
-            CropComponent seedComponent = new CropComponent(((CropComponent) type).seedType);
+        if (type instanceof CropIComponentService) {
+            CropIComponentService seedComponent = new CropIComponentService(((CropIComponentService) type).seedType);
             seedComponent.isHarvestable = false;
 
             EntityID itemId = world.createEntity();
             inventory.addSeeds(seedComponent.seedType, 1);
         }
 
-        if (type instanceof RobotComponent robotComponent) {
-            ICreateRobot robotCreator = ServiceLoader.load(ICreateRobot.class).findFirst().orElseThrow( () -> new RuntimeException("Can't find createRobot"));
+        if (type instanceof RobotIComponentService robotComponent) {
+            RobotSPI robotCreator = ServiceLoader.load(RobotSPI.class).findFirst().orElseThrow( () -> new RuntimeException("Can't find createRobot"));
 
             robotCreator.createRobot(world, robotComponent.robotType, 9, 9, 1, 1);
         }
 
-        if (type instanceof SpeedToolComponent) {
+        if (type instanceof SpeedToolIComponentService) {
             //;
             //world.addComponent();
             /// skal adde moment speed tool så det virker ind
@@ -548,12 +548,12 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         updateWalletLabel(walletLabel, inventory);
     }*/
     }
-     private void handleSpeedToolPurchase(EntityID entity, int price, InventoryComponent inventory, Label walletLabel, World world) {
-        if (world.hasComponent(entity, SpeedToolComponent.class)) {
-            SpeedToolComponent existing = (SpeedToolComponent) world.GetComponent(entity, SpeedToolComponent.class);
-            world.addComponent(entity, new SpeedToolComponent(existing.getSpeedMultiplier() + 1.0));
+     private void handleSpeedToolPurchase(EntityID entity, int price, InventoryIComponentService inventory, Label walletLabel, World world) {
+        if (world.hasComponent(entity, SpeedToolIComponentService.class)) {
+            SpeedToolIComponentService existing = (SpeedToolIComponentService) world.GetComponent(entity, SpeedToolIComponentService.class);
+            world.addComponent(entity, new SpeedToolIComponentService(existing.getSpeedMultiplier() + 1.0));
         } else {
-            world.addComponent(entity, new SpeedToolComponent(2.0));
+            world.addComponent(entity, new SpeedToolIComponentService(2.0));
         }
         inventory.removeFromWallet(price);
         updateWalletLabel(walletLabel, inventory);
@@ -565,7 +565,7 @@ public class ShopPlugin extends Button implements IShopService,EcsSystem {
         return List.of();
     }*/
 
-    private void updateWalletLabel(Label walletLabel, InventoryComponent inventory) {
+    private void updateWalletLabel(Label walletLabel, InventoryIComponentService inventory) {
         walletLabel.setText("Coins: " + inventory.getWallet());
     }
 

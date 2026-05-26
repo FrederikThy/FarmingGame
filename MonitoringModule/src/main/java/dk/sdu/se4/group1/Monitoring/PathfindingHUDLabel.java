@@ -1,7 +1,6 @@
 package dk.sdu.se4.group1.Monitoring;
 
-import dk.sdu.se4.group1.CommonEcs.Components.PathfindingUpgradeComponent;
-import dk.sdu.se4.group1.CommonEcs.EntityID;
+import dk.sdu.se4.group1.CommonEcs.Components.PathfindingUpgradeIComponentService;
 import dk.sdu.se4.group1.CommonEcs.World;
 import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
@@ -16,7 +15,7 @@ import javafx.scene.text.FontWeight;
 public class PathfindingHUDLabel extends Label {
 
     private final World world;
-    private PathfindingUpgradeComponent.AlgorithmTier lastTier = null;
+    private PathfindingUpgradeIComponentService.AlgorithmTier lastTier = null;
 
     public PathfindingHUDLabel(World world) {
         super("Pathfinding: BFS");
@@ -29,11 +28,11 @@ public class PathfindingHUDLabel extends Label {
     }
 
     public void onFrame() {
-        var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeComponent.class);
+        var upgradeEntities = world.getEntitiesWith(PathfindingUpgradeIComponentService.class);
         if (upgradeEntities == null || !upgradeEntities.iterator().hasNext()) return;
 
-        PathfindingUpgradeComponent upgrade = (PathfindingUpgradeComponent)
-                world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeComponent.class);
+        PathfindingUpgradeIComponentService upgrade = (PathfindingUpgradeIComponentService)
+                world.GetComponent(upgradeEntities.iterator().next(), PathfindingUpgradeIComponentService.class);
 
         if (upgrade.activeTier == lastTier) return;
         lastTier = upgrade.activeTier;

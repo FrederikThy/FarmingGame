@@ -1,7 +1,8 @@
 package dk.sdu.se4.group1.CommonEcs;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
-import dk.sdu.se4.group1.CommonEcs.Components.PositionComponent;
+import dk.sdu.se4.group1.CommonEcs.Components.PositionIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.RobotIComponentService;
 
 import java.util.*;
 
@@ -15,7 +16,7 @@ public class World {
     //For each entity store its components in a dictionary like setup. (det er en dictionary inde i en dictionary
     //Dvs for hver entity som key tilhører der en value som også er et dictionary men dette indeholder
     //typen af componenten som key og valuen vil så være den komponent som bliver hold for entitien.)
-    private final Map<EntityID, Map<Class<? extends Component>, Component>> entityComponentDictionary = new HashMap<>();
+    private final Map<EntityID, Map<Class<? extends IComponentService>, IComponentService>> entityComponentDictionary = new HashMap<>();
 
     private int NextEntityId = 0;
 
@@ -33,10 +34,10 @@ public class World {
     }
 
 
-    public void addComponent(EntityID entity, Component component){
+    public void addComponent(EntityID entity, IComponentService IComponentService){
 
         //gets the component dictionary for the entity inserted in the parameter
-        Map<Class<? extends Component>, Component> entityComponents = entityComponentDictionary.get(entity);
+        Map<Class<? extends IComponentService>, IComponentService> entityComponents = entityComponentDictionary.get(entity);
 
         //checks if entity exists
         if(entityComponents == null){
@@ -47,13 +48,13 @@ public class World {
         //Hvordan sætter jeg det her ind i entitycomponentdictionary
         //her indsætter man component typen (getclass) som en key og derved component som en value. DVS:
         //Komponenten kan kun have en slags af denne type (eks. postion, croptype, etc..)
-        entityComponents.put(component.getClass(), component);
+        entityComponents.put(IComponentService.getClass(), IComponentService);
     }
 
-    public Component GetComponent(EntityID entity, Class<? extends Component> componentClass){
-        Map<Class<? extends Component>, Component> entityComponents = entityComponentDictionary.get(entity);
+    public IComponentService GetComponent(EntityID entity, Class<? extends IComponentService> componentClass){
+        Map<Class<? extends IComponentService>, IComponentService> entityComponents = entityComponentDictionary.get(entity);
 
-        Component result;
+        IComponentService result;
 
         if(entityComponents.containsKey(componentClass)){
             result = entityComponents.get(componentClass);
@@ -69,8 +70,8 @@ public class World {
 
     //To use this method call:
     //World.hasComponent(*entityID*, new *componentType*)
-    public boolean hasComponent(EntityID entity, Class<? extends Component> componentClass){
-        Map<Class<? extends Component>, Component> entityComponents = entityComponentDictionary.get(entity);
+    public boolean hasComponent(EntityID entity, Class<? extends IComponentService> componentClass){
+        Map<Class<? extends IComponentService>, IComponentService> entityComponents = entityComponentDictionary.get(entity);
 
         //checks if entity exists
         if(entityComponents == null){
@@ -84,11 +85,11 @@ public class World {
         return Entities;
     }
 
-    public Set<EntityID> getEntitiesWith(Class<? extends Component> componentClass) {
+    public Set<EntityID> getEntitiesWith(Class<? extends IComponentService> componentClass) {
         Set<EntityID> result = new HashSet<>();
 
         for(EntityID entity : Entities){
-            Map<Class<? extends Component>, Component> components =
+            Map<Class<? extends IComponentService>, IComponentService> components =
                     entityComponentDictionary.get(entity);
 
             if(components != null && components.containsKey(componentClass)){
@@ -101,8 +102,8 @@ public class World {
 
     public boolean isTileFree(int x, int y){
         for(EntityID entityID : Entities){
-            if(hasComponent(entityID, PositionComponent.class)){
-                PositionComponent pos =(PositionComponent) GetComponent(entityID, PositionComponent.class);
+            if(hasComponent(entityID, PositionIComponentService.class)){
+                PositionIComponentService pos =(PositionIComponentService) GetComponent(entityID, PositionIComponentService.class);
                 if(pos.x == x && pos.y == y){
                     return false;
                 }
@@ -119,11 +120,11 @@ public class World {
      */
     public boolean isTileFreeIgnoringRobots(int x, int y){
         for(EntityID entityID : Entities){
-            if(hasComponent(entityID, PositionComponent.class)){
-                if(hasComponent(entityID, dk.sdu.se4.group1.CommonEcs.Components.RobotComponent.class)){
+            if(hasComponent(entityID, PositionIComponentService.class)){
+                if(hasComponent(entityID, RobotIComponentService.class)){
                     continue;
                 }
-                PositionComponent pos = (PositionComponent) GetComponent(entityID, PositionComponent.class);
+                PositionIComponentService pos = (PositionIComponentService) GetComponent(entityID, PositionIComponentService.class);
                 if(pos.x == x && pos.y == y){
                     return false;
                 }
