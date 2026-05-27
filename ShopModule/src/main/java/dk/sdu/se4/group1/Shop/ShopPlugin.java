@@ -560,18 +560,6 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
         }
         inventory.removeFromWallet(price);
         updateWalletLabel(walletLabel, inventory);
-        /*if (seedType instanceof SpeedToolComponent speedToolComponent) {
-            EntityID robotId = findSlowestRobot(world);
-
-            if (robotId == null) {
-                return;
-            }
-
-            RobotComponent robot =
-                    (RobotComponent) world.GetComponent(robotId, RobotComponent.class);
-
-            robot.setMoveInterval(speedToolComponent.getSpeedMultiplier());
-        }*/
 
         //EntityID robotId = findAvailableRobot(world);
 
