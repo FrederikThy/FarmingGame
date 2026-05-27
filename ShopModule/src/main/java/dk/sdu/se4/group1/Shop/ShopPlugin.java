@@ -15,9 +15,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.ServiceLoader;
 
-/**
- * Hello world!
- */
 public class ShopPlugin extends Button implements IShopService, IEntityProcessingService {
 
     private VBox activeAllList;
@@ -217,7 +214,7 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
             if (component instanceof CropIComponentService) {
                 cropList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
             } else if (component instanceof SpeedToolIComponentService) {
-                speedList.getChildren().add(createSpeedToolCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
+                speedList.getChildren().add(createShopCard(item, inventory, walletLabel, world, allList, cropList, speedList, robotList, shop));
             } else if (component instanceof RobotIComponentService) {
                 robotList.getChildren().add(createShopCard(item, inventory, walletLabel, world,allList,cropList, speedList, robotList, shop));
             } else if (component instanceof PathfindingAlgorithmIComponentService) {
@@ -291,73 +288,6 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
 
         return button;
     }
-
-    private Button createSpeedToolCard(ShopOfferIComponentService item, InventoryIComponentService inventory, Label walletLabel, World world, VBox allList , VBox cropList, VBox speedList, VBox robotList, ShopIComponentService shop) {
-        int price = item.getBuyPrice();
-        var component = item.getComponent();
-        String name = getName(component);
-        String imagePath = getImagePath(component);
-
-        ImageView itemImage = loadImage(imagePath, 52, 52);
-        ImageView coinImage = loadImage("/coin.png", 24, 24);
-
-        Label nameLabel = new Label(name);
-        Label priceLabel = new Label("pris: " + price);
-        HBox priceRow = new HBox(12, priceLabel, coinImage);
-        VBox textBox = new VBox(12, nameLabel, priceRow);
-        HBox content = new HBox(12, itemImage, textBox);
-        content.setStyle("-fx-alignment: center-left;");
-
-        Button button = new Button();
-        button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
-        button.setGraphic(content);
-
-        button.setMaxWidth(Double.MAX_VALUE);
-        button.setPrefWidth(330);
-        if (!isAvailable(price,inventory.getWallet())){
-            button.setCancelButton(false);
-            ColorAdjust darken = new ColorAdjust();
-            darken.setBrightness(-0.5); // -1.0 = helt sort, 0.0 = normal
-
-            button.setEffect(darken);
-        }
-        button.getStyleClass().add("shop-item");
-
-        button.setOnAction(e -> {
-            if (inventory.getWallet() < price) return;
-
-            Stage pickStage = new Stage();
-            VBox pickLayout = new VBox(10);
-
-            pickLayout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
-            pickLayout.setPadding(new javafx.geometry.Insets(20));
-            pickLayout.getChildren().add(new Label("Vælg en robot:"));
-
-            for (EntityID entity : world.getEntitiesWith(RobotIComponentService.class)) {
-                boolean alreadyEquipped = world.hasComponent(entity, SpeedToolIComponentService.class);
-
-                String label;
-                if (alreadyEquipped){
-                   label = "Robot " + entity.id() + " (level " + (int)((SpeedToolIComponentService) world.GetComponent(entity, SpeedToolIComponentService.class)).getSpeedMultiplier() + ")";
-                } else {
-                    label = "Robot " + entity.id();
-                }
-
-                Button robotBtn = new Button(label);
-                robotBtn.setOnAction(ev -> {
-                    handleSpeedToolPurchase(entity, price, inventory, walletLabel, world);
-                    updateShopContent(allList , cropList, speedList, robotList, shop, inventory, walletLabel, world);
-                    pickStage.close();
-                });
-                pickLayout.getChildren().add(robotBtn);
-            }
-            pickStage.setScene(new Scene(pickLayout, 250, 300));
-            pickStage.setTitle("Vælg Robot");
-            pickStage.show();});
-
-        return button;
-    }
-
 
     private void handleRobotSelect(ShopOfferIComponentService item, InventoryIComponentService inventory, Label walletLabel, World world, VBox allList, VBox cropList, VBox speedList, VBox robotList, ShopIComponentService shop){
         Stage pickStage = new Stage();
@@ -575,10 +505,47 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
         }
 
         if (type instanceof SpeedToolIComponentService) {
-            //;
-            //world.addComponent();
-            /// skal adde moment speed tool så det virker ind
+            Stage pickStage = new Stage();
+            VBox pickLayout = new VBox(10);
+            pickLayout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
+            pickLayout.setPadding(new javafx.geometry.Insets(20));
+            pickLayout.getChildren().add(new Label("Choose a robot to upgrade:"));
 
+            for (EntityID entity : world.getEntitiesWith(RobotIComponentService.class)) {
+                RobotIComponentService robot = (RobotIComponentService) world.GetComponent(entity, RobotIComponentService.class);
+
+                String robotName = switch (robot.robotType) {
+                    case HARVEST -> "Harvest Robot";
+                    case PLANT -> "Planting Robot";
+                    case WEED_REMOVER -> "Weed Remover Robot";
+                };
+
+                boolean equipped = world.hasComponent(entity, SpeedToolIComponentService.class);
+                String label = equipped
+                        ? robotName + " (level " + (int) ((SpeedToolIComponentService) world.GetComponent(entity, SpeedToolIComponentService.class)).getSpeedMultiplier() + ")"
+                        : robotName;
+
+                Button robotBtn = new Button(label);
+                robotBtn.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 2; -fx-padding: 6 14;");
+                robotBtn.setPrefWidth(200);
+                robotBtn.setOnAction(ev -> {
+                    if (world.hasComponent(entity, SpeedToolIComponentService.class)) {
+                        SpeedToolIComponentService existing = (SpeedToolIComponentService) world.GetComponent(entity, SpeedToolIComponentService.class);
+                        world.addComponent(entity, new SpeedToolIComponentService(existing.getSpeedMultiplier() + 1.0));
+                    } else {
+                        world.addComponent(entity, new SpeedToolIComponentService(2.0));
+                    }
+                    inventory.removeFromWallet(price);
+                    updateWalletLabel(walletLabel, inventory);
+                    pickStage.close();
+                });
+                pickLayout.getChildren().add(robotBtn);
+            }
+
+            pickStage.setScene(new javafx.scene.Scene(pickLayout, 260, 300));
+            pickStage.setTitle("Upgrade Speed Tool");
+            pickStage.show();
+            return;
         }
 
         if (type instanceof SoilLevel){
@@ -620,18 +587,6 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
         updateWalletLabel(walletLabel, inventory);
     }*/
     }
-     private void handleSpeedToolPurchase(EntityID entity, int price, InventoryIComponentService inventory, Label walletLabel, World world) {
-        if (world.hasComponent(entity, SpeedToolIComponentService.class)) {
-            SpeedToolIComponentService existing = (SpeedToolIComponentService) world.GetComponent(entity, SpeedToolIComponentService.class);
-            world.addComponent(entity, new SpeedToolIComponentService(existing.getSpeedMultiplier() + 1.0));
-        } else {
-            world.addComponent(entity, new SpeedToolIComponentService(2.0));
-        }
-        inventory.removeFromWallet(price);
-        updateWalletLabel(walletLabel, inventory);
-        System.out.println("Speed tool upgraded on robot " + entity.id());
-    }
-
     /*@Override
     public List<EntityID> getShopItems(World world) {
         return List.of();
