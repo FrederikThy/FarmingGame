@@ -95,7 +95,7 @@ public class ShopPlugin extends Button implements IShopService, IEntityProcessin
         Tab cropTab = new Tab("Crop", createScrollPane(cropList));
         cropTab.setClosable(false);
 
-        Tab speedTab = new Tab("Speed", createScrollPane(speedList));
+        Tab speedTab = new Tab("Tools", createScrollPane(speedList));
         speedTab.setClosable(false);
 
         Tab robotTab = new Tab("Robot", createScrollPane(robotList));
