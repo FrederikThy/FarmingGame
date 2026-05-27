@@ -8,6 +8,6 @@ public class SpeedToolUiPluginService implements IUiPluginService {
 
     @Override
     public Node createNode(World world) {
-        return new SpeedToolNode(world);
+        return new SpeedToolPlugin(world);
     }
 }

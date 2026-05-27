@@ -12,11 +12,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class SpeedToolNode extends Button {
+public class SpeedToolPlugin extends Button {
 
-    private static final int SPEED_TOOL_PRICE = 250;
+    private static final int speedToolPrice = 250;
 
-    public SpeedToolNode(World world) {
+    public SpeedToolPlugin(World world) {
         this.setText("Speed Tool");
         this.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 2; -fx-padding: 6 14;");
         this.setOnAction(e -> openRobotPicker(world));
@@ -24,13 +24,13 @@ public class SpeedToolNode extends Button {
 
     private void openRobotPicker(World world) {
         InventoryIComponentService inventory = findInventory(world);
-        if (inventory == null || inventory.getWallet() < SPEED_TOOL_PRICE) return;
+        if (inventory == null || inventory.getWallet() < speedToolPrice) return;
 
         Stage pickStage = new Stage();
         VBox layout = new VBox(10);
         layout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
         layout.setPadding(new Insets(20));
-        layout.getChildren().add(new Label("Choose a robot to upgrade:"));
+        layout.getChildren().add(new Label("Choose robot to upgrade:"));
 
         for (EntityID entity : world.getEntitiesWith(RobotIComponentService.class)) {
             boolean equipped = world.hasComponent(entity, SpeedToolIComponentService.class);
@@ -42,12 +42,11 @@ public class SpeedToolNode extends Button {
             Button robotBtn = new Button(label);
             robotBtn.setOnAction(ev -> {
                 SpeedToolFactory.applyUpgrade(entity, world);
-                inventory.removeFromWallet(SPEED_TOOL_PRICE);
+                inventory.removeFromWallet(speedToolPrice);
                 pickStage.close();
             });
             layout.getChildren().add(robotBtn);
         }
-
         pickStage.setScene(new Scene(layout, 250, 300));
         pickStage.setTitle("Upgrade Speed Tool");
         pickStage.show();

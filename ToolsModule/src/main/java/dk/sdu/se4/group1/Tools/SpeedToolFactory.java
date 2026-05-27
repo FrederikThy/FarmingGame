@@ -7,13 +7,13 @@ import dk.sdu.se4.group1.CommonEcs.World;
 
 public class SpeedToolFactory {
 
-    private static final int SPEED_TOOL_PRICE = 250;
+    private static final int speedToolPrice = 250;
 
     public static void registerInShop(World world) {
         for (EntityID entity : world.getEntitiesWith(ShopIComponentService.class)) {
             ShopIComponentService shop =
                     (ShopIComponentService) world.GetComponent(entity, ShopIComponentService.class);
-            shop.addShopItem(new SpeedToolIComponentService(0.15), SPEED_TOOL_PRICE);
+            shop.addShopItem(new SpeedToolIComponentService(0.15), speedToolPrice);
             return;
         }
     }
@@ -26,6 +26,5 @@ public class SpeedToolFactory {
         } else {
             world.addComponent(robotEntity, new SpeedToolIComponentService(2.0));
         }
-        System.out.println("[ToolsModule] Speed tool upgraded on robot " + robotEntity.id());
     }
 }
