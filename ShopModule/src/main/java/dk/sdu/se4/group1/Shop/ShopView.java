@@ -56,7 +56,7 @@ public class ShopView {
         TabPane tabPane = new TabPane(
                 createTab("All", allList),
                 createTab("Crop", cropList),
-                createTab("Speed", speedList),
+                createTab("Tools", speedList),
                 createTab("Robot", robotList)
         );
 

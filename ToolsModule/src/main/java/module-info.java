@@ -5,5 +5,4 @@ module ToolsModule {
     requires Common.ecs;
     requires javafx.controls;
     requires javafx.graphics;
-    provides IUiPluginService with dk.sdu.se4.group1.Tools.SpeedToolUiPluginService;
 }
