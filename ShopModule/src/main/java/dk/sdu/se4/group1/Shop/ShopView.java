@@ -1,9 +1,7 @@
 package dk.sdu.se4.group1.Shop;
 
-import dk.sdu.se4.group1.CommonEcs.Components.GrowthMapIComponentService;
-import dk.sdu.se4.group1.CommonEcs.Components.InventoryIComponentService;
-import dk.sdu.se4.group1.CommonEcs.Components.ShopIComponentService;
-import dk.sdu.se4.group1.CommonEcs.Components.ShopOfferIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.*;
+import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.IComponentService;
 import dk.sdu.se4.group1.CommonEcs.World;
 import javafx.scene.Scene;
@@ -138,10 +136,61 @@ public class ShopView {
         if (!pricingService.canAfford(price, inventory.getWallet())) {
             disableButton(button);
         }
-
-        button.setOnAction(e -> controller.buyOffer(world, offer));
+        if (component instanceof SpeedToolIComponentService) {
+            button.setOnAction(e -> showSpeedToolRobotPicker(world, offer));
+        } else {
+            button.setOnAction(e -> controller.buyOffer(world, offer));
+        }
 
         return button;
+    }
+    private void showSpeedToolRobotPicker(World world, ShopOfferIComponentService offer) {
+        Stage stage = new Stage();
+        VBox layout = new VBox(10);
+        layout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
+        layout.getChildren().add(new Label("Choose a robot to upgrade:"));
+
+        var robots = world.getEntitiesWith(RobotIComponentService.class);
+
+        if (robots == null || !robots.iterator().hasNext()) {
+            layout.getChildren().add(new Label("No robots available"));
+        } else {
+            int harvestCount = 1;
+            int plantCount = 1;
+            int weedCount = 1;
+
+            for (EntityID robotEntity : robots) {
+                RobotIComponentService robot =
+                        (RobotIComponentService) world.GetComponent(robotEntity, RobotIComponentService.class);
+
+                String robotName = switch (robot.robotType) {
+                    case HARVEST -> "Harvest Robot " + harvestCount++;
+                    case PLANT -> "Planting Robot " + plantCount++;
+                    case WEED_REMOVER -> "Weed Remover Robot " + weedCount++;
+                };
+
+                if (world.hasComponent(robotEntity, SpeedToolIComponentService.class)) {
+                    SpeedToolIComponentService speed =
+                            (SpeedToolIComponentService) world.GetComponent(robotEntity, SpeedToolIComponentService.class);
+
+                    robotName += " - speed " + speed.getSpeedMultiplier();
+                }
+
+                Button robotButton = new Button(robotName);
+                robotButton.setPrefWidth(220);
+
+                robotButton.setOnAction(e -> {
+                    controller.buySpeedToolForRobot(world, offer, robotEntity);
+                    stage.close();
+                });
+
+                layout.getChildren().add(robotButton);
+            }
+        }
+
+        stage.setScene(new Scene(layout, 280, 320));
+        stage.setTitle("Upgrade Speed Tool");
+        stage.show();
     }
 
     private void refreshSoilUpgradeUI(GrowthMapIComponentService growthMap,InventoryIComponentService inventory,int price)

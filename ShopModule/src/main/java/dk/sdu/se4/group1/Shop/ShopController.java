@@ -48,6 +48,24 @@ public class ShopController {
         }
     }
 
+    public void buySpeedToolForRobot(World world, ShopOfferIComponentService offer, EntityID robotEntity) {
+        if (activeInventory == null) {
+            return;
+        }
+
+        boolean bought = purchaseService.buySpeedToolForRobot(
+                world,
+                activeInventory,
+                offer,
+                robotEntity
+        );
+
+        if (bought) {
+            view.refresh(world, activeShop, activeInventory, activeGrowthMap, SOIL_UPGRADE_PRICE);
+        }
+    }
+
+
     public void buySoilUpdgrade(World world)
     {
         if (activeInventory == null)
