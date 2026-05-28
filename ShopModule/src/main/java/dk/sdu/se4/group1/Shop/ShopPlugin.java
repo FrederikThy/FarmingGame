@@ -1,19 +1,7 @@
 package dk.sdu.se4.group1.Shop;
-
-import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.*;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.effect.ColorAdjust;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import java.io.InputStream;
-import java.util.List;
-import java.util.ServiceLoader;
 
 public class ShopPlugin extends Button implements IEntityProcessingService {
 

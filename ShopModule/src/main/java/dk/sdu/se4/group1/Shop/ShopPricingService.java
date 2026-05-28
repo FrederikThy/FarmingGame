@@ -18,7 +18,7 @@ public class ShopPricingService {
         {
             case CHILI -> sellsAmount = 100 *amount;
             case CARROT -> sellsAmount = 150 *amount;
-            case BEANSPROUT -> sellsAmount =200 *amount;
+            case BEANSPROUT -> sellsAmount = 200 *amount;
             case TOMATO -> sellsAmount = 200 * amount;
         }
         return sellsAmount;
