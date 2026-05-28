@@ -2,8 +2,10 @@ package dk.sdu.se4.group1.Shop;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.Components.ShopOfferIComponentService;
+import dk.sdu.se4.group1.CommonEcs.IShopPricingService;
+import dk.sdu.se4.group1.CommonEcs.SeedRequest;
 
-public class ShopPricingService {
+public class ShopPricingService implements IShopPricingService {
     public boolean canAfford(int price,int wallet){
         return price <= wallet;
     }
@@ -12,7 +14,9 @@ public class ShopPricingService {
         return offer.getBuyPrice();
     }
 
-    public int getSellPrice(SeedType seedType, int amount){
+
+    @Override
+    public int getSellPrice(SeedType seedType, int amount) {
         int sellsAmount = 0;
         switch (seedType)
         {
@@ -23,5 +27,4 @@ public class ShopPricingService {
         }
         return sellsAmount;
     }
-
 }

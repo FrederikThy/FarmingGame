@@ -9,9 +9,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -26,15 +30,17 @@ public class ItemsPlugin extends Button implements IItemsService, IEntityProcess
     private InventoryIComponentService localInventory;
     private Stage LocalStage;
     private final IShopService shopService;
+    private final IShopPricingService pricingService;
     private double InvUpdateTimer = 0.0;
 
     public ItemsPlugin(World world){
-        this(world, null);
+        this(world, null,ServiceLoader.load(IShopPricingService.class).findFirst().orElse(null));
     }
 
-    public ItemsPlugin(World world, IShopService shopService){
+    public ItemsPlugin(World world, IShopService shopService, IShopPricingService pricingService){
         this.world=world;
         this.shopService = shopService;
+        this.pricingService = pricingService;
         this.setLayoutX(710);
         this.setLayoutY(521);
         this.setPrefWidth(230);
@@ -45,18 +51,6 @@ public class ItemsPlugin extends Button implements IItemsService, IEntityProcess
         });
     }
 
-    private EntityID findAvailableRobot(World world) {
-        for (EntityID entity : world.getEntitiesWith(RobotIComponentService.class)) {
-            RobotIComponentService robot =
-                    (RobotIComponentService) world.GetComponent(entity, RobotIComponentService.class);
-
-
-            if (robot.seedType == null) {
-                return entity;
-            }
-        }
-        return null;
-    }
 
     @Override
     public void showInventory(World world) {
@@ -129,26 +123,13 @@ public class ItemsPlugin extends Button implements IItemsService, IEntityProcess
         var entityInvitory = world.getEntitiesWith(InventoryIComponentService.class);
         InventoryIComponentService invitory = (InventoryIComponentService)world.GetComponent(entityInvitory.iterator().next(), InventoryIComponentService.class);
         world.getEntitiesWith(CropIComponentService.class).stream();
-
-
-        //invitory.addHarvest();
         return result;
     }
 
     @Override
     public boolean additem(EntityID entityID, int quantity) {
         boolean result = true;
-        /*try {
-            for (InviItme invItem : invitory) {
-                if (invItem.getItem().equals(item)) {
-                    invItem.addCount(quantity);
-                }
-            }
-            invitory.add(new InviItme(item, quantity)); // Bruger den nye constructor
-        } catch (Exception e) {
-            System.console().printf(e.getMessage());
-            result = false;
-        }*/
+
          return result;
 
     }
@@ -170,19 +151,26 @@ public class ItemsPlugin extends Button implements IItemsService, IEntityProcess
             return;
         }
         for (var entry : inventory.getSeedStorage().entrySet()){
-            Label seedLabel = new Label(entry.getKey() + " x " + entry.getValue() + " Seeds");
-            seedLabel.setStyle(
+            SeedType seedType = entry.getKey();
+            int amount = entry.getValue();
+            ImageView seedImage = loadImage(getSeedImagePath(seedType),42,42);
+            Label seedLabel = new Label(seedType + " x " + amount + " Seeds");
+            HBox row = new HBox(10,seedImage, seedLabel);
+            row.setStyle(
                     "-fx-background-color: #c8a96e;" +
                     "-fx-border-color: #3f2d17;" +
                     "-fx-border-width: 3;" +
                     "-fx-padding: 10;" +
                     "-fx-font-size: 13px;"
             );
-            seedLabel.setMaxWidth(Double.MAX_VALUE);
-            seedList.getChildren().add(seedLabel);
+            row.setMaxWidth(Double.MAX_VALUE);
+            seedList.getChildren().add(row);
         }
 
     }
+
+
+
     private void updateHarvestList(VBox HarvestList, InventoryIComponentService inventory, Label walletLabel){
         HarvestList.getChildren().clear();
         if(inventory.getharvestedCrops().isEmpty()){
@@ -195,6 +183,7 @@ public class ItemsPlugin extends Button implements IItemsService, IEntityProcess
             SeedType seedType = entry.getKey();
             int amount = entry.getValue();
 
+            ImageView cropImage = loadImage(getSeedImagePath(seedType),42,42);
             Label cropLabel = new Label(seedType + " x "+amount + "Harvested");
 
             Button sellButton = new Button("Sell");
@@ -208,7 +197,7 @@ public class ItemsPlugin extends Button implements IItemsService, IEntityProcess
                     updateHarvestList(HarvestList,inventory,walletLabel);
                 }
             });
-            HBox row = new HBox(10, cropLabel, sellButton);
+            HBox row = new HBox(10,cropImage, cropLabel, sellButton);
             row.setStyle(
                     "-fx-background-color: #c8a96e;" +
                     "-fx-border-color: #3f2d17;" +
@@ -297,13 +286,34 @@ public class ItemsPlugin extends Button implements IItemsService, IEntityProcess
     }
 
     private int getSellPrice(SeedType seedType, int amount) {
-        if (shopService == null) {
+        if (pricingService == null) {
             return 0;
         }
-        return shopService.getSellPrice(seedType, amount);
+        return pricingService.getSellPrice(seedType, amount);
     }
 
+    private String getSeedImagePath(SeedType seedType) {
+        return "/" + seedType.name().toLowerCase() + ".png";
+    }
 
+    private ImageView loadImage(String path, double width, double height) {
+        InputStream stream = getClass().getResourceAsStream(path);
+
+        if (stream == null) {
+            stream = getClass().getResourceAsStream("/item_slot.png");
+        }
+
+        if (stream == null) {
+            throw new IllegalArgumentException("Image not found: " + path);
+        }
+
+        ImageView imageView = new ImageView(new Image(stream));
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        imageView.setPreserveRatio(true);
+
+        return imageView;
+    }
 
     @Override
     public void update(World world, double deltaTime) {

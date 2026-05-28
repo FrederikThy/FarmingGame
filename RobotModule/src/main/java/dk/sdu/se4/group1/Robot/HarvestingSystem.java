@@ -19,8 +19,18 @@ public class HarvestingSystem implements IEntityProcessingService {
 
             if (crop != null) {
 
-                inventory.addToWallet(100);
+                //inventory.addToWallet(100);
+                //world.RemoveEntity(crop);
+                CropIComponentService cropComponent = (CropIComponentService) world.GetComponent(crop,CropIComponentService.class);
+
+                if (cropComponent==null){
+                    continue;
+                }
+
+                inventory.addHarvest(cropComponent.seedType,1);
                 world.RemoveEntity(crop);
+
+
             }
         }
     }
