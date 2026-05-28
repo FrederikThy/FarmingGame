@@ -87,7 +87,8 @@ public class Game {
             public void handle(long now) {
                 if (lastTime == 0)
                 {
-                    lastTime = now; return;
+                    lastTime = now;
+                    return;
                 }
                 double dt = (now - lastTime) / 1_000_000_000.0;
                 lastTime = now;
