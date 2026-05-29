@@ -21,6 +21,15 @@ public class RobotTaskSystem implements IEntityProcessingService {
                 continue;
             }
 
+            // If the robot already has a task, we skip.
+            if (world.hasComponent(entity, PlantingIComponentService.class)){
+                PlantingIComponentService planting = (PlantingIComponentService) world.GetComponent(entity, PlantingIComponentService.class);
+
+                if (planting.waitingToPlant == true){
+                    continue;
+                }
+            }
+
             int[] target = FindTarget(world, entity);
 
             // Sætter vores goalX og goalY til de koordinater vi får fra FindTarget.
@@ -29,7 +38,16 @@ public class RobotTaskSystem implements IEntityProcessingService {
                 path.goalY = target[1];
                 path.goalFixed = true;
                 path.arrived = false;
+
+                if (world.hasComponent(entity, PlantingIComponentService.class)){
+                    PlantingIComponentService planting = (PlantingIComponentService) world.GetComponent(entity, PlantingIComponentService.class);
+
+                    planting.waitingToPlant = true;
+                    planting.plantingTimer = 0.0;
+                }
             }
+
+
         }
     }
 
