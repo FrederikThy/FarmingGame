@@ -21,7 +21,7 @@ public class RobotTaskSystem implements IEntityProcessingService {
                 continue;
             }
 
-            // If the robot already has a task, we skip.
+            // If the PlantingRobot already has a task, we skip.
             if (world.hasComponent(entity, PlantingIComponentService.class)){
                 PlantingIComponentService planting = (PlantingIComponentService) world.GetComponent(entity, PlantingIComponentService.class);
 
@@ -29,6 +29,15 @@ public class RobotTaskSystem implements IEntityProcessingService {
                     continue;
                 }
             }
+
+            if (world.hasComponent(entity, HarvestingIComponentService.class)){
+                HarvestingIComponentService harvesting = (HarvestingIComponentService)  world.GetComponent(entity, HarvestingIComponentService.class);
+
+                if (harvesting.waitingToHarvest == true){
+                    continue;
+                }
+            }
+
 
             int[] target = FindTarget(world, entity);
 
@@ -44,6 +53,13 @@ public class RobotTaskSystem implements IEntityProcessingService {
 
                     planting.waitingToPlant = true;
                     planting.plantingTimer = 0.0;
+                }
+
+                if (world.hasComponent(entity, HarvestingIComponentService.class)){
+                    HarvestingIComponentService harvesting = (HarvestingIComponentService)  world.GetComponent(entity, HarvestingIComponentService.class);
+
+                    harvesting.waitingToHarvest = true;
+                    harvesting.harvestingTime = 0.0;
                 }
             }
 
