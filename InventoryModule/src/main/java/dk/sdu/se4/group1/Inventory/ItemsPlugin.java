@@ -184,7 +184,7 @@ public class ItemsPlugin extends Button implements IItemsService, IEntityProcess
             int amount = entry.getValue();
 
             ImageView cropImage = loadImage(getSeedImagePath(seedType),42,42);
-            Label cropLabel = new Label(seedType + " x "+amount + "Harvested");
+            Label cropLabel = new Label(seedType + " x "+amount +" sell price: "+ getSellPrice(seedType,amount));
 
             Button sellButton = new Button("Sell");
             sellButton.setOnAction(e->{
