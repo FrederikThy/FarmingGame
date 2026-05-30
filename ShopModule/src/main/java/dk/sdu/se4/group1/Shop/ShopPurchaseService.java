@@ -67,6 +67,36 @@ public class ShopPurchaseService {
         return true;
     }
 
+    public boolean buyHarvestingToolForRobot(World world, InventoryIComponentService inventory,
+                                             ShopOfferIComponentService offer, EntityID robotEntity) {
+        int price = offer.getBuyPrice();
+        if (inventory.getWallet() < price) return false;
+        if (!(offer.getComponent() instanceof HarvestingIComponentService)) return false;
+
+        HarvestingIComponentService tool = world.hasComponent(robotEntity, HarvestingIComponentService.class)
+                ? (HarvestingIComponentService) world.GetComponent(robotEntity, HarvestingIComponentService.class)
+                : new HarvestingIComponentService();
+        tool.setGrowthMultiplier(tool.getGrowthMultiplier() + 1.0);
+        world.addComponent(robotEntity, tool);
+        inventory.removeFromWallet(price);
+        return true;
+    }
+
+    public boolean buyPlantingToolForRobot(World world, InventoryIComponentService inventory,
+                                           ShopOfferIComponentService offer, EntityID robotEntity) {
+        int price = offer.getBuyPrice();
+        if (inventory.getWallet() < price) return false;
+        if (!(offer.getComponent() instanceof PlantingIComponentService)) return false;
+
+        PlantingIComponentService tool = world.hasComponent(robotEntity, PlantingIComponentService.class)
+                ? (PlantingIComponentService) world.GetComponent(robotEntity, PlantingIComponentService.class)
+                : new PlantingIComponentService();
+        tool.setPlantingSpeedMultiplier(tool.getPlantingSpeedMultiplier() + 1.0);
+        world.addComponent(robotEntity, tool);
+        inventory.removeFromWallet(price);
+        return true;
+    }
+
     public boolean buySoilUpgrade(World world,InventoryIComponentService inventory,int price)
     {
         if (inventory.getWallet() < price) {

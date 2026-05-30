@@ -1,7 +1,7 @@
 package dk.sdu.se4.group1.Crops;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
-import dk.sdu.se4.group1.CommonEcs.Components.CropIComponentService;
+import dk.sdu.se4.group1.CommonEcs.Components.*;
 import dk.sdu.se4.group1.CommonEcs.Components.RenderIComponentService;
 import dk.sdu.se4.group1.CommonEcs.IEntityProcessingService;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
@@ -89,13 +89,26 @@ public class cropSystem implements IEntityProcessingService {
 
     //Checks for growth map in the world and if true then it returns the growth rate from that map
     private double getGrowthRate(World world) {
+        double baseRate = 1.0;
         for (EntityID entity : world.getEntitiesWith(GrowthMapIComponentService.class)) {
             GrowthMapIComponentService growthMap =
                     (GrowthMapIComponentService) world.GetComponent(entity, GrowthMapIComponentService.class);
-            return growthMap.
-                    getGrowthRate();
+            baseRate = growthMap.getGrowthRate();
         }
-        return 1.0;
+        double harvestBonus = 0.0;
+        for (EntityID entity : world.getEntitiesWith(HarvestingIComponentService.class)) {
+            HarvestingIComponentService tool =
+                    (HarvestingIComponentService) world.GetComponent(entity, HarvestingIComponentService.class);
+            harvestBonus += tool.getGrowthMultiplier() - 1.0;
+        }
+        double plantingBonus = 0.0;
+        for (EntityID entity : world.getEntitiesWith(PlantingIComponentService.class)) {
+            PlantingIComponentService tool =
+                    (PlantingIComponentService) world.GetComponent(entity, PlantingIComponentService.class);
+            plantingBonus += tool.getPlantingSpeedMultiplier() - 1.0;
+        }
+        return baseRate + harvestBonus + plantingBonus;
     }
+
 
 }

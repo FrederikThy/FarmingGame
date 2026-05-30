@@ -12,31 +12,30 @@ public class PlantingSystem implements IEntityProcessingService {
 
     private final Random random = new Random();
 
+    private double timeSinceLastPlantCheck = 0.0;
+    private static final double PLANT_INTERVAL = 8.0;
 
     private static final int MAP_WIDTH = 10;
     private static final int MAP_HEIGHT = 10;
     @Override
     public void update(World world, double deltaTime) {
+        timeSinceLastPlantCheck += deltaTime;
 
         for (EntityID entity : world.getEntitiesWith(PlantingIComponentService.class)) {
-            PositionIComponentService robotPos = (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
-            PathIComponentService path = (PathIComponentService) world.GetComponent(entity, PathIComponentService.class);
-            PlantingIComponentService planting = (PlantingIComponentService) world.GetComponent(entity, PlantingIComponentService.class);
+            PlantingIComponentService plantingTool =
+                    (PlantingIComponentService) world.GetComponent(entity, PlantingIComponentService.class);
+            double effectiveInterval = PLANT_INTERVAL / plantingTool.getPlantingSpeedMultiplier();
+            PositionIComponentService robotPos =
+                    (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
 
-
-            if (!path.arrived || !planting.waitingToPlant) {
-                continue;
-            }
-            planting.plantingTimer += deltaTime;
-
-            if (planting.plantingTimer >= 2.0){
+            if (timeSinceLastPlantCheck >= effectiveInterval) {
                 tryPlantSeed(world, entity, robotPos);
-                planting.plantingTimer = 0.0;
-                planting.waitingToPlant = false;
             }
-
         }
 
+        if (timeSinceLastPlantCheck >= PLANT_INTERVAL) {
+            timeSinceLastPlantCheck = 0.0;
+        }
     }
 
     private void tryPlantSeed(World world,EntityID entity, PositionIComponentService robotPos) {
