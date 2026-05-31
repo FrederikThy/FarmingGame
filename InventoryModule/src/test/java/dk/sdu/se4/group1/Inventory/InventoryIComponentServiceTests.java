@@ -15,7 +15,7 @@ class InventoryIComponentServiceTests {
         inventory = new InventoryIComponentService();
     }
 
-   /**Add and remove seeds test*/
+   /** Add and remove seeds test */
     @Test
     void addAndRemoveSeedsTest() {
         inventory.addSeeds(SeedType.CARROT, 5);
@@ -30,7 +30,7 @@ class InventoryIComponentServiceTests {
                 "Remaining stock should be 2");
     }
 
-    /** Remove more seeds than available inventory, and remaining seeds are unchanged after removal fails  */
+    /** Remove more seeds than available inventory, and remaining seeds are unchanged after removal fails */
     @Test
     void removeSeedsFromStorage() {
         inventory.addSeeds(SeedType.TOMATO, 2);
@@ -38,19 +38,18 @@ class InventoryIComponentServiceTests {
         boolean removed = inventory.removeSeedsFromStorage(SeedType.TOMATO, 5);
 
         assertFalse(removed, "Removal should fail");
-        assertEquals(2, inventory.getSeedStorage().get(SeedType.TOMATO),
-                "Stock must not change when removal fails");
+        assertEquals(2, inventory.getSeedStorage().get(SeedType.TOMATO),"Stock must not change when removal fails");
     }
 
-    /** Wallet starts at 1000 and should reflect any additions or removals*/
+    /** Wallet starts at 10000 and should reflect any additions or removals*/
     @Test
     void addAndRemovewalletTest() {
-        assertEquals(1000, inventory.getWallet(), "Wallet starts at 1000 coins");
+        assertEquals(10000, inventory.getWallet(), "Wallet starts at 10000 coins");
 
-        inventory.addToWallet(500);
-        assertEquals(1500, inventory.getWallet(), "After adding 500 coins wallet should be 1500");
+        inventory.addToWallet(5000);
+        assertEquals(15000, inventory.getWallet(), "After adding 500 coins wallet should be 15000");
 
-        inventory.removeFromWallet(200);
-        assertEquals(1300, inventory.getWallet(), "After removing 200 coins wallet should be 1300");
+        inventory.removeFromWallet(2000);
+        assertEquals(13000, inventory.getWallet(), "After removing 200 coins wallet should be 13000");
     }
 }
