@@ -30,6 +30,7 @@ public class ShopView {
     private Label soilLabel;
     private Button soilUpgradeButton;
 
+
     public ShopView(ShopController controller, ShopItemMapper itemMapper, ShopPricingService pricingService){
         this.controller = controller;
         this.itemMapper = itemMapper;
@@ -164,8 +165,7 @@ public class ShopView {
             int weedCount = 1;
 
             for (EntityID robotEntity : robots) {
-                RobotIComponentService robot =
-                        (RobotIComponentService) world.GetComponent(robotEntity, RobotIComponentService.class);
+                RobotIComponentService robot = (RobotIComponentService) world.GetComponent(robotEntity, RobotIComponentService.class);
 
                 String robotName = switch (robot.robotType) {
                     case HARVEST -> "Harvest Robot " + harvestCount++;
@@ -180,15 +180,16 @@ public class ShopView {
                     robotName += " - speed " + speed.getSpeedMultiplier();
                 }
 
-                Button robotButton = new Button(robotName);
-                robotButton.setPrefWidth(220);
+                Button speedButton = new Button(robotName);
+                speedButton.setPrefWidth(220);
+                speedButton.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
 
-                robotButton.setOnAction(e -> {
-                    controller.buySpeedToolForRobot(world, offer, robotEntity);
+
+                speedButton.setOnAction(e -> {
+                    controller.buyToolForRobot(world, offer, robotEntity);
                     stage.close();
                 });
-
-                layout.getChildren().add(robotButton);
+                layout.getChildren().add(speedButton);
             }
         }
 
@@ -201,20 +202,21 @@ public class ShopView {
         VBox layout = new VBox(10);
         layout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
         layout.getChildren().add(new Label("Choose a robot to equip Harvesting Tool:"));
-
+           int harvestCount = 1;
         for (EntityID entity : world.getEntitiesWith(RobotIComponentService.class)) {
             RobotIComponentService robot = (RobotIComponentService) world.GetComponent(entity, RobotIComponentService.class);
             if (robot.robotType != RobotType.HARVEST) continue;
 
             HarvestingIComponentService existing = world.hasComponent(entity, HarvestingIComponentService.class) ? (HarvestingIComponentService) world.GetComponent(entity, HarvestingIComponentService.class) : null;
-            String label = "Harvest Robot " + entity.id() + (existing != null ? " (level " + (int)(existing.getGrowthMultiplier()) + ")" : "");
+            String label = "Harvest Robot " + harvestCount++ + (existing != null ? " (level " + (int)(existing.getGrowthMultiplier()) + ")" : "");
 
-            Button btn = new Button(label);
-            btn.setPrefWidth(220);
-            btn.setOnAction(e -> {controller.buyHarvestingToolForRobot(world, offer, entity);
+            Button harvestButton = new Button(label);
+            harvestButton.setPrefWidth(220);
+            harvestButton.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
+            harvestButton.setOnAction(e -> {controller.buyToolForRobot(world, offer, entity);
                 stage.close();
             });
-            layout.getChildren().add(btn);
+            layout.getChildren().add(harvestButton);
         }
         stage.setScene(new Scene(layout, 280, 320));
         stage.setTitle("Upgrade Harvesting Tool");
@@ -226,21 +228,23 @@ public class ShopView {
         VBox layout = new VBox(10);
         layout.setStyle("-fx-padding: 16; -fx-background-color: #f1e0b8;");
         layout.getChildren().add(new Label("Choose a robot to equip Planting Tool:"));
-
+            int plantCount = 1;
         for (EntityID entity : world.getEntitiesWith(RobotIComponentService.class)) {
             RobotIComponentService robot = (RobotIComponentService) world.GetComponent(entity, RobotIComponentService.class);
             if (robot.robotType != RobotType.PLANT) continue;
 
             PlantingIComponentService existing = world.hasComponent(entity, PlantingIComponentService.class) ? (PlantingIComponentService) world.GetComponent(entity, PlantingIComponentService.class) : null;
-            String label = "Planting Robot " + entity.id() + (existing != null ? " (level " + (int)(existing.getPlantingSpeedMultiplier()) + ")" : "");
+            String label = "Planting Robot " + plantCount++ + (existing != null ? " (level " + (int)(existing.getPlantingSpeedMultiplier()) + ")" : "");
 
-            Button btn = new Button(label);
-            btn.setPrefWidth(220);
-            btn.setOnAction(e -> {
-                controller.buyPlantingToolForRobot(world, offer, entity);
+            Button plantingButton = new Button(label);
+            plantingButton.setPrefWidth(220);
+            plantingButton.setPrefWidth(220);
+            plantingButton.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
+            plantingButton.setOnAction(e -> {
+                controller.buyToolForRobot(world, offer, entity);
                 stage.close();
             });
-            layout.getChildren().add(btn);
+            layout.getChildren().add(plantingButton);
         }
         stage.setScene(new Scene(layout, 280, 320));
         stage.setTitle("Upgrade Planting Tool");

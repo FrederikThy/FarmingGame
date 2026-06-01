@@ -1,11 +1,11 @@
-package dk.sdu.se4.group1.Tools;
+/*package dk.sdu.se4.group1.Tools;
 
 import dk.sdu.se4.group1.CommonEcs.Components.SpeedToolIComponentService;
 import dk.sdu.se4.group1.CommonEcs.Components.ShopIComponentService;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.World;
 
-public class SpeedToolFactory {
+public class ToolFactory {
 
     private static final int speedToolPrice = 250;
 
@@ -28,3 +28,4 @@ public class SpeedToolFactory {
         }
     }
 }
+*/
