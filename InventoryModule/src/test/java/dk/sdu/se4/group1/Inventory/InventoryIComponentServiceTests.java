@@ -26,8 +26,7 @@ class InventoryIComponentServiceTests {
 
         boolean removed = inventory.removeSeedsFromStorage(SeedType.CARROT, 6);
         assertTrue(removed, "Removal should succeed when stock is sufficient");
-        assertEquals(2, inventory.getSeedStorage().get(SeedType.CARROT),
-                "Remaining stock should be 2");
+        assertEquals(2, inventory.getSeedStorage().get(SeedType.CARROT), "Remaining stock should be 2");
     }
 
     /** Remove more seeds than available inventory, and remaining seeds are unchanged after removal fails */
