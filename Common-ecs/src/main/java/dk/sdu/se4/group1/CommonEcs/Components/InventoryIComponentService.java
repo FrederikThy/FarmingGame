@@ -9,7 +9,7 @@ import java.util.Map;
 public class InventoryIComponentService implements IComponentService {
 
 
-    private int Wallet = 1000;
+    private int Wallet = 10000;
 
     private final EnumMap<SeedType, Integer> seedsStorage = new EnumMap<>(SeedType.class);
     private final EnumMap<SeedType, Integer> harvestedCrops = new EnumMap<>(SeedType.class);
