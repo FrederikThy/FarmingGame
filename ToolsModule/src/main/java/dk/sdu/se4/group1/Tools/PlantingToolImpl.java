@@ -1,12 +1,10 @@
 package dk.sdu.se4.group1.Tools;
 
+import dk.sdu.se4.group1.CommonEcs.Components.*;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.IComponentService;
 import dk.sdu.se4.group1.CommonEcs.ToolSPI;
 import dk.sdu.se4.group1.CommonEcs.World;
-import dk.sdu.se4.group1.CommonEcs.Components.InventoryIComponentService;
-import dk.sdu.se4.group1.CommonEcs.Components.PlantingIComponentService;
-import dk.sdu.se4.group1.CommonEcs.Components.ShopOfferIComponentService;
 
 public class PlantingToolImpl implements ToolSPI {
 
@@ -16,8 +14,7 @@ public class PlantingToolImpl implements ToolSPI {
     }
 
     @Override
-    public boolean applyTool(World world, InventoryIComponentService inventory,
-                             ShopOfferIComponentService offer, EntityID robotEntity) {
+    public boolean applyTool(World world, InventoryIComponentService inventory, ShopOfferIComponentService offer, EntityID robotEntity) {
         int price = offer.getBuyPrice();
         if (inventory.getWallet() < price) return false;
         if (!(offer.getComponent() instanceof PlantingIComponentService)) return false;
@@ -29,5 +26,10 @@ public class PlantingToolImpl implements ToolSPI {
         world.addComponent(robotEntity, tool);
         inventory.removeFromWallet(price);
         return true;
+    }
+
+    @Override
+    public void addShopOffer(ShopIComponentService shop) {
+        shop.addShopItem(new PlantingIComponentService(), 150);
     }
 }
