@@ -133,6 +133,15 @@ public class ShopView {
         button.setPrefWidth(330);
         button.setStyle("-fx-background-color: #c8a96e; -fx-border-color: #3f2d17; -fx-border-width: 3; -fx-padding: 10;");
 
+        if (component instanceof PathfindingAlgorithmIComponentService algo && isAlgorithmOwned(world, algo)) {
+            priceLabel.setText("Purchased");
+            button.setStyle("-fx-background-color: #1a1a1a; -fx-border-color: #000000; -fx-border-width: 3; -fx-padding: 10;");
+            nameLabel.setStyle("-fx-text-fill: #888888;");
+            priceLabel.setStyle("-fx-text-fill: #888888;");
+            button.setDisable(true);
+            return button;
+        }
+
         if (!pricingService.canAfford(price, inventory.getWallet())) {
             disableButton(button);
         }
@@ -245,6 +254,14 @@ public class ShopView {
         stage.setScene(new Scene(layout, 280, 320));
         stage.setTitle("Upgrade Planting Tool");
         stage.show();
+    }
+
+    private boolean isAlgorithmOwned(World world, PathfindingAlgorithmIComponentService algo) {
+        var entities = world.getEntitiesWith(PathfindingUpgradeIComponentService.class);
+        if (entities == null || !entities.iterator().hasNext()) return false;
+        PathfindingUpgradeIComponentService upgrade = (PathfindingUpgradeIComponentService)
+                world.GetComponent(entities.iterator().next(), PathfindingUpgradeIComponentService.class);
+        return upgrade.activeTier.tier >= algo.tier.tier;
     }
 
     private void refreshSoilUpgradeUI(GrowthMapIComponentService growthMap,InventoryIComponentService inventory,int price)
