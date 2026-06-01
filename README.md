@@ -1,16 +1,15 @@
 # FarmingGame
 
-
 ## Project Description
 
-The purpose of this project is to create a farming simulation game with a modular architecture, where each gameplay feature is developed as its own module.
+The purpose of this project is to create a farming game with a modular architecture.
 
 The game is built around a shared ECS-style core:
 - **Entities** represent objects in the world
 - **Components** store data such as position, inventory, crops, and robot behavior
 - **Systems** process entities each frame and implement game logic
 
-This structure makes it easier to extend the game with new modules and features without tightly coupling all code together.
+This structure makes it easier to extend the game with new modules and features without changing major code.
 
 ## Features
 
