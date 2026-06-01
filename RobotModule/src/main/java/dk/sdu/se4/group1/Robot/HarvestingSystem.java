@@ -34,14 +34,14 @@ public class HarvestingSystem implements IEntityProcessingService {
 
     private EntityID FindCropAtPosition(World world, PositionIComponentService pos) {
         EntityID crop = FindCropAt(world, pos.x, pos.y - 1);
-        if (crop != null) return crop;
-        crop = FindCropAt(world, pos.x, pos.y + 1);
-        if (crop != null) return crop;
-        crop = FindCropAt(world, pos.x - 1, pos.y);
-        if (crop != null) return crop;
-        crop = FindCropAt(world, pos.x + 1, pos.y);
-        if (crop != null) return crop;
-        return FindCropAt(world, pos.x, pos.y);
+        if (crop != null) return crop;{
+            crop = FindCropAt(world, pos.x, pos.y + 1);}
+        if (crop != null) return crop;{
+        crop = FindCropAt(world, pos.x - 1, pos.y);}
+        if (crop != null) return crop;{
+        crop = FindCropAt(world, pos.x + 1, pos.y);}
+        if (crop != null) return crop;{
+        return FindCropAt(world, pos.x, pos.y);}
     }
 
     private EntityID FindCropAt(World world, double x, double y) {

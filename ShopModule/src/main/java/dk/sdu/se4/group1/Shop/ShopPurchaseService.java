@@ -1,10 +1,7 @@
 package dk.sdu.se4.group1.Shop;
 
+import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.CommonEcs.Components.*;
-import dk.sdu.se4.group1.CommonEcs.EntityID;
-import dk.sdu.se4.group1.CommonEcs.IComponentService;
-import dk.sdu.se4.group1.CommonEcs.RobotSPI;
-import dk.sdu.se4.group1.CommonEcs.World;
 
 import java.util.ServiceLoader;
 
@@ -42,59 +39,14 @@ public class ShopPurchaseService {
 
         return false;
     }
-    public boolean buySpeedToolForRobot(World world,InventoryIComponentService inventory,ShopOfferIComponentService offer,EntityID robotEntity)
-    {
-        int price = offer.getBuyPrice();
-
-        if (inventory.getWallet() < price) {
-            return false;
+    public boolean buyToolForRobot(World world, InventoryIComponentService inventory,
+                                   ShopOfferIComponentService offer, EntityID robotEntity) {
+        for (ToolSPI tool : ServiceLoader.load(ToolSPI.class)) {
+            if (tool.getToolType().isInstance(offer.getComponent())) {
+                return tool.applyTool(world, inventory, offer, robotEntity);
+            }
         }
-
-        if (!(offer.getComponent() instanceof SpeedToolIComponentService)) {
-            return false;
-        }
-
-        if (world.hasComponent(robotEntity, SpeedToolIComponentService.class)) {
-            SpeedToolIComponentService existing =
-                    (SpeedToolIComponentService) world.GetComponent(robotEntity, SpeedToolIComponentService.class);
-
-            world.addComponent(robotEntity, new SpeedToolIComponentService(existing.getSpeedMultiplier() + 1.0));
-        } else {
-            world.addComponent(robotEntity, new SpeedToolIComponentService(2.0));
-        }
-
-        inventory.removeFromWallet(price);
-        return true;
-    }
-
-    public boolean buyHarvestingToolForRobot(World world, InventoryIComponentService inventory,
-                                             ShopOfferIComponentService offer, EntityID robotEntity) {
-        int price = offer.getBuyPrice();
-        if (inventory.getWallet() < price) return false;
-        if (!(offer.getComponent() instanceof HarvestingIComponentService)) return false;
-
-        HarvestingIComponentService tool = world.hasComponent(robotEntity, HarvestingIComponentService.class)
-                ? (HarvestingIComponentService) world.GetComponent(robotEntity, HarvestingIComponentService.class)
-                : new HarvestingIComponentService();
-        tool.setGrowthMultiplier(tool.getGrowthMultiplier() + 1.0);
-        world.addComponent(robotEntity, tool);
-        inventory.removeFromWallet(price);
-        return true;
-    }
-
-    public boolean buyPlantingToolForRobot(World world, InventoryIComponentService inventory,
-                                           ShopOfferIComponentService offer, EntityID robotEntity) {
-        int price = offer.getBuyPrice();
-        if (inventory.getWallet() < price) return false;
-        if (!(offer.getComponent() instanceof PlantingIComponentService)) return false;
-
-        PlantingIComponentService tool = world.hasComponent(robotEntity, PlantingIComponentService.class)
-                ? (PlantingIComponentService) world.GetComponent(robotEntity, PlantingIComponentService.class)
-                : new PlantingIComponentService();
-        tool.setPlantingSpeedMultiplier(tool.getPlantingSpeedMultiplier() + 1.0);
-        world.addComponent(robotEntity, tool);
-        inventory.removeFromWallet(price);
-        return true;
+        return false;
     }
 
     public boolean buySoilUpgrade(World world,InventoryIComponentService inventory,int price)

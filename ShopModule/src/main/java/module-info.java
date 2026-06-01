@@ -1,7 +1,4 @@
-import dk.sdu.se4.group1.CommonEcs.IGamePlugin;
-import dk.sdu.se4.group1.CommonEcs.IShopPricingService;
-import dk.sdu.se4.group1.CommonEcs.RobotSPI;
-import dk.sdu.se4.group1.CommonEcs.IUiPluginService;
+import dk.sdu.se4.group1.CommonEcs.*;
 import dk.sdu.se4.group1.Shop.ShopPricingService;
 import dk.sdu.se4.group1.Shop.ShopUiPluginService;
 
@@ -14,8 +11,8 @@ module ShopModule {
     requires java.naming;
     requires jdk.compiler;
 
-
     uses RobotSPI;
+    uses ToolSPI;
 
     provides IShopPricingService with ShopPricingService;
     provides IGamePlugin with dk.sdu.se4.group1.Shop.ShopGamePlugin;

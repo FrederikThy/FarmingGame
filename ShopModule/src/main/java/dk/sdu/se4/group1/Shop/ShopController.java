@@ -48,34 +48,11 @@ public class ShopController {
         }
     }
 
-    public void buySpeedToolForRobot(World world, ShopOfferIComponentService offer, EntityID robotEntity) {
-        if (activeInventory == null) {
-            return;
-        }
-
-        boolean bought = purchaseService.buySpeedToolForRobot(
-                world,
-                activeInventory,
-                offer,
-                robotEntity
-        );
-
-        if (bought) {
-            view.refresh(world, activeShop, activeInventory, activeGrowthMap, SOIL_UPGRADE_PRICE);
-        }
-    }
-    public void buyHarvestingToolForRobot(World world, ShopOfferIComponentService offer, EntityID robotEntity) {
+    public void buyToolForRobot(World world, ShopOfferIComponentService offer, EntityID robotEntity) {
         if (activeInventory == null) return;
-        boolean bought = purchaseService.buyHarvestingToolForRobot(world, activeInventory, offer, robotEntity);
+        boolean bought = purchaseService.buyToolForRobot(world, activeInventory, offer, robotEntity);
         if (bought) view.refresh(world, activeShop, activeInventory, activeGrowthMap, SOIL_UPGRADE_PRICE);
     }
-
-    public void buyPlantingToolForRobot(World world, ShopOfferIComponentService offer, EntityID robotEntity) {
-        if (activeInventory == null) return;
-        boolean bought = purchaseService.buyPlantingToolForRobot(world, activeInventory, offer, robotEntity);
-        if (bought) view.refresh(world, activeShop, activeInventory, activeGrowthMap, SOIL_UPGRADE_PRICE);
-    }
-
 
     public void buySoilUpdgrade(World world)
     {
