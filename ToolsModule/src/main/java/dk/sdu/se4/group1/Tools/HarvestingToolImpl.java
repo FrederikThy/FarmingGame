@@ -1,5 +1,6 @@
 package dk.sdu.se4.group1.Tools;
 
+import dk.sdu.se4.group1.CommonEcs.Components.ShopIComponentService;
 import dk.sdu.se4.group1.CommonEcs.EntityID;
 import dk.sdu.se4.group1.CommonEcs.IComponentService;
 import dk.sdu.se4.group1.CommonEcs.ToolSPI;
@@ -29,5 +30,9 @@ public class HarvestingToolImpl implements ToolSPI {
         world.addComponent(robotEntity, tool);
         inventory.removeFromWallet(price);
         return true;
+    }
+    @Override
+    public void addShopOffer(ShopIComponentService shop) {
+        shop.addShopItem(new HarvestingIComponentService(), 200);
     }
 }

@@ -2,6 +2,8 @@ package dk.sdu.se4.group1.Shop;
 
 import dk.sdu.se4.group1.CommonApi.SeedType;
 import dk.sdu.se4.group1.CommonEcs.Components.*;
+import dk.sdu.se4.group1.CommonEcs.*;
+import java.util.ServiceLoader;
 
 public class ShopCatalog
 {
@@ -18,11 +20,13 @@ public class ShopCatalog
         shop.addShopItem(new CropIComponentService(SeedType.BEANSPROUT), 100);
     }
 
-    private void addTools(ShopIComponentService shop) {
-        shop.addShopItem(new PlantingIComponentService(), 150);
-        shop.addShopItem(new HarvestingIComponentService(), 200);
-        shop.addShopItem(new SpeedToolIComponentService(0.15), 250);
-    }
+  private void addTools(ShopIComponentService shop) {
+
+      for (ToolSPI tool : ServiceLoader.load(ToolSPI.class)) {
+          tool.addShopOffer(shop);
+      }
+
+  }
 
     private void addRobots(ShopIComponentService shop) {
         shop.addShopItem(new RobotIComponentService(0, 0, RobotType.WEED_REMOVER), 1000);
