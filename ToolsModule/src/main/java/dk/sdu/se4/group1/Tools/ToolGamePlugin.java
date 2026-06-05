@@ -7,7 +7,6 @@ public class ToolGamePlugin implements IGamePlugin {
 
     @Override
     public void start(World world) {
-
     }
 
     @Override

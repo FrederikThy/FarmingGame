@@ -17,8 +17,7 @@ public class HarvestingToolImpl implements ToolSPI {
     }
 
     @Override
-    public boolean applyTool(World world, InventoryIComponentService inventory,
-                             ShopOfferIComponentService offer, EntityID robotEntity) {
+    public boolean applyTool(World world, InventoryIComponentService inventory, ShopOfferIComponentService offer, EntityID robotEntity) {
         int price = offer.getBuyPrice();
         if (inventory.getWallet() < price) return false;
         if (!(offer.getComponent() instanceof HarvestingIComponentService)) return false;

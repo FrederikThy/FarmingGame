@@ -12,29 +12,24 @@ public class PlantingSystem implements IEntityProcessingService {
 
     private final Random random = new Random();
 
-    private double timeSinceLastPlantCheck = 0.0;
-    private static final double PLANT_INTERVAL = 8.0;
-
     private static final int MAP_WIDTH = 10;
     private static final int MAP_HEIGHT = 10;
     @Override
     public void update(World world, double deltaTime) {
-        timeSinceLastPlantCheck += deltaTime;
-
         for (EntityID entity : world.getEntitiesWith(PlantingIComponentService.class)) {
             PlantingIComponentService plantingTool =
                     (PlantingIComponentService) world.GetComponent(entity, PlantingIComponentService.class);
-            double effectiveInterval = PLANT_INTERVAL / plantingTool.getPlantingSpeedMultiplier();
             PositionIComponentService robotPos =
                     (PositionIComponentService) world.GetComponent(entity, PositionIComponentService.class);
 
-            if (timeSinceLastPlantCheck >= effectiveInterval) {
+            plantingTool.plantWaitTimer += deltaTime;
+
+            double waitTime = Math.max(1.0, 6.0 - (plantingTool.getPlantingSpeedMultiplier() - 1.0)); // min 1 second
+
+            if (plantingTool.plantWaitTimer >= waitTime) {
+                plantingTool.plantWaitTimer = 0.0;  // reset timer
                 tryPlantSeed(world, entity, robotPos);
             }
-        }
-
-        if (timeSinceLastPlantCheck >= PLANT_INTERVAL) {
-            timeSinceLastPlantCheck = 0.0;
         }
     }
 

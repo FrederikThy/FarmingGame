@@ -7,4 +7,6 @@ public class PlantingIComponentService implements IComponentService {
 
     public double getPlantingSpeedMultiplier() { return plantingSpeedMultiplier; }
     public void setPlantingSpeedMultiplier(double multiplier) { this.plantingSpeedMultiplier = multiplier; }
+
+    public double plantWaitTimer = 0.0;
 }

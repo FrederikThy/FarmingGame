@@ -40,6 +40,11 @@ public class RobotTaskSystem implements IEntityProcessingService {
     private int[] FindTarget(World world, EntityID entity){
         // planting robot
         if (world.hasComponent(entity, PlantingIComponentService.class)){
+            PlantingIComponentService plantingTool =
+                    (PlantingIComponentService) world.GetComponent(entity, PlantingIComponentService.class);
+            if (plantingTool.plantWaitTimer > 0.0) {
+                return null;
+            }
             return FindPlantingTarget(world);
         }
         // Harvesting robot

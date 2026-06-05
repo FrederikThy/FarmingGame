@@ -19,10 +19,19 @@ public class PlantingToolImpl implements ToolSPI {
         if (inventory.getWallet() < price) return false;
         if (!(offer.getComponent() instanceof PlantingIComponentService)) return false;
 
-        PlantingIComponentService tool = world.hasComponent(robotEntity, PlantingIComponentService.class)
-                ? (PlantingIComponentService) world.GetComponent(robotEntity, PlantingIComponentService.class)
-                : new PlantingIComponentService();
-        tool.setPlantingSpeedMultiplier(tool.getPlantingSpeedMultiplier() + 1.0);
+        PlantingIComponentService tool;
+
+        if (world.hasComponent(robotEntity, PlantingIComponentService.class)) {
+            PlantingIComponentService existing =
+                    (PlantingIComponentService) world.GetComponent(robotEntity, PlantingIComponentService.class);
+
+            tool = new PlantingIComponentService();  // create new
+            tool.setPlantingSpeedMultiplier(existing.getPlantingSpeedMultiplier() + 1.0);
+        } else {
+            tool = new PlantingIComponentService();
+            tool.setPlantingSpeedMultiplier(1.0);  // starting level
+        }
+
         world.addComponent(robotEntity, tool);
         inventory.removeFromWallet(price);
         return true;
